@@ -1,0 +1,13 @@
+# Build outputs
+bin/
+obj/
+
+# Visual Studio and IDE files
+.vs/
+.vscode/
+*.user
+*.suo
+
+# Local configuration and logs
+*.log
+appsettings.Local.json
