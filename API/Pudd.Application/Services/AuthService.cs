@@ -8,7 +8,7 @@ namespace API.Features.Auth
 {
     public class AuthService
     {
-        public async Task<LoginResponse> Login (LoginRequest request)
+        public async Task<LoginResponse?> AutenticarUsuario (LoginRequest request)
         {
             throw new NotImplementedException();
         }
