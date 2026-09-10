@@ -6,11 +6,13 @@ using Pudd.Application.Contracts;
 
 namespace Pudd.Application.Services
 {
-    public class AuthService
+    public class UserService(
+    )
     {
-        public async Task<LoginResponse?> AutenticarUsuario (LoginRequest request)
+        public async Task<LoginResponse?> ObterPorEmail(string email)
         {
-            throw new NotImplementedException();
+            var emailExistente = await _userRepository.ObterEmailUsuario(email)
+
         }
     }
 }

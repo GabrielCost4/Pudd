@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Pudd.Domain.Enums.Roles;
 
-namespace API.Pudd.Domain.Entities
+namespace Pudd.Domain.Entities
 {
     public class User
     {
@@ -11,6 +12,6 @@ namespace API.Pudd.Domain.Entities
         public string Name { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;   
         public string PasswordHash { get; set;} = string.Empty;
-        public string Role { get; set;} = string.Empty;
+        public UserRole Role { get; set;} = UserRole.User;
     }
 }

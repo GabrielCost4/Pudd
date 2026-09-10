@@ -6,9 +6,9 @@ using Pudd.Application.Contracts;
 
 namespace Pudd.Application.Services
 {
-    public class AuthService
+    public class RegisterService
     {
-        public async Task<LoginResponse?> AutenticarUsuario (LoginRequest request)
+        public async Task<RegisterResponse?> CadastrarUsuario(RegisterRequest request)
         {
             throw new NotImplementedException();
         }

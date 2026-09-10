@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Pudd.API/Pudd.API.csproj" />
+  <Project Path="Pudd.Application/Pudd.Application.csproj" />
+  <Project Path="Pudd.Infrastructure/Pudd.Infrastructure.csproj" />
+  <Project Path="Pudd.Domain/Pudd.Domain.csproj" />
+</Solution>
