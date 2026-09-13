@@ -11,7 +11,7 @@ namespace Pudd.Application.Services
     {
         public async Task<LoginResponse?> ObterPorEmail(string email)
         {
-            var emailExistente = await _userRepository.ObterEmailUsuario(email)
+            throw new NotImplementedException(); 
 
         }
     }
