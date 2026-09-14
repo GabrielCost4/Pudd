@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Pudd.Infrastructure;
@@ -11,9 +12,11 @@ using Pudd.Infrastructure;
 namespace Pudd.Infrastructure.Migrations
 {
     [DbContext(typeof(PuddDbContext))]
-    partial class PuddDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260913193939_AddUniqueEmail")]
+    partial class AddUniqueEmail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
