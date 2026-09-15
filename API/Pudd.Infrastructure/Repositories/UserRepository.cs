@@ -19,12 +19,10 @@ namespace Pudd.Infrastructure.Repositories
             .FirstOrDefaultAsync(user => user.Email == email);
         }
 
-        public async Task<User> AdicionarUsuario(User user)
+        public async Task AdicionarUsuario(User user)
         {
              await _context.users.AddAsync(user);
              await _context.SaveChangesAsync();
-
-             return user;
         }
     }
 }

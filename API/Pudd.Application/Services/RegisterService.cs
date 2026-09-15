@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Pudd.Application.Contracts;
+using Pudd.Application.Contracts.Enums;
 using Pudd.Application.Interfaces;
 using Pudd.Domain.Entities;
 using Pudd.Domain.Enums.Roles;
@@ -11,16 +12,20 @@ namespace Pudd.Application.Services
 {
     public class RegisterService(
         IUserRepository _userRepository,
-        IPasswordHasher _passwordHasher
+        IPasswordHasher _passwordHasher,
+        IJwtService _jwtService
     )
     {
-        public async Task<LoginResponse?> CadastrarUsuario(RegisterRequest request)
+        public async Task<LoginResult> CadastrarUsuario(RegisterRequest request)
         {
             var resultado = await _userRepository.ObterPorEmail(request.Email);
 
             if(resultado is not null)
             {
-                return null;
+                return new LoginResult
+                {
+                    Error = AuthErrors.EmailExistente
+                };
             }
 
             var senhaValida = 
@@ -31,10 +36,12 @@ namespace Pudd.Application.Services
 
             if (!senhaValida)
             {
-                return null;
+                return new LoginResult
+                {
+                  Error = AuthErrors.SenhaFraca  
+                };
             }
          
-  
             var senha = _passwordHasher.GerarHash(request.Senha);
 
             User user = new User
@@ -45,13 +52,11 @@ namespace Pudd.Application.Services
                 Role = UserRole.User
             };
 
-            var novoUsuario = await _userRepository.AdicionarUsuario(user);
+            await _userRepository.AdicionarUsuario(user);
 
-            return new LoginResponse
+            return new LoginResult
             {
-                Role = novoUsuario.Role.ToString(),
-                AccessToken = string.Empty,
-                ExpiresIn = 0
+               Response = _jwtService.GerarToken(user)
             };
         }
     }

@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Pudd.Application.Contracts;
+using Pudd.Domain.Entities;
 
-namespace Pudd.Application.Interfaces
+namespace Pudd.Application.Interfaces;
+
+public interface IJwtService
 {
-    public interface IJwtService
-    {
-        
-    }
+    LoginResponse GerarToken(User user);
 }

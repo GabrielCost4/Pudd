@@ -3,34 +3,40 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Pudd.Application.Contracts;
+using Pudd.Application.Contracts.Enums;
 using Pudd.Application.Interfaces;
 
 namespace Pudd.Application.Services
 {
     public class AuthService(
         IUserRepository _userRepository,
-        IPasswordHasher _passwordHasher
+        IPasswordHasher _passwordHasher,
+        IJwtService _jwtService
     )
     {
-        public async Task<LoginResponse?> AutenticarUsuario (LoginRequest request)
+        public async Task<LoginResult> AutenticarUsuario (LoginRequest request)
         {
             var resultado = await _userRepository.ObterPorEmail(request.Email);
 
             if(resultado == null)
             {
-                return null;
+                return new LoginResult
+                {
+                   Error = AuthErrors.EmailNaoEncontrado 
+                } ;
             }
 
             if (!_passwordHasher.VerificarSenha(request.Senha, resultado.PasswordHash))
             {
-                return null;
+                return new LoginResult
+                {
+                    Error = AuthErrors.SenhaDiferente
+                };
             } 
 
-            return new LoginResponse
+            return new LoginResult 
             {
-                Role = resultado.Role.ToString(),
-                AccessToken = string.Empty,
-                ExpiresIn = 0
+                Response = _jwtService.GerarToken(resultado)
             };
         }
     }

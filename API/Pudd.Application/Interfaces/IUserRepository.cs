@@ -9,6 +9,6 @@ namespace Pudd.Application.Interfaces
     public interface IUserRepository
     {
         Task<User?> ObterPorEmail(string email);
-        Task<User> AdicionarUsuario(User user);
+        Task AdicionarUsuario(User user);
     }
 }

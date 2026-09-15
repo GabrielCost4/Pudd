@@ -1,45 +1,50 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Pudd.Application.Services;
-using Pudd.Application.Contracts;
 using Microsoft.AspNetCore.Mvc;
+using Pudd.Application.Contracts;
+using Pudd.Application.Contracts.Enums;
+using Pudd.Application.Services;
 
-namespace Pudd.API.Controllers
+namespace Pudd.API.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class AuthController(
+    AuthService authService,
+    RegisterService registerService) : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class AuthController(
-        AuthService _authService,
-        RegisterService _registerService
-    ) : ControllerBase
-
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-       [HttpPost("login")]
-       public async Task<IActionResult> Login([FromBody]LoginRequest request)
+        var resultado = await authService.AutenticarUsuario(request);
+
+        if (resultado.Response is { } response)
         {
-            var resultado = await _authService.AutenticarUsuario(request);
-
-            if(resultado == null)
-            {
-                return Unauthorized("Email ou senha inválidos!");
-            }
-
-            return Ok(resultado);
+            return Ok(response);
         }
 
-       [HttpPost("register")]
-       public async Task<IActionResult> Cadastrar([FromBody]RegisterRequest request)
+        return Unauthorized("E-mail ou senha inválidos.");
+    }
+
+    [HttpPost("register")]
+    public async Task<IActionResult> Cadastrar([FromBody] RegisterRequest request)
+    {
+        var resultado = await registerService.CadastrarUsuario(request);
+
+        if (resultado.Response is { } response)
         {
-            var resultado = await _registerService.CadastrarUsuario(request);
-
-            if(resultado == null)
-            {
-                return BadRequest("Dados inválidos!");
-            } 
-
-            return Ok(resultado);
+            return Ok(response);
         }
+
+        return resultado.Error switch
+        {
+            AuthErrors.EmailExistente =>
+                Conflict("Já existe um usuário com este e-mail."),
+
+            AuthErrors.SenhaFraca =>
+                BadRequest("A senha precisa ter ao menos 8 caracteres, letra maiúscula, número e símbolo."),
+
+            _ => Problem(
+                title: "Erro inesperado no cadastro.",
+                statusCode: StatusCodes.Status500InternalServerError)
+        };
     }
 }
