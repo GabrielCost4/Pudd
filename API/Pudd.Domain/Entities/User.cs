@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Pudd.Domain.Enums.Roles;
 
 namespace Pudd.Domain.Entities
@@ -13,5 +9,12 @@ namespace Pudd.Domain.Entities
         public string Email { get; set; } = string.Empty;   
         public string PasswordHash { get; set;} = string.Empty;
         public UserRole Role { get; set;} = UserRole.User;
+        public string? Bio { get; set; }
+        public string? AvatarImagePath { get; set; }
+        public bool IsBlocked { get; set; }
+
+        public ICollection<Post> Posts { get; set; } = [];
+        public ICollection<Comment> Comments { get; set; } = [];
+        public ICollection<PostLike> PostLikes { get; set; } = [];
     }
 }
