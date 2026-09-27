@@ -1,4 +1,4 @@
-name: CI-PUDD
+name: CI - API
 
 on:
   push:
@@ -13,6 +13,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: ./API
+
     steps:
       - name: Baixar código
         uses: actions/checkout@v4
@@ -23,10 +27,10 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Restaurar dependências
-        run: dotnet restore
+        run: dotnet restore Pudd.slnx
 
       - name: Compilar
-        run: dotnet build --no-restore --configuration Release
+        run: dotnet build Pudd.slnx --no-restore --configuration Release
 
       - name: Executar testes
-        run: dotnet test --no-build --configuration Release
+        run: dotnet test Pudd.slnx --no-build --configuration Release
