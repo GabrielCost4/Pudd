@@ -16,11 +16,19 @@ namespace Pudd.Infrastructure
         public DbSet<Post> posts => Set<Post>();
         public DbSet<Comment> comments => Set<Comment>();
         public DbSet<PostLike> postLikes => Set<PostLike>();
+        public DbSet<PendingImageDeletion> pendingImageDeletions => Set<PendingImageDeletion>();
 
         // Define as relações entre as entidades e as regras aplicadas pelo banco nas exclusões.
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<PendingImageDeletion>()
+                .HasIndex(item => item.NextAttemptAt);
+
+            // Evita que duas edições simultâneas percam dados ou deixem imagens sem referência.
+            modelBuilder.Entity<Post>().Property(post => post.UpdatedAt).IsConcurrencyToken();
+            modelBuilder.Entity<User>().Property(user => user.AvatarImagePath).IsConcurrencyToken();
 
             modelBuilder.Entity<User>()
                 .HasIndex(user => user.Email)

@@ -11,3 +11,6 @@ obj/
 # Local configuration and logs
 *.log
 appsettings.Local.json
+
+# Local Credentials
+.env

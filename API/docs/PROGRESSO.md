@@ -32,5 +32,13 @@ AuthController → AuthService/RegisterService → IUserRepository → UserRepos
 
 ## Próximos passos
 
-- Proteger endpoints futuros com `[Authorize]`.
-- Criar testes para cadastro, login e erros de autenticação.
+- Revisar o backend social e aplicar `AddImageDeletionQueue` no banco de desenvolvimento.
+- Testar upload/URLs assinadas com o projeto Supabase real e integrar o frontend.
+
+## Backend social
+
+- Implementados posts, comentários, curtidas, perfil/avatar e moderação, com rotas protegidas.
+- Integrado Supabase Storage via `IImageStorage`, mantendo referências no PostgreSQL e gerando URLs temporárias.
+- Incluídos bloqueio de contas, autoria, paginação, tratamento de erros e fila persistente de exclusão de imagens.
+- Adicionados testes de services, HTTP, adaptador Storage e integração com PostgreSQL descartável.
+- Consulte [BACKEND_MVP.md](BACKEND_MVP.md) para rotas, limites, decisões, testes e a migration necessária.

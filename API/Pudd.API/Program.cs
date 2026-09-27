@@ -1,32 +1,43 @@
+using System.Security.Claims;
 using System.Text;
+using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Pudd.API.Errors;
+using Pudd.API.Workers;
 using Pudd.Application.Interfaces;
 using Pudd.Application.Services;
 using Pudd.Infrastructure;
 using Pudd.Infrastructure.Repositories;
 using Pudd.Infrastructure.Security;
+using Pudd.Infrastructure.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+var connectionString =
+    builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException(
-        "A string de conexão 'DefaultConnection' não foi configurada.");
+        "A string de conexão 'DefaultConnection' não foi configurada."
+    );
 
-builder.Services.AddDbContext<PuddDbContext>(options =>
-    options.UseNpgsql(connectionString));
+builder.Services.AddDbContext<PuddDbContext>(options => options.UseNpgsql(connectionString));
 
-var jwtKey = builder.Configuration["Jwt:Key"]
+var jwtKey =
+    builder.Configuration["Jwt:Key"]
     ?? throw new InvalidOperationException("A chave JWT não foi configurada.");
-var jwtIssuer = builder.Configuration["Jwt:Issuer"]
+var jwtIssuer =
+    builder.Configuration["Jwt:Issuer"]
     ?? throw new InvalidOperationException("O emissor JWT não foi configurado.");
-var jwtAudience = builder.Configuration["Jwt:Audience"]
+var jwtAudience =
+    builder.Configuration["Jwt:Audience"]
     ?? throw new InvalidOperationException("O público JWT não foi configurado.");
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder
+    .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        options.MapInboundClaims = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
@@ -36,18 +47,72 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidAudience = jwtAudience,
             ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero
+            ClockSkew = TimeSpan.Zero,
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = async context =>
+            {
+                // Um token ainda válido não autoriza uma conta bloqueada depois do login.
+                if (!Guid.TryParse(context.Principal?.FindFirstValue("sub"), out var userId))
+                {
+                    context.Fail("Identidade inválida.");
+                    return;
+                }
+                var users =
+                    context.HttpContext.RequestServices.GetRequiredService<IUserRepository>();
+                var user = await users.GetByIdAsync(userId);
+                if (user is null || user.IsBlocked)
+                    context.Fail("Conta indisponível.");
+            },
         };
     });
 
 builder.Services.AddAuthorization();
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<ApiExceptionHandler>();
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy(
+        "likes",
+        context =>
+            RateLimitPartition.GetFixedWindowLimiter(
+                context.User.FindFirstValue("sub")
+                    ?? context.Connection.RemoteIpAddress?.ToString()
+                    ?? "anonymous",
+                _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = 30,
+                    Window = TimeSpan.FromMinutes(1),
+                    QueueLimit = 0,
+                }
+            )
+    );
+});
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<RegisterService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<IPostLikeRepository, PostLikeRepository>();
+builder.Services.AddScoped<IImageDeletionQueue, ImageDeletionQueue>();
+builder.Services.AddScoped<AccountAccess>();
+builder.Services.AddScoped<ImageService>();
+builder.Services.AddScoped<PostService>();
+builder.Services.AddScoped<CommentService>();
+builder.Services.AddScoped<PostLikeService>();
+builder.Services.AddScoped<UserService>();
+builder
+    .Services.AddHttpClient<IImageStorage, SupabaseImageStorage>(client =>
+        client.Timeout = TimeSpan.FromSeconds(30)
+    )
+    .RemoveAllLoggers();
+builder.Services.AddHostedService<ImageDeletionWorker>();
 
 var app = builder.Build();
 
@@ -56,9 +121,14 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.UseExceptionHandler();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
 app.MapControllers();
 
 app.Run();
+
+// Permite hospedar a API em memória nos testes de integração.
+public partial class Program { }

@@ -34,6 +34,9 @@ namespace Pudd.Application.Services
                 };
             } 
 
+            if (resultado.IsBlocked)
+                return new LoginResult { Error = AuthErrors.ContaBloqueada };
+
             return new LoginResult 
             {
                 Response = _jwtService.GerarToken(resultado)

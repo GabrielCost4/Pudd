@@ -1,0 +1,15 @@
+# Sobe o PostgreSQL 18 do Pudd em um container, com credenciais locais e dados persistentes.
+services:
+    postgres:
+      image: postgres:18
+      container_name: pudd-postgres
+      restart: unless-stopped
+      env_file:
+        - .env
+      ports:
+        - "5433:5432"
+      volumes:
+        - pudd_postgres_data:/var/lib/postgresql
+# Preserva os dados do banco mesmo se o container for recriado.
+volumes:
+    pudd_postgres_data:
