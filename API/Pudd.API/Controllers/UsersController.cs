@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Pudd.API.Contracts;
+using Pudd.API.Uploads;
 using Pudd.Application.Contracts;
 using Pudd.Application.Services;
 

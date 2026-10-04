@@ -7,6 +7,8 @@ using Pudd.Domain.Enums.Roles;
 using Pudd.Infrastructure;
 using Pudd.Infrastructure.Repositories;
 using Xunit;
+using Microsoft.Extensions.Logging.Abstractions;
+using Pudd.Application.Validation;
 
 namespace Pudd.Tests;
 
@@ -74,7 +76,8 @@ public class ServiceTests
     public async Task FailedSave_DeletesNewUpload()
     {
         await using var s = new Scenario();
-        var service = new PostService(new FailingPosts(), s.Users, s.Access, s.Images);
+        var service = new PostService(new FailingPosts(), s.Users, s.Access, s.Images,
+            new CreatePostRequestValidator(), new UpdatePostRequestValidator());
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
             service.CreateAsync(s.Owner.ID, new() { Content = "texto" }, Scenario.Png));
         Assert.Single(s.Storage.Deletions);
@@ -108,7 +111,7 @@ public class ServiceTests
         await AssertError(ErrorCode.InvalidInput, () => s.Images.UploadAsync("posts", s.Owner.ID,
             new("this is text"u8.ToArray(), "image/png")));
         await AssertError(ErrorCode.InvalidInput, () => s.Images.UploadAsync("posts", s.Owner.ID,
-            new(new byte[ImageService.MaxBytes + 1], "image/png")));
+            new(new byte[ImageUpload.MaxBytes + 1], "image/png")));
         Assert.Empty(s.Storage.Uploads);
     }
 
@@ -177,7 +180,8 @@ public class ServiceTests
     {
         await using var s = new Scenario();
         var post = await s.AddPost();
-        var service = new CommentService(new CommentRepository(s.Db), new PostRepository(s.Db), s.Access);
+        var service = new CommentService(new CommentRepository(s.Db), new PostRepository(s.Db), s.Access,
+            new CreateCommentRequestValidator());
         var comment = await service.CreateAsync(s.Other.ID, post.ID, new() { Content = " legal " });
         Assert.Equal("legal", comment.Content);
         await AssertError(ErrorCode.Forbidden, () => service.DeleteAsync(s.Owner.ID, comment.ID));
@@ -224,9 +228,10 @@ internal sealed class Scenario : IAsyncDisposable
         Db.SaveChanges();
         Users = new(Db);
         Access = new(Users);
-        Images = new(Storage, Queue);
-        Posts = new(new PostRepository(Db), Users, Access, Images);
-        Profiles = new(Users, Access, Images);
+        Images = new(Storage, Queue, NullLogger<ImageService>.Instance);
+        Posts = new(new PostRepository(Db), Users, Access, Images,
+            new CreatePostRequestValidator(), new UpdatePostRequestValidator());
+        Profiles = new(Users, Access, Images, new UpdateProfileRequestValidator());
     }
     public async Task<Post> AddPost(string? path = null)
     {
@@ -263,21 +268,37 @@ internal class FakeStorage : IImageStorage
 internal class FakeQueue : IImageDeletionQueue
 {
     public List<(string, string)> Items { get; } = [];
+    public List<PendingImageDeletion> Pending { get; } = [];
+    public List<PendingImageDeletion> Completed { get; } = [];
+    public List<PendingImageDeletion> Retried { get; } = [];
+    public bool FailEnqueue { get; set; }
+    public bool FailRetry { get; set; }
     public Task EnqueueAsync(string bucket, string path, CancellationToken ct = default)
     {
+        if (FailEnqueue) throw new InvalidOperationException("fila indisponível");
         Items.Add((bucket, path)); return Task.CompletedTask;
     }
     public Task<IReadOnlyList<PendingImageDeletion>> GetPendingAsync(CancellationToken ct) =>
-        Task.FromResult<IReadOnlyList<PendingImageDeletion>>([]);
-    public Task CompleteAsync(PendingImageDeletion item, CancellationToken ct) => Task.CompletedTask;
-    public Task RetryLaterAsync(PendingImageDeletion item, CancellationToken ct) => Task.CompletedTask;
+        Task.FromResult<IReadOnlyList<PendingImageDeletion>>(Pending);
+    public Task CompleteAsync(PendingImageDeletion item, CancellationToken ct)
+    {
+        Completed.Add(item);
+        return Task.CompletedTask;
+    }
+    public Task RetryLaterAsync(PendingImageDeletion item, CancellationToken ct)
+    {
+        if (FailRetry) throw new InvalidOperationException("fila indisponível");
+        Retried.Add(item);
+        return Task.CompletedTask;
+    }
 }
 
 internal class FailingPosts : IPostRepository
 {
     public Task AddAsync(Post post) => throw new InvalidOperationException("falha simulada");
     public Task<Post?> GetByIdAsync(Guid id) => Task.FromResult<Post?>(null);
-    public Task UpdateAsync(Post post, string? previousImagePath = null) => Task.CompletedTask;
+    public Task UpdateAsync(Post post) => Task.CompletedTask;
+    public Task UpdateWithImageCleanupAsync(Post post, string? previousImagePath) => Task.CompletedTask;
     public Task DeleteAsync(Post post) => Task.CompletedTask;
     public Task<IReadOnlyList<Post>> GetFeedAsync(int page, int pageSize) => Task.FromResult<IReadOnlyList<Post>>([]);
     public Task<IReadOnlyList<Post>> GetByUserAsync(Guid userId, int page, int pageSize) => GetFeedAsync(page, pageSize);

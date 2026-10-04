@@ -19,14 +19,16 @@ namespace Pudd.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Post?> GetByIdAsync (Guid postId)
+        public async Task<Post?> GetByIdAsync(Guid postId)
         {
             return await _context.posts
                 .Include(post => post.User)
                 .FirstOrDefaultAsync(p => p.ID == postId);
         }
 
-        public async Task UpdateAsync(Post post, string? previousImagePath = null)
+        public Task UpdateAsync(Post post) => _context.SaveChangesAsync();
+
+        public async Task UpdateWithImageCleanupAsync(Post post, string? previousImagePath)
         {
             // A troca do caminho e a limpeza pendente são salvas na mesma transação.
             ScheduleImageDeletion(previousImagePath);

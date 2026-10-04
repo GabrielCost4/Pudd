@@ -11,7 +11,9 @@ namespace Pudd.Application.Interfaces
         Task<User?> ObterPorEmail(string email);
         Task AdicionarUsuario(User user);
         Task<User?> GetByIdAsync(Guid id);
-        Task UpdateAsync(User user, string? previousAvatarPath = null);
+        Task UpdateAsync(User user);
+        // Salva o perfil e agenda a limpeza anterior na mesma transação.
+        Task UpdateWithAvatarCleanupAsync(User user, string? previousAvatarPath);
         Task<IReadOnlyList<User>> GetPageAsync(int page, int pageSize);
     }
 }

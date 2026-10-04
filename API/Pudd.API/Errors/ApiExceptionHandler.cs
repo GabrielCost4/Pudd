@@ -13,6 +13,15 @@ public class ApiExceptionHandler(ILogger<ApiExceptionHandler> logger) : IExcepti
         CancellationToken ct
     )
     {
+        if (exception is AppException { ValidationErrors: not null } validationError)
+        {
+            await Results.ValidationProblem(
+                errors: validationError.ValidationErrors.ToDictionary(pair => pair.Key, pair => pair.Value),
+                title: validationError.Message,
+                extensions: new Dictionary<string, object?> { ["traceId"] = context.TraceIdentifier })
+                .ExecuteAsync(context);
+            return true;
+        }
         var (status, message) = exception switch
         {
             AppException e => (
@@ -56,9 +65,10 @@ public class ApiExceptionHandler(ILogger<ApiExceptionHandler> logger) : IExcepti
         };
         if (status >= 500)
             logger.LogError(
-                "Falha {ExceptionType}, referência {TraceId}.",
+                "Falha {ExceptionType}, referência {TraceId}; origem: {ErrorStack}.",
                 exception.GetType().Name,
-                context.TraceIdentifier
+                context.TraceIdentifier,
+                exception.StackTrace
             );
         // Não devolve exceções, SQL, chaves ou respostas internas do Supabase ao cliente.
         await Results

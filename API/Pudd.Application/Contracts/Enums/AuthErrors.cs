@@ -10,7 +10,6 @@ namespace Pudd.Application.Contracts.Enums
         SenhaDiferente = 0,
         EmailNaoEncontrado = 1,
         EmailExistente = 2,
-        SenhaFraca = 3,
         ContaBloqueada = 4
     }
 }

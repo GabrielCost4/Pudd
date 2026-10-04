@@ -1,13 +1,16 @@
 using Pudd.Application.Contracts;
 using Pudd.Application.Interfaces;
 using Pudd.Domain.Entities;
+using FluentValidation;
+using Pudd.Application.Validation;
 
 namespace Pudd.Application.Services
 {
     public class UserService(
-        IUserRepository users, 
-                AccountAccess access, 
-                ImageService images)
+        IUserRepository users,
+                AccountAccess access,
+                ImageService images,
+                IValidator<UpdateProfileRequest> validator)
     {
         public async Task<ProfileResponse> GetProfileAsync(Guid actorId, Guid userId)
         {
@@ -18,9 +21,8 @@ namespace Pudd.Application.Services
         public async Task<ProfileResponse> UpdateProfileAsync(Guid actorId, UpdateProfileRequest request)
         {
             var user = await access.RequireActiveAsync(actorId);
-            var name = SocialRules.Text(request.Name, 50, "Nome");
-            if (request.Bio?.Trim().Length > 500)
-                throw new AppException(ErrorCode.InvalidInput, "A bio deve ter até 500 caracteres.");
+            await RequestValidation.ValidateAsync(validator, request);
+            var name = request.Name.Trim();
             user.Name = name;
             user.Bio = string.IsNullOrWhiteSpace(request.Bio) ? null : request.Bio.Trim();
             await users.UpdateAsync(user);
@@ -33,7 +35,10 @@ namespace Pudd.Application.Services
             var oldPath = user.AvatarImagePath;
             var path = await images.UploadAsync("avatars", actorId, image, ct);
             user.AvatarImagePath = path;
-            try { await users.UpdateAsync(user, oldPath); }
+            try
+            {
+                await users.UpdateWithAvatarCleanupAsync(user, oldPath);
+            }
             catch
             {
                 await images.DiscardAsync("avatars", path);
@@ -46,7 +51,7 @@ namespace Pudd.Application.Services
             var user = await access.RequireActiveAsync(actorId);
             var oldPath = user.AvatarImagePath;
             user.AvatarImagePath = null;
-            await users.UpdateAsync(user, oldPath);
+            await users.UpdateWithAvatarCleanupAsync(user, oldPath);
         }
 
         public async Task<ImageUrlResponse> GetAvatarAsync(Guid actorId, Guid userId, CancellationToken ct = default)

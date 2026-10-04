@@ -21,7 +21,7 @@ public class AuthController : ControllerBase
             return Ok(response);
         }
 
-        return Unauthorized("E-mail ou senha inválidos.");
+        return Problem(statusCode: StatusCodes.Status401Unauthorized, title: "E-mail ou senha inválidos.");
     }
 
     [HttpPost("register")]
@@ -39,10 +39,7 @@ public class AuthController : ControllerBase
         return resultado.Error switch
         {
             AuthErrors.EmailExistente =>
-                Conflict("Já existe um usuário com este e-mail."),
-
-            AuthErrors.SenhaFraca =>
-                BadRequest("A senha precisa ter ao menos 8 caracteres, letra maiúscula, número e símbolo."),
+                Problem(statusCode: StatusCodes.Status409Conflict, title: "Já existe um usuário com este e-mail."),
 
             _ => Problem(
                 title: "Erro inesperado no cadastro.",

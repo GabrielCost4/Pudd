@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Pudd.API.Contracts;
+using Pudd.API.Uploads;
 using Pudd.Application.Services;
 
 namespace Pudd.API.Controllers;
@@ -19,8 +20,9 @@ public class PostsController(PostService posts) : SocialControllerBase
     [RequestSizeLimit(6 * 1024 * 1024)]
     public async Task<IActionResult> Create([FromForm] CreatePostForm form, CancellationToken ct)
     {
-        var post = await posts.CreateAsync(ActorId,form,await UploadedImage.ReadAsync(form.Image, ct),ct);
-        
+        var image = await UploadedImage.ReadAsync(form.Image, ct);
+        var post = await posts.CreateAsync(ActorId, form, image, ct);
+
         return CreatedAtAction(nameof(Get), new { id = post.ID }, post);
     }
 

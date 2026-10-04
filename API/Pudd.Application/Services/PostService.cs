@@ -1,6 +1,8 @@
 using Pudd.Application.Contracts;
 using Pudd.Application.Interfaces;
 using Pudd.Domain.Entities;
+using FluentValidation;
+using Pudd.Application.Validation;
 
 namespace Pudd.Application.Services;
 
@@ -8,7 +10,9 @@ public class PostService(
     IPostRepository posts,
     IUserRepository users,
     AccountAccess access,
-    ImageService images
+    ImageService images,
+    IValidator<CreatePostRequest> createValidator,
+    IValidator<UpdatePostRequest> updateValidator
 )
 {
     public async Task<PostResponse> CreateAsync(
@@ -19,7 +23,8 @@ public class PostService(
     )
     {
         var actor = await access.RequireActiveAsync(actorId);
-        var content = SocialRules.Text(request.Content, 5000, "Conteúdo");
+        await RequestValidation.ValidateAsync(createValidator, request, ct);
+        var content = request.Content.Trim();
         var path = image is null ? null : await images.UploadAsync("posts", actorId, image, ct);
         var post = new Post
         {
@@ -76,7 +81,8 @@ public class PostService(
         await access.RequireActiveAsync(actorId);
         var post = await FindAsync(postId);
         SocialRules.Owner(post.UserID, actorId);
-        var content = SocialRules.Text(request.Content, 5000, "Conteúdo");
+        await RequestValidation.ValidateAsync(updateValidator, request, ct);
+        var content = request.Content.Trim();
         if (request.RemoveImage && image is not null)
             throw new AppException(
                 ErrorCode.InvalidInput,
@@ -90,7 +96,7 @@ public class PostService(
             post.ImagePath = newPath;
         try
         {
-            await posts.UpdateAsync(post, oldPath != post.ImagePath ? oldPath : null);
+            await posts.UpdateWithImageCleanupAsync(post, oldPath != post.ImagePath ? oldPath : null);
         }
         catch
         {

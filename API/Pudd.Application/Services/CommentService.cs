@@ -1,13 +1,16 @@
 using Pudd.Application.Contracts;
 using Pudd.Application.Interfaces;
 using Pudd.Domain.Entities;
+using FluentValidation;
+using Pudd.Application.Validation;
 
 namespace Pudd.Application.Services;
 
 public class CommentService(
     ICommentRepository comments,
     IPostRepository posts,
-    AccountAccess access
+    AccountAccess access,
+    IValidator<CreateCommentRequest> validator
 )
 {
     public async Task<CommentResponse> CreateAsync(
@@ -17,7 +20,8 @@ public class CommentService(
     )
     {
         var actor = await access.RequireActiveAsync(actorId);
-        var content = SocialRules.Text(request.Content, 2000, "Comentário");
+        await RequestValidation.ValidateAsync(validator, request);
+        var content = request.Content.Trim();
         await RequirePostAsync(postId);
         var comment = new Comment
         {

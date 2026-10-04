@@ -15,12 +15,15 @@ namespace Pudd.Infrastructure.Repositories
         public Task<User?> GetByIdAsync(Guid id) =>
             _context.users.FirstOrDefaultAsync(user => user.ID == id);
 
-        public async Task UpdateAsync(User user, string? previousAvatarPath = null)
+        public Task UpdateAsync(User user) => _context.SaveChangesAsync();
+
+        public async Task UpdateWithAvatarCleanupAsync(User user, string? previousAvatarPath)
         {
             if (previousAvatarPath is not null)
                 _context.pendingImageDeletions.Add(new PendingImageDeletion
                 {
-                    Bucket = "avatars", Path = previousAvatarPath
+                    Bucket = "avatars",
+                    Path = previousAvatarPath
                 });
             await _context.SaveChangesAsync();
         }
@@ -37,8 +40,8 @@ namespace Pudd.Infrastructure.Repositories
 
         public async Task AdicionarUsuario(User user)
         {
-             await _context.users.AddAsync(user);
-             await _context.SaveChangesAsync();
+            await _context.users.AddAsync(user);
+            await _context.SaveChangesAsync();
         }
     }
 }

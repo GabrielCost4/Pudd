@@ -20,6 +20,41 @@ namespace Pudd.Tests;
 public class ApiTests
 {
     [Fact]
+    public async Task RegistrationValidationReturnsFieldErrorsAndDoesNotPersistUser()
+    {
+        await using var factory = new ApiFactory();
+        var client = factory.CreateClient(new() { BaseAddress = new Uri("https://localhost") });
+
+        var result = await client.PostAsJsonAsync("/api/auth/register",
+            new { Nome = "   ", Email = "invalid", Senha = "weak" });
+
+        Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+        Assert.Equal("application/problem+json", result.Content.Headers.ContentType?.MediaType);
+        var problem = await result.Content.ReadFromJsonAsync<Microsoft.AspNetCore.Mvc.ValidationProblemDetails>();
+        Assert.NotNull(problem);
+        Assert.Contains("Nome", problem.Errors.Keys);
+        Assert.Contains("Email", problem.Errors.Keys);
+        Assert.Contains("Senha", problem.Errors.Keys);
+        using var scope = factory.Services.CreateScope();
+        Assert.Empty(scope.ServiceProvider.GetRequiredService<PuddDbContext>().users);
+    }
+
+    [Fact]
+    public async Task InvalidCredentialsReturnProblemDetails()
+    {
+        await using var factory = new ApiFactory();
+        var client = factory.CreateClient(new() { BaseAddress = new Uri("https://localhost") });
+
+        var result = await client.PostAsJsonAsync("/api/auth/login",
+            new { Email = "missing@example.test", Senha = "Valid!1234" });
+
+        Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
+        Assert.Equal("application/problem+json", result.Content.Headers.ContentType?.MediaType);
+        var problem = await result.Content.ReadFromJsonAsync<Microsoft.AspNetCore.Mvc.ProblemDetails>();
+        Assert.Equal(401, problem?.Status);
+    }
+
+    [Fact]
     public async Task AnonymousRequestsAreRejected()
     {
         await using var factory = new ApiFactory();

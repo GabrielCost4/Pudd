@@ -11,7 +11,12 @@ public enum ErrorCode
 }
 
 // O service descreve a falha; a API decide qual status HTTP representa essa falha.
-public sealed class AppException(ErrorCode code, string message) : Exception(message)
+public sealed class AppException(
+    ErrorCode code,
+    string message,
+    IReadOnlyDictionary<string, string[]>? validationErrors = null
+) : Exception(message)
 {
     public ErrorCode Code { get; } = code;
+    public IReadOnlyDictionary<string, string[]>? ValidationErrors { get; } = validationErrors;
 }

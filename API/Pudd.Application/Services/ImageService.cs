@@ -1,12 +1,15 @@
 using Pudd.Application.Contracts;
 using Pudd.Application.Interfaces;
+using Microsoft.Extensions.Logging;
+using Pudd.Application.Validation;
 
 namespace Pudd.Application.Services;
 
-public class ImageService(IImageStorage storage, IImageDeletionQueue deletions)
+public class ImageService(
+    IImageStorage storage,
+    IImageDeletionQueue deletions,
+    ILogger<ImageService> logger)
 {
-    public const int MaxBytes = 5 * 1024 * 1024;
-
     public async Task<string> UploadAsync(
         string bucket,
         Guid ownerId,
@@ -14,7 +17,7 @@ public class ImageService(IImageStorage storage, IImageDeletionQueue deletions)
         CancellationToken ct = default
     )
     {
-        var extension = Validate(image);
+        var extension = ImageFileValidation.Validate(image);
         // Cada versão recebe um nome novo; a imagem anterior só é limpa após salvar no banco.
         var path = $"{ownerId:D}/{Guid.NewGuid():N}.{extension}";
         try
@@ -25,7 +28,7 @@ public class ImageService(IImageStorage storage, IImageDeletionQueue deletions)
         catch
         {
             // Um timeout pode ocorrer depois de o servidor receber o arquivo.
-            await deletions.EnqueueAsync(bucket, path);
+            await ScheduleCleanupAsync(bucket, path);
             throw;
         }
     }
@@ -36,9 +39,29 @@ public class ImageService(IImageStorage storage, IImageDeletionQueue deletions)
         {
             await storage.DeleteAsync(bucket, path);
         }
-        catch (AppException)
+        catch (Exception error)
         {
+            logger.LogWarning(
+                "Falha ao compensar upload em {Bucket}/{Path}. Tipo: {ErrorType}; origem: {ErrorStack}.",
+                bucket, path, error.GetType().Name, error.StackTrace);
+            await ScheduleCleanupAsync(bucket, path);
+        }
+    }
+
+    private async Task ScheduleCleanupAsync(string bucket, string path)
+    {
+        try
+        {
+            // A limpeza deve sobreviver ao cancelamento da requisição que fez o upload.
             await deletions.EnqueueAsync(bucket, path);
+        }
+        catch (Exception error)
+        {
+            // Preserva o erro original do upload/salvamento. Sem banco e Storage disponíveis,
+            // a reconciliação do arquivo órfão ainda exigirá intervenção posterior.
+            logger.LogError(
+                "Limpeza não registrada para {Bucket}/{Path}. Tipo: {ErrorType}; origem: {ErrorStack}.",
+                bucket, path, error.GetType().Name, error.StackTrace);
         }
     }
 
@@ -53,32 +76,4 @@ public class ImageService(IImageStorage storage, IImageDeletionQueue deletions)
         return storage.GetSignedUrlAsync(bucket, path, ct);
     }
 
-    private static string Validate(ImageUpload image)
-    {
-        if (image.Data is null || image.Data.Length == 0 || image.Data.Length > MaxBytes)
-            throw new AppException(ErrorCode.InvalidInput, "Envie uma imagem de até 5 MB.");
-
-        // Confere os bytes iniciais, pois a extensão e o Content-Type podem ser falsificados.
-        var bytes = image.Data.AsSpan();
-        string? extension = image.ContentType switch
-        {
-            "image/jpeg"
-                when bytes.Length >= 3
-                    && bytes[0] == 0xFF
-                    && bytes[1] == 0xD8
-                    && bytes[2] == 0xFF => "jpg",
-            "image/png" when bytes.StartsWith(new byte[] { 137, 80, 78, 71, 13, 10, 26, 10 }) =>
-                "png",
-            "image/webp"
-                when bytes.Length >= 12
-                    && bytes[..4].SequenceEqual("RIFF"u8)
-                    && bytes.Slice(8, 4).SequenceEqual("WEBP"u8) => "webp",
-            _ => null,
-        };
-        return extension
-            ?? throw new AppException(
-                ErrorCode.InvalidInput,
-                "Arquivo incompatível: use JPG, PNG ou WebP."
-            );
-    }
 }
