@@ -7,12 +7,12 @@ namespace Pudd.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController(
-    AuthService authService,
-    RegisterService registerService) : ControllerBase
+public class AuthController : ControllerBase
 {
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginRequest request)
+    public async Task<IActionResult> Login(
+        [FromBody] LoginRequest request,
+        [FromServices] AuthService authService)
     {
         var resultado = await authService.AutenticarUsuario(request);
 
@@ -25,7 +25,9 @@ public class AuthController(
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Cadastrar([FromBody] RegisterRequest request)
+    public async Task<IActionResult> Cadastrar(
+        [FromBody] RegisterRequest request,
+        [FromServices] RegisterService registerService)
     {
         var resultado = await registerService.CadastrarUsuario(request);
 

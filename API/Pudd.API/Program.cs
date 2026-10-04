@@ -2,26 +2,16 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Pudd.API.Errors;
 using Pudd.API.Workers;
 using Pudd.Application.Interfaces;
-using Pudd.Application.Services;
-using Pudd.Infrastructure;
-using Pudd.Infrastructure.Repositories;
-using Pudd.Infrastructure.Security;
-using Pudd.Infrastructure.Storage;
+using Pudd.Application.DependencyInjection;
+using Pudd.Infrastructure.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString =
-    builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? throw new InvalidOperationException(
-        "A string de conexão 'DefaultConnection' não foi configurada."
-    );
-
-builder.Services.AddDbContext<PuddDbContext>(options => options.UseNpgsql(connectionString));
+builder.Services.AddInfrastructure(builder.Configuration);
 
 var jwtKey =
     builder.Configuration["Jwt:Key"]
@@ -68,6 +58,7 @@ builder
         };
     });
 
+builder.Services.AddApplication();
 builder.Services.AddAuthorization();
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
@@ -92,26 +83,7 @@ builder.Services.AddRateLimiter(options =>
             )
     );
 });
-builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped<RegisterService>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
-builder.Services.AddScoped<IJwtService, JwtService>();
-builder.Services.AddScoped<IPostRepository, PostRepository>();
-builder.Services.AddScoped<ICommentRepository, CommentRepository>();
-builder.Services.AddScoped<IPostLikeRepository, PostLikeRepository>();
-builder.Services.AddScoped<IImageDeletionQueue, ImageDeletionQueue>();
-builder.Services.AddScoped<AccountAccess>();
-builder.Services.AddScoped<ImageService>();
-builder.Services.AddScoped<PostService>();
-builder.Services.AddScoped<CommentService>();
-builder.Services.AddScoped<PostLikeService>();
-builder.Services.AddScoped<UserService>();
-builder
-    .Services.AddHttpClient<IImageStorage, SupabaseImageStorage>(client =>
-        client.Timeout = TimeSpan.FromSeconds(30)
-    )
-    .RemoveAllLoggers();
+
 builder.Services.AddHostedService<ImageDeletionWorker>();
 
 var app = builder.Build();
