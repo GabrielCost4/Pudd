@@ -1,5 +1,9 @@
 # WEB
 
+## Arquitetura do Pudd
+
+O front-end adota Feature Based. Consulte [docs/ARQUITETURA.md](docs/ARQUITETURA.md) para a organização por funcionalidades, responsabilidades e integração com a API.
+
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.1.6.
 
 ## Development server
@@ -11,6 +15,18 @@ ng serve
 ```
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+
+### Login do Pudd
+
+Execute `npm start` na pasta `WEB` e abra `http://localhost:4200/login`. Para autenticar, mantenha a API em execução em `http://localhost:5193`; `proxy.conf.json` encaminha as requisições `/api` para ela.
+
+A tela envia e-mail e senha à API e apresenta seu resultado. O token fica apenas em memória e a sessão local é perdida ao recarregar. O feed ainda não está implementado, portanto o sucesso é confirmado na tela de login. Em produção, o encaminhamento `/api` precisa ser configurado no servidor que hospeda o frontend.
+
+## Formatação
+
+O Prettier usa as regras de `.prettierrc` e `.editorconfig`. As configurações locais do VS Code selecionam a extensão `esbenp.prettier-vscode` e habilitam a formatação ao salvar para TypeScript, HTML, CSS e JSON, tanto ao abrir a raiz Pudd quanto apenas WEB.
+
+Para formatar os arquivos de `src` pelo terminal, execute `npm run format` dentro de WEB. Para apenas conferir a formatação, execute `npm run format:check`.
 
 ## Code scaffolding
 

@@ -1,0 +1,69 @@
+<main class="login-layout">
+  <app-login-intro class="intro-panel" />
+
+  <section class="login-panel" aria-labelledby="login-title">
+    <div class="login-card">
+      <div class="card-signature">
+        <app-signature text="Pudd" [fontSize]="88" />
+      </div>
+
+      @if (loggedIn()) {
+        <div class="success" role="status">
+          <p class="eyebrow">BEM-VINDO DE VOLTA</p>
+          <h1 id="login-title">Você entrou no Pudd.</h1>
+          <p class="subtitle">Seu login foi realizado com sucesso.</p>
+          <button puddButton type="button" (click)="useAnotherAccount()">Usar outra conta</button>
+        </div>
+      } @else {
+        <p class="eyebrow">SEU ESPAÇO PARA CONECTAR</p>
+        <h1 id="login-title">Bem-vindo de volta.</h1>
+        <p class="subtitle">Entre na sua conta e continue a conversa.</p>
+
+        <form
+          [formGroup]="form"
+          (ngSubmit)="submit()"
+          ngNativeValidate
+          [attr.aria-busy]="loading()"
+        >
+          <app-label-input
+            inputId="email"
+            label="E-mail"
+            type="email"
+            autocomplete="username"
+            [control]="form.controls.email"
+            [required]="true"
+            [describedBy]="messages().length ? 'login-errors' : null"
+          />
+          <app-label-input
+            inputId="senha"
+            label="Senha"
+            type="password"
+            autocomplete="current-password"
+            [control]="form.controls.senha"
+            [required]="true"
+            [describedBy]="messages().length ? 'login-errors' : null"
+          />
+
+          @if (messages().length) {
+            <div id="login-errors" class="error-message" role="alert">
+              @for (message of messages(); track $index) {
+                <p>{{ message }}</p>
+              }
+            </div>
+          }
+
+          <button puddButton type="submit" [busy]="loading()" [disabled]="loading()">
+            {{ loading() ? 'Entrando…' : 'Entrar no Pudd' }}
+            @if (!loading()) {
+              <span aria-hidden="true">→</span>
+            }
+          </button>
+          <p class="form-note" role="status">
+            {{ loading() ? 'Confirmando seu login…' : 'Um lugar para ser você.' }}
+          </p>
+        </form>
+      }
+    </div>
+    <p class="panel-caption">&copy; Pudd 2026 - Todos os direitos reservados</p>
+  </section>
+</main>

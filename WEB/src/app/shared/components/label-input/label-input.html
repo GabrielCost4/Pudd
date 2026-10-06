@@ -1,0 +1,36 @@
+<div class="input-wrapper" [class.with-toggle]="type() === 'password'">
+  <input
+    [id]="inputId()"
+    [type]="type() === 'password' && showPassword() ? 'text' : type()"
+    [formControl]="control()"
+    [autocomplete]="autocomplete()"
+    [required]="required()"
+    [attr.aria-describedby]="describedBy()"
+    placeholder=" "
+  />
+  <label [for]="inputId()">{{ label() }}</label>
+  @if (type() === 'password') {
+    <button
+      type="button"
+      class="visibility-toggle"
+      [disabled]="control().disabled"
+      [attr.aria-pressed]="showPassword()"
+      [attr.aria-label]="showPassword() ? 'Ocultar senha' : 'Mostrar senha'"
+      (click)="showPassword.set(!showPassword())"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        aria-hidden="true"
+      >
+        <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+        <circle cx="12" cy="12" r="3" />
+        @if (showPassword()) {
+          <path d="m3 3 18 18" />
+        }
+      </svg>
+    </button>
+  }
+</div>

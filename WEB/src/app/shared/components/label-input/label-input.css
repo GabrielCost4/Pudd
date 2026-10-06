@@ -1,0 +1,80 @@
+:host {
+  display: block;
+}
+.input-wrapper {
+  position: relative;
+}
+input {
+  width: 100%;
+  height: 54px;
+  padding: 20px 14px 7px;
+  border: 1px solid var(--pudd-border, #303030);
+  border-radius: 10px;
+  background: var(--pudd-input, #171717);
+  color: var(--pudd-text, #fafafa);
+  transition:
+    border-color 160ms,
+    box-shadow 160ms;
+}
+input:focus {
+  outline: none;
+  border-color: #aaa;
+  box-shadow: 0 0 0 3px #ffffff0a;
+}
+input:disabled {
+  opacity: 0.55;
+}
+input:-webkit-autofill {
+  -webkit-text-fill-color: var(--pudd-text, #fafafa);
+  box-shadow: 0 0 0 100px var(--pudd-input, #171717) inset;
+}
+label {
+  position: absolute;
+  top: 18px;
+  left: 14px;
+  color: var(--pudd-muted, #aaa);
+  font-size: 14px;
+  pointer-events: none;
+  transform-origin: left top;
+  transition:
+    transform 160ms,
+    color 160ms;
+}
+input:focus + label,
+input:not(:placeholder-shown) + label {
+  transform: translateY(-10px) scale(0.75);
+}
+input:focus + label {
+  color: var(--pudd-text, #fafafa);
+}
+.with-toggle input {
+  padding-right: 52px;
+}
+.visibility-toggle {
+  display: grid;
+  place-items: center;
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  width: 38px;
+  height: 38px;
+  padding: 9px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--pudd-muted, #aaa);
+}
+.visibility-toggle:hover:not(:disabled) {
+  background: #ffffff08;
+  color: #fafafa;
+}
+.visibility-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+@media (prefers-reduced-motion: reduce) {
+  input,
+  label {
+    transition: none;
+  }
+}

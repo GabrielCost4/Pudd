@@ -1,0 +1,54 @@
+@font-face {
+  font-family: 'Pudd Signature';
+  src: url('/fonts/LastoriaBoldRegular.otf') format('opentype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+}
+
+:host {
+  display: inline-flex;
+  color: inherit;
+}
+svg {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+}
+.signature-text {
+  font-family: 'Pudd Signature', cursive;
+  font-weight: 400;
+  fill: currentColor;
+  fill-opacity: 0;
+  stroke: currentColor;
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+}
+.ready .signature-text {
+  animation: write-signature var(--signature-duration, 2s) ease forwards;
+}
+@keyframes write-signature {
+  0% {
+    stroke-dashoffset: 1000;
+    fill-opacity: 0;
+  }
+  75% {
+    stroke-dashoffset: 0;
+    fill-opacity: 0;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    fill-opacity: 1;
+    stroke-width: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ready .signature-text {
+    animation: none;
+    fill-opacity: 1;
+    stroke: none;
+  }
+}

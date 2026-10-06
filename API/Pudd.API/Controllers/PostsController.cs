@@ -6,7 +6,8 @@ using Pudd.Application.Services;
 namespace Pudd.API.Controllers;
 
 [Route("api/posts")]
-public class PostsController(PostService posts) : SocialControllerBase
+public class PostsController(
+    PostService posts) : SocialControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> Feed(int page = 1, int pageSize = 20, Guid? authorId = null) =>

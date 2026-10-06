@@ -1,0 +1,14 @@
+<svg
+  role="img"
+  [attr.aria-label]="text()"
+  [attr.viewBox]="viewBox()"
+  [attr.width]="width()"
+  [attr.height]="height()"
+  [style.--signature-duration]="duration() + 's'"
+  [style.visibility]="measured() ? 'visible' : 'hidden'"
+  [class.ready]="measured()"
+>
+  <text #lettering class="signature-text" x="0" y="0" font-size="100">
+    {{ text() }}
+  </text>
+</svg>

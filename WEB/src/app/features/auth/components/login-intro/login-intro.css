@@ -1,0 +1,44 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.intro {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100dvh;
+  padding: 44px clamp(32px, 5vw, 80px) 36px;
+  background: #0c0c0e;
+}
+.intro > :not(app-dither-gradient) {
+  position: relative;
+  z-index: 1;
+}
+.intro-brand {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: 2px;
+}
+.intro-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  color: #c7c0cf;
+  font-size: 11px;
+}
+.small-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #c7b3e4;
+}
+@media (max-width: 1100px) {
+  .intro {
+    padding-inline: 32px;
+  }
+}
