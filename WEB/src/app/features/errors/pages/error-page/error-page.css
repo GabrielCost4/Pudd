@@ -1,0 +1,61 @@
+.error-layout {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 36px 24px;
+  background: radial-gradient(ellipse at 50% 35%, #c0ed9909, transparent 60%);
+}
+.wordmark {
+  margin-bottom: 40px;
+}
+.error-card {
+  max-width: 680px;
+  text-align: center;
+  padding: 40px;
+  border: 1px solid var(--border);
+  border-radius: 26px;
+  background: var(--surface);
+}
+.error-code {
+  font-size: clamp(6rem, 15vw, 10rem);
+  line-height: 1;
+  color: #c0ed99;
+  font-weight: 700;
+  letter-spacing: -10px;
+  position: relative;
+  margin: 0 0 34px;
+}
+.error-code span {
+  font-size: 4rem;
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 8px;
+  transform: rotate(12deg);
+  color: #748d62;
+}
+.error-card h1 {
+  font-size: 2rem;
+}
+.error-card > p.muted {
+  max-width: 450px;
+  margin: 20px auto 30px;
+  font-size: 0.9rem;
+}
+.actions {
+  justify-content: center;
+}
+.footnote {
+  color: var(--muted);
+  font-size: 0.7rem;
+  margin-top: 32px;
+}
+@media (max-width: 600px) {
+  .error-card {
+    padding: 30px 20px;
+  }
+  .error-card h1 {
+    font-size: 1.7rem;
+  }
+}

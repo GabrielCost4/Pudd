@@ -1,0 +1,5 @@
+<nav aria-label="Paginação" class="pagination">
+  <button class="button secondary" type="button" [disabled]="page() <= 1 || busy()" (click)="changed.emit(page() - 1)">← Anterior</button>
+  <span aria-live="polite">Página {{ page() }}</span>
+  <button class="button secondary" type="button" [disabled]="!hasNext() || busy()" (click)="changed.emit(page() + 1)">Próxima →</button>
+</nav>

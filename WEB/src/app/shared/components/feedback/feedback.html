@@ -1,0 +1,6 @@
+@if (errors().length) {
+  <div class="feedback error" role="alert">
+    @for (message of errors(); track $index) { <p>{{ message }}</p> }
+  </div>
+}
+@if (success()) { <div class="feedback success" role="status">{{ success() }}</div> }

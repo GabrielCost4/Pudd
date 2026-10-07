@@ -1,0 +1,19 @@
+@if (desktop()) {
+  <div class="wall-plane">
+    @for (column of columns(); track $index) {
+      <div class="wall-column">
+        <div class="wall-track">
+          @for (copy of copies; track copy) {
+            <div class="wall-group">
+              @for (image of column; track $index) {
+                <div class="wall-tile">
+                  <img [src]="image" alt="" decoding="async" draggable="false" />
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+}

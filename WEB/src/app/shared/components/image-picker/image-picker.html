@@ -1,0 +1,5 @@
+<div class="picker">
+  <label class="upload-label"><span aria-hidden="true">＋</span><strong>{{ filename() || 'Escolher uma imagem' }}</strong><small>JPG, PNG ou WebP · até 5 MB</small><input #fileInput type="file" accept="image/jpeg,image/png,image/webp" [disabled]="disabled()" (change)="choose($event)" /></label>
+  @if(preview()) { <div class="preview"><img [src]="preview()" alt="Prévia da imagem selecionada" /><button type="button" class="button secondary" [disabled]="disabled()" (click)="clear(fileInput)">Descartar seleção</button></div> }
+  @if(error()) { <p class="error" role="alert">{{ error() }}</p> }
+</div>

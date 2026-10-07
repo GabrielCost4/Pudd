@@ -1,0 +1,32 @@
+<article class="post-card" puddSpotlight>
+  <header>
+    <a class="author" [routerLink]="['/profile', post().userID]">
+      <span class="avatar">{{ post().authorName.slice(0,1).toUpperCase() }}</span>
+      <span><strong>{{ post().authorName }}</strong><small>{{ post().createdAt | date:'dd/MM/yyyy · HH:mm' }} @if(post().updatedAt) { · editado }</small></span>
+    </a>
+    @if (session.user().id === post().userID || session.isAdmin()) {
+      <div class="post-menu">
+        @if (session.user().id === post().userID) { <a class="text-button" [routerLink]="['/posts',post().id,'edit']">Editar</a> }
+        <button class="text-button delete" type="button" [disabled]="busy()" (click)="remove()">{{ busy() ? 'Excluindo…' : session.user().id === post().userID ? 'Excluir' : 'Moderar' }}</button>
+      </div>
+    }
+  </header>
+  <p class="content-text">{{ post().content }}</p>
+  @if (post().hasImage) {
+    <div class="post-image">
+      @if (imageUrl() && !imageFailed()) { <img [src]="imageUrl()" alt="Imagem anexada à publicação" loading="lazy" (error)="imageFailed.set(true)" /> }
+      @else if (imageFailed()) { <div class="image-fallback"><span>Não foi possível carregar a imagem.</span><button class="text-button" type="button" (click)="imageVersion.set(imageVersion() + 1)">Tentar novamente ↗</button></div> }
+      @else { <p class="loading" role="status">Carregando imagem…</p> }
+    </div>
+  }
+  <app-feedback [errors]="errors()" />
+  <footer>
+    @if (likeState(); as likes) {
+      <button type="button" class="like-button" [class.liked]="likes.liked" [attr.aria-pressed]="likes.liked" [disabled]="liking()" (click)="toggleLike()"><span aria-hidden="true">{{ likes.liked ? '♥' : '♡' }}</span> {{ likes.count }} <span>{{ likes.count === 1 ? 'curtida' : 'curtidas' }}</span></button>
+    } @else if (likeErrors().length) {
+      <button class="text-button" type="button" [title]="likeErrors()[0]" (click)="likesVersion.set(likesVersion() + 1)">Recarregar curtidas</button>
+    } @else { <span class="muted">Carregando curtidas…</span> }
+    <a class="comment-link" [routerLink]="['/posts',post().id]"><span aria-hidden="true">↳</span> Conversar</a>
+    <a class="detail-link" [routerLink]="['/posts',post().id]" aria-label="Abrir publicação">↗</a>
+  </footer>
+</article>

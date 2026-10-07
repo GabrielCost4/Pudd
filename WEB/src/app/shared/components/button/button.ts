@@ -6,12 +6,7 @@ import { Spinner } from '../spinner/spinner';
   selector: 'button[puddButton]',
   imports: [Spinner],
   host: { '[attr.aria-busy]': 'busy()' },
-  template: `
-    @if (busy()) {
-      <app-spinner />
-    }
-    <ng-content />
-  `,
+  templateUrl: './button.html',
   styleUrl: './button.css',
 })
 export class Button {

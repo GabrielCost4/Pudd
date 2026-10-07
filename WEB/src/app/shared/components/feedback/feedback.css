@@ -1,0 +1,4 @@
+.feedback { padding: 12px 16px; border-radius: 12px; margin-block: 14px; font-size: .875rem; line-height: 1.6; }
+.feedback p { margin: 0; }
+.error { background: #ff727212; color: #ffb4b4; border: 1px solid #ff727235; }
+.success { background: #bcf59412; color: #d5fac0; border: 1px solid #bcf59435; }

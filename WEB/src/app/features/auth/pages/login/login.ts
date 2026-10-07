@@ -1,43 +1,47 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
-import { SessionService } from '../../../../core/auth/session.service';
-import { ApiProblem } from '../../models/login';
+import { SessionStore } from '../../../../core/auth/session.store';
 import { AuthService } from '../../services/auth.service';
 import { LabelInput } from '../../../../shared/components/label-input/label-input';
 import { Button } from '../../../../shared/components/button/button';
-import { Signature } from '../../../../shared/components/signature/signature';
+import { Feedback } from '../../../../shared/components/feedback/feedback';
+import { apiErrors } from '../../../../shared/utils/api-errors';
 import { LoginIntro } from '../../components/login-intro/login-intro';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, LabelInput, Button, Signature, LoginIntro],
+  imports: [ReactiveFormsModule, RouterLink, LabelInput, Button, Feedback, LoginIntro],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
 export class Login {
   private readonly auth = inject(AuthService);
-  private readonly session = inject(SessionService);
+  private readonly session = inject(SessionStore);
   private readonly destroyRef = inject(DestroyRef);
-
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  protected readonly registering = this.route.snapshot.data['register'] === true;
   protected readonly loading = signal(false);
   protected readonly messages = signal<string[]>([]);
-  protected readonly loggedIn = signal(false);
   protected readonly form = new FormGroup({
+    nome: new FormControl('', { nonNullable: true }),
     email: new FormControl('', { nonNullable: true }),
     senha: new FormControl('', { nonNullable: true }),
   });
 
   protected submit(): void {
-    if (this.loading() || this.loggedIn()) return;
+    if (this.loading()) return;
     this.messages.set([]);
     this.loading.set(true);
+    const { nome, email, senha } = this.form.getRawValue();
     this.form.disable();
-
-    this.auth
-      .login(this.form.getRawValue())
+    const request = this.registering
+      ? this.auth.register({ nome, email, senha })
+      : this.auth.login({ email, senha });
+    request
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         finalize(() => {
@@ -47,31 +51,21 @@ export class Login {
       )
       .subscribe({
         next: (response) => {
-          this.session.start(response.accessToken);
           this.form.controls.senha.reset();
-          this.loggedIn.set(true);
+          if (!this.session.start(response.accessToken, response.role)) {
+            this.messages.set([
+              'A API retornou uma sessão inválida ou expirada. Tente entrar novamente.',
+            ]);
+            return;
+          }
+          const requested = this.route.snapshot.queryParamMap.get('returnUrl');
+          const target =
+            requested && /^\/(feed|posts|profile|admin)(\/|\?|$)/.test(requested)
+              ? requested
+              : '/feed';
+          void this.router.navigateByUrl(target);
         },
-        error: (error: HttpErrorResponse) => {
-          const problem = error.error as ApiProblem | null;
-          const fieldErrors = problem?.errors ? Object.values(problem.errors).flat() : [];
-          this.messages.set(
-            fieldErrors.length
-              ? fieldErrors
-              : [
-                  problem?.title ||
-                    (error.status === 0
-                      ? 'Não foi possível conectar à API. Tente novamente em instantes.'
-                      : 'Não foi possível entrar. Tente novamente.'),
-                ],
-          );
-        },
+        error: (error: unknown) => this.messages.set(apiErrors(error)),
       });
-  }
-
-  protected useAnotherAccount(): void {
-    this.session.clear();
-    this.form.reset();
-    this.messages.set([]);
-    this.loggedIn.set(false);
   }
 }

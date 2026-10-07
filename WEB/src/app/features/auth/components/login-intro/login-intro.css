@@ -10,35 +10,111 @@
   flex-direction: column;
   justify-content: space-between;
   min-height: 100dvh;
-  padding: 44px clamp(32px, 5vw, 80px) 36px;
+  padding: 38px clamp(32px, 4.5vw, 72px) 30px;
   background: #0c0c0e;
 }
-.intro > :not(app-dither-gradient) {
+.intro > .intro-header,
+.intro > .intro-content,
+.intro > .intro-bottom {
   position: relative;
   z-index: 1;
 }
+.intro-shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, #080b0f55, #080b0f10 25%, #080b0fcc 75%, #080b0ff2),
+    linear-gradient(90deg, #080b0f66, #080b0f15);
+  pointer-events: none;
+}
+.intro-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
 .intro-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
   margin: 0;
-  font-size: 17px;
-  font-weight: 650;
+  font-size: 14px;
+  font-weight: 700;
   letter-spacing: 2px;
 }
-.intro-footer {
+.intro-brand span {
+  color: #ddc4ff;
+  font-size: 22px;
+  letter-spacing: 0;
+}
+.intro-tag {
+  color: #d2c7df;
+  font-size: 8px;
+  letter-spacing: 1.2px;
+}
+.intro-content {
+  width: 100%;
+  max-width: 490px;
+  margin: auto 0 0;
+  padding: 160px 0 54px;
+}
+h2 {
+  margin: 0;
+  font-size: clamp(39px, 4.4vw, 70px);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -2.8px;
+}
+h2 span {
+  display: block;
+}
+.accent {
+  color: #d3e8dd;
+}
+.intro-description {
+  margin: 24px 0 0;
+  max-width: 310px;
+  color: #d7dfdc;
+  font-size: 13px;
+  line-height: 1.8;
+}
+.intro-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16px;
+  border-top: 1px solid #ffffff22;
+  color: #d2c7df;
+  font-size: 9px;
+  letter-spacing: 1.4px;
+}
+.intro-bottom button {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: 0;
-  color: #c7c0cf;
-  font-size: 11px;
+  padding: 8px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #d7dfdc;
+  font: inherit;
+  cursor: pointer;
 }
-.small-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #c7b3e4;
+.intro-bottom button:hover {
+  background: #ffffff12;
+}
+.intro-bottom button:focus-visible {
+  outline: 2px solid #d3e8dd;
+  outline-offset: 3px;
 }
 @media (max-width: 1100px) {
   .intro {
     padding-inline: 32px;
+  }
+  .intro-tag {
+    display: none;
+  }
+  h2 {
+    letter-spacing: -1.8px;
   }
 }

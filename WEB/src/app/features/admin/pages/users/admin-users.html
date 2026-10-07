@@ -1,0 +1,89 @@
+<section>
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">CUIDAR TAMBÉM É CONSTRUIR</p>
+      <h1>Administração.</h1>
+      <p class="muted">Gerencie o acesso e mantenha a comunidade acolhedora.</p>
+    </div>
+    <a class="button secondary" routerLink="/feed">Moderar publicações ↗</a>
+  </header>
+  <div class="moderation-note">
+    <span aria-hidden="true">◇</span>
+    <p>
+      A moderação de publicações está disponível em cada post do feed. Para moderar comentários,
+      abra a publicação.
+    </p>
+  </div>
+  <app-feedback [errors]="errors()" [success]="success()" />
+  @if (loading()) {
+    <p class="loading" role="status">Carregando membros…</p>
+  } @else {
+    @if (errors().length) {
+      <button class="button secondary" (click)="load(page())">Tentar novamente</button>
+    }
+    <div class="table-container">
+      <table>
+        <caption>
+          Membros da comunidade · página
+          {{
+            page()
+          }}
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Pessoa</th>
+            <th scope="col">Permissão</th>
+            <th scope="col">Situação</th>
+            <th scope="col">Ação</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of users(); track user.id) {
+            <tr>
+              <td>
+                <a [routerLink]="['/profile', user.id]">{{ user.name }}</a
+                ><small>{{ user.email }}</small>
+              </td>
+              <td>{{ user.role === 'Admin' ? 'Administrador' : 'Membro' }}</td>
+              <td>
+                <span class="status" [class.blocked]="user.isBlocked">{{
+                  user.isBlocked ? 'Bloqueado' : 'Ativo'
+                }}</span>
+              </td>
+              <td>
+                @if (user.id === session.user().id) {
+                  <span class="muted">Sua conta</span>
+                } @else {
+                  <button
+                    class="button secondary"
+                    type="button"
+                    [disabled]="!!changing()"
+                    (click)="toggle(user)"
+                  >
+                    {{
+                      changing() === user.id
+                        ? 'Aguarde…'
+                        : user.isBlocked
+                          ? 'Desbloquear'
+                          : 'Bloquear'
+                    }}
+                  </button>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4" class="empty">Nenhum membro nesta página.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <app-pagination
+      [page]="page()"
+      [hasNext]="hasNext()"
+      [busy]="!!changing()"
+      (changed)="load($event)"
+    />
+  }
+</section>

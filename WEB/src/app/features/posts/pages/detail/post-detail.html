@@ -1,0 +1,12 @@
+<div class="detail">
+  <a routerLink="/feed" class="back-link">← Voltar para o feed</a>
+  <p class="eyebrow">UMA IDEIA. NOVAS CONVERSAS.</p>
+  <h1>Publicação</h1>
+  <app-feedback [errors]="errors()" />
+  @if (loading()) {
+    <p class="loading" role="status">Buscando publicação…</p>
+  }
+  @if (post(); as item) {
+    <app-post-card [post]="item" (deleted)="removed()" /><app-comments [postId]="item.id" />
+  }
+</div>

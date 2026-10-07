@@ -1,0 +1,1 @@
+.pagination { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 24px; color: var(--muted); font-size: .8rem; }

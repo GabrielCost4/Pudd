@@ -1,0 +1,23 @@
+<div class="profile-page"><a class="back-link" routerLink="/feed">← Voltar para a comunidade</a><p class="eyebrow">PESSOAS POR TRÁS DO CÓDIGO</p><h1>{{ isOwner() ? 'Seu perfil.' : 'Conheça esta pessoa.' }}</h1><app-feedback [errors]="errors()" [success]="success()" />
+  @if(loading()) { <p class="loading" role="status">Buscando perfil…</p> }
+  @if(profile();as person) {
+    <section class="profile-card panel" puddSpotlight>
+      <div class="cover" aria-hidden="true"><span>✳</span></div>
+      <div class="profile-info">
+        @if(avatarUrl() && !avatarFailed()) { <img class="avatar profile-avatar" [src]="avatarUrl()" [alt]="'Foto de ' + person.name" (error)="avatarFailed.set(true)" /> } @else { <span class="avatar profile-avatar">{{ person.name.slice(0,1).toUpperCase() }}</span> }
+        @if(avatarFailed()) { <button class="text-button" type="button" (click)="loadAvatar()">Recarregar foto</button> }
+        <h2>{{ person.name }}</h2><p class="content-text bio">{{ person.bio || 'Ainda há muita história para contar.' }}</p>
+        <div class="actions"><a class="button secondary" routerLink="/feed" [queryParams]="{authorId:person.id}">Ver publicações ↗</a>@if(isOwner()) { <button class="button" type="button" (click)="editing.set(!editing())" [disabled]="busy()">{{ editing() ? 'Fechar edição' : 'Editar perfil' }}</button> }</div>
+      </div>
+    </section>
+    @if(isOwner() && editing()) {
+      <section class="panel edit-profile"><h2>Como você quer se apresentar?</h2>
+        <form class="stack" [formGroup]="form" (ngSubmit)="save()" ngNativeValidate><div class="field"><label for="profile-name">Nome</label><input id="profile-name" formControlName="name" autocomplete="name" required [readOnly]="busy()" /></div><div class="field"><label for="profile-bio">Bio</label><textarea id="profile-bio" formControlName="bio" placeholder="O que você constrói, aprende ou tem vontade de compartilhar?" [readOnly]="busy()"></textarea></div><div class="actions"><button class="button" type="submit" [disabled]="busy()">{{ busy() ? 'Salvando…' : 'Salvar perfil' }}</button><button class="button secondary" type="button" [disabled]="busy()" (click)="cancelEdit()">Cancelar</button></div></form>
+      </section>
+      <section class="panel edit-profile"><h2>Sua foto de perfil</h2><p class="muted">Uma imagem para acompanhar suas ideias.</p>
+        @for(version of [pickerVersion()];track version) { <app-image-picker [disabled]="busy()" (selected)="selectedImage.set($event)" /> }
+        <div class="actions avatar-actions"><button class="button" type="button" [disabled]="busy() || !selectedImage()" (click)="uploadAvatar()">Enviar foto</button>@if(person.hasAvatar) { <button class="button danger" type="button" [disabled]="busy()" (click)="removeAvatar()">Remover foto atual</button> }</div>
+      </section>
+    }
+  }
+</div>

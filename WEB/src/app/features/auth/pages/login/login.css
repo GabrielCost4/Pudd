@@ -1,123 +1,84 @@
 :host {
-  --pudd-text: #fafafa;
-  --pudd-muted: #a3a3a3;
-  --pudd-border: #303030;
-  --pudd-input: #171717;
+  --pudd-text: var(--text);
+  --pudd-muted: var(--muted);
+  --pudd-border: #33383c;
+  --pudd-input: var(--surface);
   display: block;
-  color: var(--pudd-text);
 }
 .login-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.05fr 1fr;
   min-height: 100dvh;
-  background: #101010;
 }
 .intro-panel {
-  border-right: 1px solid #ffffff0a;
+  border-right: 1px solid var(--border);
 }
 .login-panel {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 64px 48px;
-  min-width: 0;
+  padding: 48px;
 }
 .login-card {
   width: 100%;
-  max-width: 360px;
-  animation: arrive 400ms ease-out;
+  max-width: 370px;
 }
-.card-signature {
-  display: flex;
-  justify-content: flex-start;
-  margin: 0 0 36px;
-}
-.eyebrow {
-  margin: 0 0 12px;
-  color: #a3a3a3;
-  font-size: 10px;
-  font-weight: 650;
-  letter-spacing: 1.5px;
+.wordmark {
+  margin-bottom: 48px;
 }
 h1 {
-  margin: 0;
-  font-size: 27px;
-  font-weight: 600;
-  letter-spacing: -1px;
-  line-height: 1.25;
+  font-size: 2.1rem;
 }
 .subtitle {
-  margin: 12px 0 28px;
-  color: var(--pudd-muted);
-  font-size: 14px;
-  line-height: 1.7;
+  color: var(--muted);
+  font-size: 0.875rem;
+  margin: 0 0 28px;
 }
 form {
   display: grid;
   gap: 16px;
 }
+app-feedback:empty {
+  display: none;
+}
 button[puddButton] {
   margin-top: 8px;
 }
-.form-note {
-  min-height: 20px;
-  margin: 4px 0 0;
+.switch-account {
+  margin-top: 28px;
+  color: var(--muted);
+  font-size: 0.8rem;
   text-align: center;
-  color: var(--pudd-muted);
-  font-size: 12px;
 }
-.error-message {
-  padding: 12px 14px;
-  border: 1px solid #773834;
-  border-radius: 10px;
-  background: #331b1b;
-  color: #ffb9b3;
-}
-.error-message p {
-  margin: 4px 0;
-  font-size: 13px;
-  line-height: 1.5;
+.switch-account a {
+  color: var(--accent);
+  margin-left: 6px;
 }
 .panel-caption {
-  margin: 44px 0 0;
-  color: #888;
-  font-size: 11px;
+  max-width: 320px;
+  margin: 48px 0 0;
+  color: var(--muted);
+  font-size: 0.7rem;
   text-align: center;
-  line-height: 1.6;
-}
-@keyframes arrive {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .login-card {
-    animation: none;
-  }
 }
 @media (max-width: 767px) {
   .login-layout {
     grid-template-columns: 1fr;
   }
-  .intro-panel,
-  .panel-caption {
+  .intro-panel {
     display: none;
   }
   .login-panel {
     min-height: 100dvh;
-    padding: 40px 24px;
+    padding: 36px 24px;
   }
-  .card-signature {
+  .wordmark {
+    display: flex;
     justify-content: center;
-    margin-bottom: 40px;
+    margin-bottom: 36px;
   }
-  h1 {
-    font-size: 25px;
+  .panel-caption {
+    display: none;
   }
 }

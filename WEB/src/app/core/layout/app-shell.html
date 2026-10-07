@@ -1,0 +1,38 @@
+<a class="skip-link" href="#main-content">Pular para o conteúdo</a>
+<div class="app-layout">
+  <aside class="sidebar">
+    <a class="wordmark" routerLink="/feed" aria-label="Pudd, página inicial">pudd<span>✳</span></a>
+    <p class="nav-caption">SEU CANTO NA INTERNET</p>
+    <nav aria-label="Navegação principal">
+      <a routerLink="/feed" routerLinkActive="active"><span aria-hidden="true">◈</span> Feed</a>
+      <a routerLink="/profile/me" routerLinkActive="active"
+        ><span aria-hidden="true">◎</span> Meu perfil</a
+      >
+      @if (session.isAdmin()) {
+        <a routerLink="/admin" routerLinkActive="active"
+          ><span aria-hidden="true">◇</span> Administração</a
+        >
+      }
+    </nav>
+    <a class="button" routerLink="/posts/new"
+      ><span aria-hidden="true">＋</span> Criar publicação</a
+    >
+    <div class="sidebar-bottom">
+      <div class="identity">
+        <span class="avatar">{{ session.user().email.slice(0, 1).toUpperCase() }}</span>
+        <div>
+          <strong>Seu espaço, sua voz.</strong><small>{{ session.user().email }}</small>
+        </div>
+      </div>
+      <button class="text-button" type="button" (click)="logout()">Sair da conta ↗</button>
+    </div>
+  </aside>
+  <div class="main-column">
+    <header class="topbar">
+      <span>Pequenos momentos. Boas conexões.</span
+      ><span class="community-tag">COMUNIDADE DEV <i></i></span>
+    </header>
+    <main id="main-content" tabindex="-1"><router-outlet /></main>
+    <footer>Feito de pessoas, ideias e um pouco de código. <span>© Pudd 2026</span></footer>
+  </div>
+</div>

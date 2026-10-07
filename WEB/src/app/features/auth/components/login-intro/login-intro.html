@@ -1,6 +1,24 @@
-<aside class="intro" aria-labelledby="intro-title">
-  <app-dither-gradient />
-  <p id="intro-title" class="intro-brand" puddBlurReveal [delay]="0.1">PUDD</p>
-  <p class="intro-footer" puddBlurReveal [delay]="0.85">
-  </p>
+<aside class="intro" aria-labelledby="intro-heading">
+  <app-drift-wall [images]="images" [paused]="paused()" />
+  <div class="intro-shade" aria-hidden="true"></div>
+  <div class="intro-header">
+  </div>
+
+  <div class="intro-content">
+    <h2 id="intro-heading">
+      <span puddBlurReveal [delay]="0.15">Pequenos</span>
+      <span puddBlurReveal [delay]="0.3">momentos.</span>
+      <span class="accent" puddBlurReveal [delay]="0.45">Boas conexões.</span>
+    </h2>
+    <p class="intro-description" puddBlurReveal [delay]="0.6">
+      O que faz parte do seu dia pode ser o começo de uma boa conversa.
+    </p>
+  </div>
+
+  <div class="intro-bottom">
+    <button type="button" [attr.aria-pressed]="paused()" (click)="paused.set(!paused())">
+      {{ paused() ? 'Retomar animação' : 'Pausar animação' }}
+      <span aria-hidden="true">{{ paused() ? '▶' : 'Ⅱ' }}</span>
+    </button>
+  </div>
 </aside>

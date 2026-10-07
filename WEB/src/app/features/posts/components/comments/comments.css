@@ -1,0 +1,47 @@
+.comments {
+  margin-top: 32px;
+}
+.comments h2 {
+  margin-bottom: 24px;
+}
+.comments h2 span {
+  color: var(--accent);
+}
+.comment-form {
+  display: grid;
+  gap: 14px;
+}
+.comment-form button {
+  justify-self: end;
+}
+.comment-form textarea {
+  min-height: 100px;
+}
+.comment {
+  display: flex;
+  gap: 14px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--border);
+}
+.comment-body {
+  flex: 1;
+  min-width: 0;
+}
+.comment header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+.comment header a {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.comment small {
+  color: var(--muted);
+  font-size: 0.65rem;
+}
+.comment p {
+  font-size: 0.85rem;
+  margin: 12px 0;
+}

@@ -1,0 +1,71 @@
+<section class="comments" aria-labelledby="comments-title">
+  <h2 id="comments-title">Continue a conversa<span aria-hidden="true"> ↳</span></h2>
+  <form (submit)="$event.preventDefault(); submit()" class="comment-form">
+    <div class="field">
+      <label for="comment-content">Seu comentário</label
+      ><textarea
+        id="comment-content"
+        [formControl]="content"
+        required
+        placeholder="Acrescente uma ideia à conversa…"
+        [readOnly]="saving()"
+      ></textarea>
+    </div>
+    <button class="button" type="submit" [disabled]="saving() || !content.value.trim()">
+      {{ saving() ? 'Enviando…' : 'Comentar' }}
+    </button>
+  </form>
+  <app-feedback [errors]="errors()" />
+  @if (loading()) {
+    <p class="loading" role="status">Carregando comentários…</p>
+  } @else {
+    @if (errors().length) {
+      <button class="text-button" type="button" (click)="load(page())">
+        Recarregar comentários
+      </button>
+    }
+    @for (comment of items(); track comment.id) {
+      <article class="comment">
+        <a
+          class="avatar"
+          [routerLink]="['/profile', comment.userID]"
+          [attr.aria-label]="'Perfil de ' + comment.authorName"
+          >{{ comment.authorName.slice(0, 1).toUpperCase() }}</a
+        >
+        <div class="comment-body">
+          <header>
+            <a [routerLink]="['/profile', comment.userID]">{{ comment.authorName }}</a
+            ><small>{{ comment.createdAt | date: 'dd/MM/yyyy · HH:mm' }}</small>
+          </header>
+          <p class="content-text">{{ comment.content }}</p>
+          @if (comment.userID === session.user().id || session.isAdmin()) {
+            <button
+              class="text-button"
+              type="button"
+              [disabled]="!!deleting()"
+              (click)="remove(comment)"
+            >
+              {{
+                deleting() === comment.id
+                  ? 'Excluindo…'
+                  : comment.userID === session.user().id
+                    ? 'Excluir'
+                    : 'Remover pela moderação'
+              }}
+            </button>
+          }
+        </div>
+      </article>
+    } @empty {
+      @if (!errors().length) {
+        <p class="empty">Seja a primeira pessoa a comentar.</p>
+      }
+    }
+    <app-pagination
+      [page]="page()"
+      [hasNext]="hasNext()"
+      [busy]="loading()"
+      (changed)="load($event)"
+    />
+  }
+</section>

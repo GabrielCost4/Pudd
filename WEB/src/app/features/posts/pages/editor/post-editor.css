@@ -1,0 +1,25 @@
+.editor {
+  max-width: 740px;
+  margin: auto;
+}
+.editor > p.muted {
+  font-size: 0.9rem;
+  margin-bottom: 30px;
+}
+.field > span,
+.checkbox {
+  font-size: 0.85rem;
+}
+.checkbox {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.image-note {
+  font-size: 0.8rem;
+  margin: 0;
+}
+.actions {
+  border-top: 1px solid var(--border);
+  padding-top: 22px;
+}

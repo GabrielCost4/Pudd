@@ -62,6 +62,14 @@ builder.Services.AddApplication();
 builder.Services.AddAuthorization();
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy => policy
+        .WithOrigins(builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+            ?? ["http://localhost:4200"])
+        .AllowAnyHeader()
+        .AllowAnyMethod());
+});
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<ApiExceptionHandler>();
 builder.Services.AddRateLimiter(options =>
@@ -95,6 +103,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseExceptionHandler();
 app.UseHttpsRedirection();
+app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();

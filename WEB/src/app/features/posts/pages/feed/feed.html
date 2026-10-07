@@ -1,0 +1,15 @@
+<div class="feed-grid">
+  <section aria-labelledby="feed-title">
+    <header class="page-header"><div><p class="eyebrow">IDEIAS EM MOVIMENTO</p><h1 id="feed-title" puddBlurReveal>{{ authorId() ? 'Um olhar, muitas histórias.' : 'O que está acontecendo?' }}</h1><p class="muted">{{ authorId() ? 'Publicações deste membro da comunidade.' : 'Um espaço para compartilhar o que você está construindo.' }}</p></div></header>
+    <nav class="feed-tabs" aria-label="Filtrar publicações"><a routerLink="/feed" [class.selected]="!authorId()">Comunidade</a><a routerLink="/feed" [queryParams]="{authorId:session.user().id}" [class.selected]="authorId() === session.user().id">Minhas publicações</a>@if(authorId() && authorId() !== session.user().id) { <a [routerLink]="['/profile',authorId()]">Ver perfil ↗</a> }</nav>
+    <a class="composer" routerLink="/posts/new"><span class="avatar">＋</span><span>Uma ideia, uma conquista, uma pergunta…</span><span class="compose-arrow" aria-hidden="true">↗</span></a>
+    <app-feedback [errors]="errors()" />
+    @if (loading()) { <div class="loading" role="status">Buscando novas conversas…</div> }
+    @else if (errors().length) { <button class="button secondary" (click)="reload()">Tentar novamente</button> }
+    @else {
+      <div class="stack">@for(post of posts(); track post.id) { <app-post-card [post]="post" (deleted)="removed($event)" /> } @empty { <div class="panel empty"><span class="symbol" aria-hidden="true">✳</span><h2>A conversa começa com uma ideia.</h2><p>Ainda não há publicações por aqui.</p><a class="button" routerLink="/posts/new">Publicar a primeira</a></div> }</div>
+      <app-pagination [page]="page()" [hasNext]="hasNext()" (changed)="changePage($event)" />
+    }
+  </section>
+  <aside class="feed-aside"><div class="welcome panel" puddSpotlight><span class="big-star" aria-hidden="true">✳</span><p class="eyebrow">MENOS RUÍDO. MAIS TROCA.</p><h2>A próxima conexão pode começar com você.</h2><p class="muted">Mostre o projeto que está saindo do papel. Compartilhe o bug que virou aprendizado. Puxe uma conversa.</p><a routerLink="/posts/new">Compartilhar algo ↗</a></div><div class="side-note"><span>01 / COMUNIDADE</span><p>Tem gente do outro lado do código.</p><small>Respeite as diferenças, dê crédito e construa boas conversas.</small></div></aside>
+</div>

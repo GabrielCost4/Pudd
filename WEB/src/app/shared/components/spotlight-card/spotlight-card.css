@@ -1,0 +1,4 @@
+:host { position: relative; isolation: isolate; }
+:host::before { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: -1; background: radial-gradient(380px circle at var(--spot-x) var(--spot-y), #b8ef9910, transparent 75%); opacity: 0; transition: opacity .25s; }
+:host:hover::before { opacity: 1; }
+@media (prefers-reduced-motion: reduce), (hover: none) { :host::before { display: none; } }
