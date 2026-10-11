@@ -1,5 +1,11 @@
+import { ButtonModule } from 'primeng/button';
 import { Component, input, output } from '@angular/core';
-@Component({ selector: 'app-pagination', templateUrl: './pagination.html', styleUrl: './pagination.css' })
+@Component({
+  imports: [ButtonModule],
+  selector: 'app-pagination',
+  templateUrl: './pagination.html',
+  styleUrl: './pagination.css',
+})
 export class Pagination {
   readonly page = input(1);
   readonly hasNext = input(false);

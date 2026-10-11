@@ -1,7 +1,7 @@
 <main class="login-layout">
   <app-login-intro class="intro-panel" />
   <section class="login-panel" aria-labelledby="login-title">
-    <div class="login-card">
+    <p-card class="login-card">
       <a class="wordmark" routerLink="/login" aria-label="Pudd">pudd<span>✳</span></a>
       <p class="eyebrow">
         {{ registering ? 'COMECE A SUA HISTÓRIA' : 'SEU ESPAÇO PARA CONECTAR' }}
@@ -45,7 +45,7 @@
           [describedBy]="messages().length ? 'auth-errors' : null"
         />
         <app-feedback id="auth-errors" [errors]="messages()" />
-        <button puddButton type="submit" [busy]="loading()" [disabled]="loading()">
+        <button pButton type="submit" [loading]="loading()" [disabled]="loading()">
           {{ loading() ? 'Só um instante…' : registering ? 'Criar minha conta' : 'Entrar no Pudd' }}
           <span aria-hidden="true">↗</span>
         </button>
@@ -56,7 +56,7 @@
           registering ? 'Entrar' : 'Criar conta'
         }}</a>
       </p>
-    </div>
+    </p-card>
     <p class="panel-caption">Ideias, conexões e tudo o que existe entre um commit e outro.</p>
   </section>
 </main>

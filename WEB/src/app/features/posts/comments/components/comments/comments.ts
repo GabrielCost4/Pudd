@@ -1,3 +1,9 @@
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { AvatarModule } from 'primeng/avatar';
+import { TextareaModule } from 'primeng/textarea';
+import { ButtonModule } from 'primeng/button';
+import { ConfirmationService } from 'primeng/api';
 import { DatePipe } from '@angular/common';
 import { Component, DestroyRef, effect, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -12,12 +18,25 @@ import type { PostComment } from '../../models/comment';
 import { CommentService } from '../../services/comment.service';
 
 @Component({
+  providers: [ConfirmationService],
   selector: 'app-comments',
-  imports: [DatePipe, RouterLink, ReactiveFormsModule, Feedback, Pagination],
+  imports: [
+    ConfirmDialogModule,
+    ProgressSpinnerModule,
+    AvatarModule,
+    TextareaModule,
+    ButtonModule,
+    DatePipe,
+    RouterLink,
+    ReactiveFormsModule,
+    Feedback,
+    Pagination,
+  ],
   templateUrl: './comments.html',
   styleUrl: './comments.css',
 })
 export class Comments {
+  private readonly confirmation = inject(ConfirmationService);
   readonly postId = input.required<string>();
   protected readonly session = inject(SessionStore);
   private readonly api = inject(CommentService);
@@ -76,7 +95,19 @@ export class Comments {
       });
   }
   protected remove(comment: PostComment): void {
-    if (this.deleting() || !window.confirm('Excluir este comentário definitivamente?')) return;
+    if (this.deleting()) return;
+    this.confirmation.confirm({
+      header: 'Cuidar da comunidade',
+      message: 'Excluir este comentário definitivamente?',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Confirmar',
+      rejectLabel: 'Cancelar',
+      accept: () => this.performRemove(comment),
+    });
+  }
+
+  private performRemove(comment: PostComment): void {
+    if (this.deleting()) return;
     this.deleting.set(comment.id);
     this.errors.set([]);
     const request =

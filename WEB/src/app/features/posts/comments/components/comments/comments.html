@@ -4,6 +4,7 @@
     <div class="field">
       <label for="comment-content">Seu comentário</label
       ><textarea
+        pTextarea
         id="comment-content"
         [formControl]="content"
         required
@@ -11,16 +12,23 @@
         [readOnly]="saving()"
       ></textarea>
     </div>
-    <button class="button" type="submit" [disabled]="saving() || !content.value.trim()">
+    <button
+      pButton
+      type="submit"
+      [loading]="saving()"
+      [disabled]="saving() || !content.value.trim()"
+    >
       {{ saving() ? 'Enviando…' : 'Comentar' }}
     </button>
   </form>
   <app-feedback [errors]="errors()" />
   @if (loading()) {
-    <p class="loading" role="status">Carregando comentários…</p>
+    <div class="loading" role="status">
+      <p-progress-spinner ariaLabel="Carregando" /><span>Carregando comentários…</span>
+    </div>
   } @else {
     @if (errors().length) {
-      <button class="text-button" type="button" (click)="load(page())">
+      <button [text]="true" severity="secondary" pButton type="button" (click)="load(page())">
         Recarregar comentários
       </button>
     }
@@ -30,8 +38,8 @@
           class="avatar"
           [routerLink]="['/profile', comment.userID]"
           [attr.aria-label]="'Perfil de ' + comment.authorName"
-          >{{ comment.authorName.slice(0, 1).toUpperCase() }}</a
-        >
+          ><p-avatar shape="circle" [label]="comment.authorName.slice(0, 1).toUpperCase()"
+        /></a>
         <div class="comment-body">
           <header>
             <a [routerLink]="['/profile', comment.userID]">{{ comment.authorName }}</a
@@ -40,9 +48,12 @@
           <p class="content-text">{{ comment.content }}</p>
           @if (comment.userID === session.user().id || session.isAdmin()) {
             <button
-              class="text-button"
+              [text]="true"
+              severity="secondary"
+              pButton
               type="button"
               [disabled]="!!deleting()"
+              [loading]="deleting() === comment.id"
               (click)="remove(comment)"
             >
               {{
@@ -69,3 +80,5 @@
     />
   }
 </section>
+
+<p-confirmdialog [closable]="true" />

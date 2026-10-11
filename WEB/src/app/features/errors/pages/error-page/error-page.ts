@@ -1,12 +1,12 @@
+import { CardModule } from 'primeng/card';
+import { ButtonModule } from 'primeng/button';
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { SessionStore } from '../../../../core/auth/session.store';
-import { BlurReveal } from '../../../../shared/components/blur-reveal/blur-reveal';
-import { SpotlightCard } from '../../../../shared/components/spotlight-card/spotlight-card';
 
 @Component({
   selector: 'app-error-page',
-  imports: [RouterLink, BlurReveal, SpotlightCard],
+  imports: [CardModule, ButtonModule, RouterLink],
   templateUrl: './error-page.html',
   styleUrl: './error-page.css',
 })
@@ -21,11 +21,11 @@ export class ErrorPage {
 
   protected readonly code = this.notFound ? '404' : this.forbidden ? '403' : '401';
 
-  protected readonly title =
-
-    this.notFound? 'Essa conversa tomou outro caminho.' :
-
-      this.forbidden? 'Este espaço tem acesso restrito.': 'Vamos nos conectar de novo?';
+  protected readonly title = this.notFound
+    ? 'Essa conversa tomou outro caminho.'
+    : this.forbidden
+      ? 'Este espaço tem acesso restrito.'
+      : 'Vamos nos conectar de novo?';
 
   protected readonly description = this.notFound
     ? 'A página ou o conteúdo que você procura não está disponível. Pode ter sido removido ou o endereço está incorreto.'

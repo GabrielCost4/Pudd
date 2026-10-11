@@ -1,24 +1,19 @@
 <aside class="intro" aria-labelledby="intro-heading">
-  <app-drift-wall [images]="images" [paused]="paused()" />
-  <div class="intro-shade" aria-hidden="true"></div>
-  <div class="intro-header">
-  </div>
-
-  <div class="intro-content">
-    <h2 id="intro-heading">
-      <span puddBlurReveal [delay]="0.15">Pequenos</span>
-      <span puddBlurReveal [delay]="0.3">momentos.</span>
-      <span class="accent" puddBlurReveal [delay]="0.45">Boas conexões.</span>
-    </h2>
-    <p class="intro-description" puddBlurReveal [delay]="0.6">
-      O que faz parte do seu dia pode ser o começo de uma boa conversa.
+  <p-tag value="COMUNIDADE DEV" icon="pi pi-code" />
+  <div>
+    <h2 id="intro-heading">Código conecta.<br /><span>Pessoas também.</span></h2>
+    <p>
+      Compartilhe o que está construindo, aprenda com outras pessoas e encontre companhia para a
+      próxima ideia.
     </p>
   </div>
-
-  <div class="intro-bottom">
-    <button type="button" [attr.aria-pressed]="paused()" (click)="paused.set(!paused())">
-      {{ paused() ? 'Retomar animação' : 'Pausar animação' }}
-      <span aria-hidden="true">{{ paused() ? '▶' : 'Ⅱ' }}</span>
-    </button>
-  </div>
+  <p-card>
+    <div class="intro-note">
+      <i class="pi pi-comments" aria-hidden="true"></i>
+      <div>
+        <h3>Uma conversa pode mudar seu projeto.</h3>
+        <p>Dúvidas, descobertas e pequenos avanços têm lugar aqui.</p>
+      </div>
+    </div>
+  </p-card>
 </aside>

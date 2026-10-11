@@ -1,10 +1,13 @@
+import { TagModule } from 'primeng/tag';
+import { AvatarModule } from 'primeng/avatar';
+import { ButtonModule } from 'primeng/button';
 import { Component, effect, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { SessionStore } from '../auth/session.store';
 
 @Component({
   selector: 'app-shell',
-  imports: [RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [TagModule, AvatarModule, ButtonModule, RouterLink, RouterLinkActive, RouterOutlet],
   templateUrl: './app-shell.html',
   styleUrl: './app-shell.css',
 })

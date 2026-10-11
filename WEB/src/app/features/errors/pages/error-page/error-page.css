@@ -13,10 +13,6 @@
 .error-card {
   max-width: 680px;
   text-align: center;
-  padding: 40px;
-  border: 1px solid var(--border);
-  border-radius: 26px;
-  background: var(--surface);
 }
 .error-code {
   font-size: clamp(6rem, 15vw, 10rem);
@@ -52,9 +48,6 @@
   margin-top: 32px;
 }
 @media (max-width: 600px) {
-  .error-card {
-    padding: 30px 20px;
-  }
   .error-card h1 {
     font-size: 1.7rem;
   }

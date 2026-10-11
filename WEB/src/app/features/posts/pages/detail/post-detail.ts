@@ -1,3 +1,5 @@
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { ButtonModule } from 'primeng/button';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -12,7 +14,7 @@ import type { Post } from '../../models/post';
 
 @Component({
   selector: 'app-post-detail',
-  imports: [RouterLink, Feedback, PostCard, Comments],
+  imports: [ProgressSpinnerModule, ButtonModule, RouterLink, Feedback, PostCard, Comments],
   templateUrl: './post-detail.html',
   styleUrl: './post-detail.css',
 })

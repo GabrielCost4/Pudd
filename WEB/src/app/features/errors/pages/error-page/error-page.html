@@ -2,19 +2,19 @@
   <a class="wordmark" [routerLink]="session.isAuthenticated() ? '/feed' : '/login'"
     >pudd<span>✳</span></a
   >
-  <section class="error-card" puddSpotlight>
+  <p-card class="error-card">
     <div class="error-code" aria-hidden="true">{{ code }}<span>✳</span></div>
     <p class="eyebrow">{{ notFound ? 'CAMINHO NÃO ENCONTRADO' : 'ACESSO NÃO AUTORIZADO' }}</p>
-    <h1 puddBlurReveal>{{ title }}</h1>
+    <h1>{{ title }}</h1>
     <p class="muted">{{ description }}</p>
     <div class="actions">
       @if (session.isAuthenticated()) {
-        <a class="button" routerLink="/feed">Voltar para o feed ↗</a>
+        <a severity="secondary" pButton routerLink="/feed">Voltar para o feed ↗</a>
       } @else {
-        <a class="button" routerLink="/login">Ir para o login ↗</a>
+        <a severity="secondary" pButton routerLink="/login">Ir para o login ↗</a>
       }
-      <a class="button secondary" routerLink="/register">Criar uma conta</a>
+      <a severity="secondary" pButton routerLink="/register">Criar uma conta</a>
     </div>
-  </section>
+  </p-card>
   <p class="footnote">Sempre existe um novo ponto de partida.</p>
 </main>

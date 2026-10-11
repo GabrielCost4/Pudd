@@ -1,9 +1,19 @@
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { InputPasswordModule } from 'primeng/inputpassword';
+import { InputTextModule } from 'primeng/inputtext';
+import { ButtonModule } from 'primeng/button';
 import { Component, input, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-label-input',
-  imports: [ReactiveFormsModule],
+  imports: [
+    FloatLabelModule,
+    InputPasswordModule,
+    InputTextModule,
+    ButtonModule,
+    ReactiveFormsModule,
+  ],
   templateUrl: './label-input.html',
   styleUrl: './label-input.css',
 })

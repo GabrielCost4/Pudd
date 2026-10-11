@@ -28,7 +28,10 @@ export class SessionStore {
         role,
       });
       this.token.set(accessToken);
-      this.expirationTimer = setTimeout(() => this.clear(), Math.min(expiresAt - Date.now(), 2147483647));
+      this.expirationTimer = setTimeout(
+        () => this.clear(),
+        Math.min(expiresAt - Date.now(), 2147483647),
+      );
       return true;
     } catch {
       return false;

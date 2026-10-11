@@ -7,7 +7,6 @@ import type { Post } from '../models/post';
 
 @Injectable({ providedIn: 'root' })
 export class PostService {
-
   private readonly http = inject(HttpClient);
 
   list(page = 1, authorId?: string) {

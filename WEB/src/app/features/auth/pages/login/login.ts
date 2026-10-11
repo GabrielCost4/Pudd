@@ -1,3 +1,5 @@
+import { CardModule } from 'primeng/card';
+import { ButtonModule } from 'primeng/button';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -6,14 +8,21 @@ import { finalize } from 'rxjs';
 import { SessionStore } from '../../../../core/auth/session.store';
 import { AuthService } from '../../services/auth.service';
 import { LabelInput } from '../../../../shared/components/label-input/label-input';
-import { Button } from '../../../../shared/components/button/button';
 import { Feedback } from '../../../../shared/components/feedback/feedback';
 import { apiErrors } from '../../../../shared/utils/api-errors';
 import { LoginIntro } from '../../components/login-intro/login-intro';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, RouterLink, LabelInput, Button, Feedback, LoginIntro],
+  imports: [
+    CardModule,
+    ButtonModule,
+    ReactiveFormsModule,
+    RouterLink,
+    LabelInput,
+    Feedback,
+    LoginIntro,
+  ],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })

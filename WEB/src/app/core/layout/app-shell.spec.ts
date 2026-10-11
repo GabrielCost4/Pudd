@@ -4,12 +4,25 @@ import { SessionStore } from '../auth/session.store';
 import { AppShell } from './app-shell';
 
 describe('AppShell', () => {
-  beforeEach(() => TestBed.configureTestingModule({ imports: [AppShell], providers: [provideRouter([])] }));
+  beforeEach(() =>
+    TestBed.configureTestingModule({ imports: [AppShell], providers: [provideRouter([])] }),
+  );
   afterEach(() => TestBed.inject(SessionStore).clear());
   function start(role: string) {
-    TestBed.inject(SessionStore).start('header.' + btoa(JSON.stringify({ sub: 'member', email: 'member@example.test', exp: Date.now() / 1000 + 3600 })) + '.signature', role);
+    TestBed.inject(SessionStore).start(
+      'header.' +
+        btoa(
+          JSON.stringify({
+            sub: 'member',
+            email: 'member@example.test',
+            exp: Date.now() / 1000 + 3600,
+          }),
+        ) +
+        '.signature',
+      role,
+    );
   }
-  it.each(['User', 'Admin'])('shows administration only to an administrator (%s)', role => {
+  it.each(['User', 'Admin'])('shows administration only to an administrator (%s)', (role) => {
     start(role);
     const f = TestBed.createComponent(AppShell);
     f.detectChanges();

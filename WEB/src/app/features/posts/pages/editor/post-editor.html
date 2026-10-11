@@ -1,53 +1,68 @@
 <div class="editor">
-  <a class="back-link" [routerLink]="id ? ['/posts', id] : ['/feed']">← Voltar</a>
+  <a
+    [text]="true"
+    severity="secondary"
+    pButton
+    class="back-link"
+    [routerLink]="id ? ['/posts', id] : ['/feed']"
+    >← Voltar</a
+  >
   <p class="eyebrow">{{ id ? 'SEMPRE DÁ PARA REFINAR' : 'COMPARTILHE UM POUCO DE VOCÊ' }}</p>
   <h1>{{ id ? 'Editar publicação.' : 'O que você está construindo?' }}</h1>
   <p class="muted">Uma descoberta, um projeto ou aquela dúvida que pode render uma boa conversa.</p>
   <app-feedback [errors]="errors()" />
   @if (loading()) {
-    <p class="loading" role="status">Carregando publicação…</p>
+    <div class="loading" role="status">
+      <p-progress-spinner ariaLabel="Carregando" /><span>Carregando publicação…</span>
+    </div>
   } @else if (ready()) {
-    <form
-      class="panel stack"
-      [formGroup]="form"
-      (ngSubmit)="save()"
-      ngNativeValidate
-      [attr.aria-busy]="saving()"
-    >
-      <div class="field">
-        <label for="post-content">Sua publicação</label
-        ><textarea
-          id="post-content"
-          formControlName="content"
-          required
-          placeholder="Comece por uma ideia…"
-          rows="8"
-        ></textarea
-        ><small>A comunidade está aqui para trocar experiências.</small>
-      </div>
-      <div class="field">
-        <span>Imagem opcional</span
-        ><app-image-picker [disabled]="saving()" (selected)="selectImage($event)" />
-      </div>
-      @if (id && hasImage()) {
-        <p class="muted image-note">
-          {{
-            image()
-              ? 'A nova imagem substituirá a atual.'
-              : 'A imagem atual será mantida, a menos que você escolha removê-la.'
-          }}
-        </p>
-        @if (!image()) {
-          <label class="checkbox"
-            ><input type="checkbox" formControlName="removeImage" /> Remover a imagem atual</label
-          >
+    <p-card
+      ><form
+        class="stack"
+        [formGroup]="form"
+        (ngSubmit)="save()"
+        ngNativeValidate
+        [attr.aria-busy]="saving()"
+      >
+        <div class="field">
+          <label for="post-content">Sua publicação</label
+          ><textarea
+            pTextarea
+            id="post-content"
+            formControlName="content"
+            required
+            placeholder="Comece por uma ideia…"
+            rows="8"
+          ></textarea
+          ><small>A comunidade está aqui para trocar experiências.</small>
+        </div>
+        <div class="field">
+          <span>Imagem opcional</span
+          ><app-image-picker [disabled]="saving()" (selected)="selectImage($event)" />
+        </div>
+        @if (id && hasImage()) {
+          <p class="muted image-note">
+            {{
+              image()
+                ? 'A nova imagem substituirá a atual.'
+                : 'A imagem atual será mantida, a menos que você escolha removê-la.'
+            }}
+          </p>
+          @if (!image()) {
+            <label for="remove-image" class="checkbox"
+              ><p-checkbox inputId="remove-image" formControlName="removeImage" [binary]="true" />
+              Remover a imagem atual</label
+            >
+          }
         }
-      }
-      <div class="actions">
-        <button class="button" type="submit" [disabled]="saving()">
-          {{ saving() ? 'Enviando…' : id ? 'Salvar alterações' : 'Publicar ↗' }}</button
-        ><a class="button secondary" [routerLink]="id ? ['/posts', id] : ['/feed']">Cancelar</a>
-      </div>
-    </form>
+        <div class="actions">
+          <button pButton type="submit" [loading]="saving()" [disabled]="saving()">
+            {{ saving() ? 'Enviando…' : id ? 'Salvar alterações' : 'Publicar ↗' }}</button
+          ><a severity="secondary" pButton [routerLink]="id ? ['/posts', id] : ['/feed']"
+            >Cancelar</a
+          >
+        </div>
+      </form></p-card
+    >
   }
 </div>

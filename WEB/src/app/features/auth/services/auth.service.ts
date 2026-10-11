@@ -7,7 +7,6 @@ import type { RegisterRequest } from '../models/register-request';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-
   private readonly http = inject(HttpClient);
 
   login(request: LoginRequest) {

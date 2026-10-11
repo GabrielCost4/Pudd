@@ -1,10 +1,14 @@
 <div class="detail">
-  <a routerLink="/feed" class="back-link">← Voltar para o feed</a>
+  <a [text]="true" severity="secondary" pButton routerLink="/feed" class="back-link"
+    >← Voltar para o feed</a
+  >
   <p class="eyebrow">UMA IDEIA. NOVAS CONVERSAS.</p>
   <h1>Publicação</h1>
   <app-feedback [errors]="errors()" />
   @if (loading()) {
-    <p class="loading" role="status">Buscando publicação…</p>
+    <div class="loading" role="status">
+      <p-progress-spinner ariaLabel="Carregando" /><span>Buscando publicação…</span>
+    </div>
   }
   @if (post(); as item) {
     <app-post-card [post]="item" (deleted)="removed()" /><app-comments [postId]="item.id" />

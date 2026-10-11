@@ -10,9 +10,7 @@ export function apiErrors(error: unknown): string[] {
   const problem = error.error as ApiProblem | null;
   const fields =
     problem?.errors && typeof problem.errors === 'object'
-      ? Object.values(problem.errors)
-        .flat()
-        .filter((value): value is string => typeof value === 'string')
+      ? Object.values(problem.errors).flat().filter(isMessage)
       : [];
   if (fields.length) return fields;
   return [
@@ -20,4 +18,8 @@ export function apiErrors(error: unknown): string[] {
       ? problem.title
       : 'Não foi possível concluir esta ação. Tente novamente.',
   ];
+}
+
+function isMessage(value: unknown): value is string {
+  return typeof value === 'string';
 }

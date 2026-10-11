@@ -1,3 +1,10 @@
+import { TagModule } from 'primeng/tag';
+import { TableModule } from 'primeng/table';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { MessageModule } from 'primeng/message';
+import { ButtonModule } from 'primeng/button';
+import { ConfirmationService } from 'primeng/api';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
@@ -10,12 +17,24 @@ import type { AdminUser } from '../../models/admin-user';
 import { AdminService } from '../../services/admin.service';
 
 @Component({
+  providers: [ConfirmationService],
   selector: 'app-admin-users',
-  imports: [RouterLink, Feedback, Pagination],
+  imports: [
+    TagModule,
+    TableModule,
+    ConfirmDialogModule,
+    ProgressSpinnerModule,
+    MessageModule,
+    ButtonModule,
+    RouterLink,
+    Feedback,
+    Pagination,
+  ],
   templateUrl: './admin-users.html',
   styleUrl: './admin-users.css',
 })
 export class AdminUsers {
+  private readonly confirmation = inject(ConfirmationService);
   protected readonly session = inject(SessionStore);
   private readonly api = inject(AdminService);
   private readonly destroyRef = inject(DestroyRef);
@@ -48,13 +67,19 @@ export class AdminUsers {
       });
   }
   protected toggle(user: AdminUser): void {
-    if (
-      this.changing() ||
-      !window.confirm(
-        (user.isBlocked ? 'Desbloquear' : 'Bloquear') + ' a conta de ' + user.name + '?',
-      )
-    )
-      return;
+    if (this.changing()) return;
+    this.confirmation.confirm({
+      header: 'Cuidar da comunidade',
+      message: 'Alterar o acesso desta pessoa à comunidade?',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Confirmar',
+      rejectLabel: 'Cancelar',
+      accept: () => this.performToggle(user),
+    });
+  }
+
+  private performToggle(user: AdminUser): void {
+    if (this.changing()) return;
     this.changing.set(user.id);
     this.errors.set([]);
     this.success.set('');

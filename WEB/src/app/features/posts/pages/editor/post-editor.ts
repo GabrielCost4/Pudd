@@ -1,3 +1,8 @@
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { CardModule } from 'primeng/card';
+import { CheckboxModule } from 'primeng/checkbox';
+import { TextareaModule } from 'primeng/textarea';
+import { ButtonModule } from 'primeng/button';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -12,7 +17,17 @@ import { PostService } from '../../services/post.service';
 
 @Component({
   selector: 'app-post-editor',
-  imports: [RouterLink, ReactiveFormsModule, Feedback, ImagePicker],
+  imports: [
+    ProgressSpinnerModule,
+    CardModule,
+    CheckboxModule,
+    TextareaModule,
+    ButtonModule,
+    RouterLink,
+    ReactiveFormsModule,
+    Feedback,
+    ImagePicker,
+  ],
   templateUrl: './post-editor.html',
   styleUrl: './post-editor.css',
 })

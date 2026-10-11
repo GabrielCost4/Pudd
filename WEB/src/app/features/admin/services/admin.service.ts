@@ -6,7 +6,6 @@ import type { AdminUser } from '../models/admin-user';
 
 @Injectable({ providedIn: 'root' })
 export class AdminService {
-
   private readonly http = inject(HttpClient);
 
   users(page = 1) {

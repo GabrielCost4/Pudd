@@ -1,8 +1,4 @@
 :host {
-  --pudd-text: var(--text);
-  --pudd-muted: var(--muted);
-  --pudd-border: #33383c;
-  --pudd-input: var(--surface);
   display: block;
 }
 .login-layout {
@@ -42,7 +38,7 @@ form {
 app-feedback:empty {
   display: none;
 }
-button[puddButton] {
+button[pButton] {
   margin-top: 8px;
 }
 .switch-account {
