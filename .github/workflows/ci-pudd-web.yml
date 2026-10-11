@@ -1,0 +1,83 @@
+name: CI - WEB
+
+on:
+  push:
+    branches: [main]
+    paths: ['WEB/**']
+  pull_request:
+    branches: [main]
+    paths: ['WEB/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-pudd-web-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: 'true'
+
+defaults:
+  run:
+    working-directory: WEB
+
+jobs:
+  formatting:
+    name: Formatação com ESLint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: WEB/package-lock.json
+      - name: Instalar dependências
+        run: npm ci
+      - name: Conferir formatação do TypeScript
+        run: npm run lint
+
+  tests:
+    name: Testes de services, componentes e páginas
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: WEB/package-lock.json
+      - name: Instalar dependências
+        run: npm ci
+      - name: Conferir tipos dos testes
+        run: npx --no-install tsc --project tsconfig.spec.json --noEmit
+      # Executa todos os specs Angular, incluindo os módulos de comentários e curtidas.
+      # HttpTestingController intercepta as chamadas; não precisa iniciar o backend.
+      - name: Testar requisições HTTP e comportamento da interface
+        run: npm test -- --watch=false --runner-config=vitest-base.config.ts
+
+  build:
+    name: Build de produção
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: WEB/package-lock.json
+      - name: Instalar dependências
+        run: npm ci
+      - name: Compilar frontend
+        run: npm run build -- --configuration production
