@@ -4,10 +4,17 @@ services:
       image: postgres:18
       container_name: pudd-postgres
       restart: unless-stopped
-      env_file:
-        - .env
+      environment:
+        POSTGRES_DB: ${POSTGRES_DB:-PuddDocker}
+        POSTGRES_USER: ${POSTGRES_USER:-postgres}
+        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       ports:
-        - "5433:5432"
+        - "127.0.0.1:${POSTGRES_PORT:-5433}:5432"
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+        interval: 5s
+        timeout: 5s
+        retries: 10
       volumes:
         - pudd_postgres_data:/var/lib/postgresql
 # Preserva os dados do banco mesmo se o container for recriado.
