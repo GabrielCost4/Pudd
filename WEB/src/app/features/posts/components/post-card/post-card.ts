@@ -8,9 +8,9 @@ import { Feedback } from '../../../../shared/components/feedback/feedback';
 import { SpotlightCard } from '../../../../shared/components/spotlight-card/spotlight-card';
 import { apiErrors } from '../../../../shared/utils/api-errors';
 import type { Post } from '../../models/post';
-import type { LikeResponse } from '../../models/like-response';
+import type { LikeResponse } from '../../likes/models/like-response';
 import { PostService } from '../../services/post.service';
-import { LikeService } from '../../services/like.service';
+import { LikeService } from '../../likes/services/like.service';
 
 @Component({
   selector: 'app-post-card', imports: [DatePipe, RouterLink, Feedback, SpotlightCard],

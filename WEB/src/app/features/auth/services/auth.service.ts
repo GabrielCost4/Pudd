@@ -13,6 +13,7 @@ export class AuthService {
   login(request: LoginRequest) {
     return this.http.post<LoginResponse>(API_BASE_URL + '/Auth/login', request, { timeout: 30000 });
   }
+
   register(request: RegisterRequest) {
     return this.http.post<LoginResponse>(API_BASE_URL + '/Auth/register', request, {
       timeout: 30000,

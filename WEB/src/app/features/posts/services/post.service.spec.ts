@@ -3,42 +3,109 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { API_BASE_URL } from '../../../core/config/api';
 import { PostService } from './post.service';
-import { CommentService } from './comment.service';
-import { LikeService } from './like.service';
 
-describe('Post API contracts',()=>{
-  beforeEach(()=>TestBed.configureTestingModule({providers:[provideHttpClient(),provideHttpClientTesting()]}));
-  afterEach(()=>TestBed.inject(HttpTestingController).verify());
-  it('filters a paginated feed by author without assuming a total count',()=>{
-    TestBed.inject(PostService).list(2,'author').subscribe(result=>expect(result.hasNextPage).toBe(true));
-    const req=TestBed.inject(HttpTestingController).expectOne(r=>r.url===API_BASE_URL+'/posts');
-    expect(req.request.params.get('authorId')).toBe('author');
-    expect(req.request.params.get('page')).toBe('2');
-    req.flush({items:[],page:2,pageSize:6,hasNextPage:true});
+describe('PostService', () => {
+  beforeEach(() =>
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    }),
+  );
+  afterEach(() => TestBed.inject(HttpTestingController).verify());
+  const form = new FormData();
+  form.append('Content', 'Hello');
+  form.append('RemoveImage', 'true');
+  form.append('Image', new File(['image'], 'post.png', { type: 'image/png' }));
+  it('list: sends the expected request and forwards the response', () => {
+    const s = TestBed.inject(PostService);
+    const next = vi.fn();
+    s.list(2, 'author').subscribe(next);
+    const req = TestBed.inject(HttpTestingController).expectOne(
+      API_BASE_URL + '/posts?page=2&pageSize=6&authorId=author',
+    );
+    expect(req.request.method).toBe('GET');
+
+    const response = {};
+    req.flush(response);
+    expect(next).toHaveBeenCalledExactlyOnceWith(response);
   });
-  it('preserves multipart boundaries and sends RemoveImage when editing',()=>{
-    const form=new FormData();form.append('Content','Update');form.append('RemoveImage','true');
-    TestBed.inject(PostService).update('post-id',form).subscribe();
-    const req=TestBed.inject(HttpTestingController).expectOne(API_BASE_URL+'/posts/post-id');
-    expect(req.request.method).toBe('PUT');
+  it('get: sends the expected request and forwards the response', () => {
+    const s = TestBed.inject(PostService);
+    const next = vi.fn();
+    s.get('post').subscribe(next);
+    const req = TestBed.inject(HttpTestingController).expectOne(API_BASE_URL + '/posts/post');
+    expect(req.request.method).toBe('GET');
+
+    const response = {};
+    req.flush(response);
+    expect(next).toHaveBeenCalledExactlyOnceWith(response);
+  });
+  it('create: sends the expected request and forwards the response', () => {
+    const s = TestBed.inject(PostService);
+    const next = vi.fn();
+    s.create(form).subscribe(next);
+    const req = TestBed.inject(HttpTestingController).expectOne(API_BASE_URL + '/posts');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(form);
     expect(req.request.body).toBe(form);
     expect(req.request.headers.has('Content-Type')).toBe(false);
-    expect((req.request.body as FormData).get('RemoveImage')).toBe('true');
-    req.flush({});
+    const response = {};
+    req.flush(response);
+    expect(next).toHaveBeenCalledExactlyOnceWith(response);
   });
-  it('uses distinct moderation routes for posts and comments',()=>{
-    const http=TestBed.inject(HttpTestingController);
-    TestBed.inject(PostService).moderate('post').subscribe();
-    TestBed.inject(CommentService).moderate('comment').subscribe();
-    for(const path of ['/admin/posts/post','/admin/comments/comment']) {
-      const req=http.expectOne(API_BASE_URL+path);expect(req.request.method).toBe('DELETE');req.flush(null);
-    }
+  it('update: sends the expected request and forwards the response', () => {
+    const s = TestBed.inject(PostService);
+    const next = vi.fn();
+    s.update('post', form).subscribe(next);
+    const req = TestBed.inject(HttpTestingController).expectOne(API_BASE_URL + '/posts/post');
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual(form);
+    expect(req.request.body).toBe(form);
+    expect(req.request.headers.has('Content-Type')).toBe(false);
+    const response = {};
+    req.flush(response);
+    expect(next).toHaveBeenCalledExactlyOnceWith(response);
   });
-  it('reads, adds and removes likes with the endpoint methods',()=>{
-    const service=TestBed.inject(LikeService),http=TestBed.inject(HttpTestingController);
-    for(const [method,request] of [['GET',service.get('p')],['PUT',service.like('p')],['DELETE',service.unlike('p')]] as const) {
-      request.subscribe();const req=http.expectOne(API_BASE_URL+'/posts/p/like');
-      expect(req.request.method).toBe(method);req.flush({liked:method==='PUT',count:method==='PUT'?1:0});
-    }
+  it('delete: sends the expected request and forwards the response', () => {
+    const s = TestBed.inject(PostService);
+    const next = vi.fn();
+    s.delete('post').subscribe(next);
+    const req = TestBed.inject(HttpTestingController).expectOne(API_BASE_URL + '/posts/post');
+    expect(req.request.method).toBe('DELETE');
+
+    const response = null;
+    req.flush(response);
+    expect(next).toHaveBeenCalledExactlyOnceWith(response);
+  });
+  it('moderate: sends the expected request and forwards the response', () => {
+    const s = TestBed.inject(PostService);
+    const next = vi.fn();
+    s.moderate('post').subscribe(next);
+    const req = TestBed.inject(HttpTestingController).expectOne(API_BASE_URL + '/admin/posts/post');
+    expect(req.request.method).toBe('DELETE');
+
+    const response = null;
+    req.flush(response);
+    expect(next).toHaveBeenCalledExactlyOnceWith(response);
+  });
+  it('image: sends the expected request and forwards the response', () => {
+    const s = TestBed.inject(PostService);
+    const next = vi.fn();
+    s.image('post').subscribe(next);
+    const req = TestBed.inject(HttpTestingController).expectOne(API_BASE_URL + '/posts/post/image');
+    expect(req.request.method).toBe('GET');
+
+    const response = {};
+    req.flush(response);
+    expect(next).toHaveBeenCalledExactlyOnceWith(response);
+  });
+  it('forwards HTTP errors to the caller', () => {
+    const s = TestBed.inject(PostService);
+    const error = vi.fn();
+    s.list(2, 'author').subscribe({ error });
+    TestBed.inject(HttpTestingController)
+      .expectOne(API_BASE_URL + '/posts?page=2&pageSize=6&authorId=author')
+      .flush({ title: 'Unavailable' }, { status: 503, statusText: 'Service Unavailable' });
+    expect(error).toHaveBeenCalledOnce();
+    expect(error.mock.calls[0][0].status).toBe(503);
   });
 });

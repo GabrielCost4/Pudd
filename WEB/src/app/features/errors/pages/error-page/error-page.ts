@@ -12,15 +12,21 @@ import { SpotlightCard } from '../../../../shared/components/spotlight-card/spot
 })
 export class ErrorPage {
   protected readonly session = inject(SessionStore);
+
   private readonly route = inject(ActivatedRoute);
+
   protected readonly notFound = this.route.snapshot.data['notFound'] === true;
+
   protected readonly forbidden = this.route.snapshot.queryParamMap.get('reason') === 'forbidden';
+
   protected readonly code = this.notFound ? '404' : this.forbidden ? '403' : '401';
-  protected readonly title = this.notFound
-    ? 'Essa conversa tomou outro caminho.'
-    : this.forbidden
-      ? 'Este espaço tem acesso restrito.'
-      : 'Vamos nos conectar de novo?';
+
+  protected readonly title =
+
+    this.notFound? 'Essa conversa tomou outro caminho.' :
+
+      this.forbidden? 'Este espaço tem acesso restrito.': 'Vamos nos conectar de novo?';
+
   protected readonly description = this.notFound
     ? 'A página ou o conteúdo que você procura não está disponível. Pode ter sido removido ou o endereço está incorreto.'
     : this.forbidden

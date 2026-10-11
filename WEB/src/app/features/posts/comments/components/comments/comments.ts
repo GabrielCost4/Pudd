@@ -4,10 +4,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { finalize, Subscription } from 'rxjs';
-import { SessionStore } from '../../../../core/auth/session.store';
-import { Feedback } from '../../../../shared/components/feedback/feedback';
-import { Pagination } from '../../../../shared/components/pagination/pagination';
-import { apiErrors } from '../../../../shared/utils/api-errors';
+import { SessionStore } from '../../../../../core/auth/session.store';
+import { Feedback } from '../../../../../shared/components/feedback/feedback';
+import { Pagination } from '../../../../../shared/components/pagination/pagination';
+import { apiErrors } from '../../../../../shared/utils/api-errors';
 import type { PostComment } from '../../models/comment';
 import { CommentService } from '../../services/comment.service';
 

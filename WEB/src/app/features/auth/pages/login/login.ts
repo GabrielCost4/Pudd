@@ -19,13 +19,21 @@ import { LoginIntro } from '../../components/login-intro/login-intro';
 })
 export class Login {
   private readonly auth = inject(AuthService);
+
   private readonly session = inject(SessionStore);
+
   private readonly destroyRef = inject(DestroyRef);
+
   private readonly router = inject(Router);
+
   private readonly route = inject(ActivatedRoute);
+
   protected readonly registering = this.route.snapshot.data['register'] === true;
+
   protected readonly loading = signal(false);
+
   protected readonly messages = signal<string[]>([]);
+
   protected readonly form = new FormGroup({
     nome: new FormControl('', { nonNullable: true }),
     email: new FormControl('', { nonNullable: true }),
@@ -36,8 +44,10 @@ export class Login {
     if (this.loading()) return;
     this.messages.set([]);
     this.loading.set(true);
+
     const { nome, email, senha } = this.form.getRawValue();
     this.form.disable();
+
     const request = this.registering
       ? this.auth.register({ nome, email, senha })
       : this.auth.login({ email, senha });
@@ -58,6 +68,7 @@ export class Login {
             ]);
             return;
           }
+
           const requested = this.route.snapshot.queryParamMap.get('returnUrl');
           const target =
             requested && /^\/(feed|posts|profile|admin)(\/|\?|$)/.test(requested)
@@ -65,6 +76,7 @@ export class Login {
               : '/feed';
           void this.router.navigateByUrl(target);
         },
+
         error: (error: unknown) => this.messages.set(apiErrors(error)),
       });
   }

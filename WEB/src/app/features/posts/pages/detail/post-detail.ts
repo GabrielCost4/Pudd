@@ -6,7 +6,7 @@ import { catchError, finalize, of, switchMap } from 'rxjs';
 import { Feedback } from '../../../../shared/components/feedback/feedback';
 import { apiErrors } from '../../../../shared/utils/api-errors';
 import { PostCard } from '../../components/post-card/post-card';
-import { Comments } from '../../components/comments/comments';
+import { Comments } from '../../comments/components/comments/comments';
 import { PostService } from '../../services/post.service';
 import type { Post } from '../../models/post';
 

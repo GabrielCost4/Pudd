@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { API_BASE_URL } from '../../../core/config/api';
+import { API_BASE_URL } from '../../../../core/config/api';
 import type { LikeResponse } from '../models/like-response';
 
 @Injectable({ providedIn: 'root' })
