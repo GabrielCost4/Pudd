@@ -11,8 +11,8 @@ export function apiErrors(error: unknown): string[] {
   const fields =
     problem?.errors && typeof problem.errors === 'object'
       ? Object.values(problem.errors)
-          .flat()
-          .filter((value): value is string => typeof value === 'string')
+        .flat()
+        .filter((value): value is string => typeof value === 'string')
       : [];
   if (fields.length) return fields;
   return [

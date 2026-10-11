@@ -14,7 +14,7 @@ export class AdminService {
       params: { page, pageSize: 15 },
     });
   }
-  
+
   setBlocked(id: string, isBlocked: boolean) {
     return this.http.put<void>(
       API_BASE_URL + '/admin/users/' + encodeURIComponent(id) + '/blocked',
