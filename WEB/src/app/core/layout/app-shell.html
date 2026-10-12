@@ -1,47 +1,133 @@
 <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
-<div class="app-layout">
-  <aside class="sidebar">
-    <a class="wordmark" routerLink="/feed" aria-label="Pudd, página inicial">pudd<span>✳</span></a>
-    <p class="nav-caption">SEU CANTO NA INTERNET</p>
-    <nav aria-label="Navegação principal">
-      <a pButton [text]="true" severity="secondary" routerLink="/feed" routerLinkActive="active"
-        ><span aria-hidden="true">◈</span> Feed</a
-      >
-      <a
-        pButton
-        [text]="true"
-        severity="secondary"
-        routerLink="/profile/me"
-        routerLinkActive="active"
-        ><span aria-hidden="true">◎</span> Meu perfil</a
-      >
-      @if (session.isAdmin()) {
-        <a pButton [text]="true" severity="secondary" routerLink="/admin" routerLinkActive="active"
-          ><span aria-hidden="true">◇</span> Administração</a
+<p-sidebar-layout>
+  <p-sidebar
+    id="navigation"
+    [(open)]="navigationOpen"
+    [overlay]="mobile()"
+    [collapsible]="mobile() ? 'offcanvas' : 'none'"
+    width="15rem"
+    aria-label="Navegação principal"
+  >
+    <p-sidebar-spacer />
+    <p-sidebar-aside>
+      <p-sidebar-panel>
+        <p-sidebar-header>
+          <a
+            class="brand-image"
+            routerLink="/feed"
+            aria-label="Pudd, página inicial"
+            (click)="closeNavigation()"
+          >
+            <app-brand-logo [dark]="theme.mode() === 'dark'" />
+          </a>
+          @if (mobile()) {
+            <button
+              pButton
+              type="button"
+              [text]="true"
+              severity="secondary"
+              aria-label="Fechar menu"
+              (click)="navigationOpen.set(false)"
+            >
+              <i class="pi pi-times" aria-hidden="true"></i>
+            </button>
+          }
+        </p-sidebar-header>
+        <p-sidebar-content>
+          <nav aria-label="Páginas">
+            <p-sidebar-menu>
+              <p-sidebar-menu-item>
+                <a
+                  pSidebarMenuButton
+                  routerLink="/feed"
+                  routerLinkActive
+                  #feed="routerLinkActive"
+                  [isActive]="feed.isActive"
+                  (click)="closeNavigation()"
+                >
+                  <i class="pi pi-home" aria-hidden="true"></i><span>Feed</span>
+                </a>
+              </p-sidebar-menu-item>
+              <p-sidebar-menu-item>
+                <a
+                  pSidebarMenuButton
+                  routerLink="/profile/me"
+                  routerLinkActive
+                  #profile="routerLinkActive"
+                  [isActive]="profile.isActive"
+                  (click)="closeNavigation()"
+                >
+                  <i class="pi pi-user" aria-hidden="true"></i><span>Meu perfil</span>
+                </a>
+              </p-sidebar-menu-item>
+              <p-sidebar-menu-item>
+                <a
+                  pSidebarMenuButton
+                  routerLink="/posts/new"
+                  routerLinkActive
+                  #editor="routerLinkActive"
+                  [isActive]="editor.isActive"
+                  (click)="closeNavigation()"
+                >
+                  <i class="pi pi-plus" aria-hidden="true"></i><span>Criar publicação</span>
+                </a>
+              </p-sidebar-menu-item>
+              @if (session.isAdmin()) {
+                <p-sidebar-menu-item>
+                  <a
+                    pSidebarMenuButton
+                    routerLink="/admin"
+                    routerLinkActive
+                    #admin="routerLinkActive"
+                    [isActive]="admin.isActive"
+                    (click)="closeNavigation()"
+                  >
+                    <i class="pi pi-shield" aria-hidden="true"></i><span>Administração</span>
+                  </a>
+                </p-sidebar-menu-item>
+              }
+            </p-sidebar-menu>
+          </nav>
+        </p-sidebar-content>
+        <p-sidebar-footer>
+          <div class="account">
+            <p-avatar shape="circle" [label]="session.user().email.slice(0, 1).toUpperCase()" />
+            <span>{{ session.user().email }}</span>
+          </div>
+          <button
+            class="logout"
+            pButton
+            type="button"
+            [text]="true"
+            severity="secondary"
+            (click)="logout()"
+          >
+            <i class="pi pi-sign-out" aria-hidden="true"></i><span>Sair da conta</span>
+          </button>
+        </p-sidebar-footer>
+      </p-sidebar-panel>
+    </p-sidebar-aside>
+    @if (mobile()) {
+      <p-sidebar-backdrop />
+    }
+  </p-sidebar>
+  <p-sidebar-main class="main-column">
+    <div class="app-controls">
+      @if (mobile()) {
+        <button
+          pButton
+          type="button"
+          [text]="true"
+          severity="secondary"
+          pSidebarTrigger
+          target="navigation"
+          aria-label="Abrir menu"
         >
+          <i class="pi pi-bars" aria-hidden="true"></i>
+        </button>
       }
-    </nav>
-    <a severity="secondary" pButton routerLink="/posts/new"
-      ><span aria-hidden="true">＋</span> Criar publicação</a
-    >
-    <div class="sidebar-bottom">
-      <div class="identity">
-        <p-avatar shape="circle" [label]="session.user().email.slice(0, 1).toUpperCase()" />
-        <div>
-          <strong>Seu espaço, sua voz.</strong><small>{{ session.user().email }}</small>
-        </div>
-      </div>
-      <button [text]="true" severity="secondary" pButton type="button" (click)="logout()">
-        Sair da conta ↗
-      </button>
+      <app-theme-toggle [dark]="theme.mode() === 'dark'" (toggled)="theme.toggle()" />
     </div>
-  </aside>
-  <div class="main-column">
-    <header class="topbar">
-      <span>Pequenos momentos. Boas conexões.</span
-      ><p-tag value="COMUNIDADE DEV" icon="pi pi-code" />
-    </header>
     <main id="main-content" tabindex="-1"><router-outlet /></main>
-    <footer>Feito de pessoas, ideias e um pouco de código. <span>© Pudd 2026</span></footer>
-  </div>
-</div>
+  </p-sidebar-main>
+</p-sidebar-layout>

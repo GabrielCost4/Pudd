@@ -53,6 +53,20 @@ describe('Login and registration', () => {
     fixture.detectChanges();
     return { fixture, page, http: TestBed.inject(HttpTestingController) };
   }
+  it('shows required field errors without sending an incomplete form', () => {
+    const fixture = TestBed.createComponent(Login);
+    fixture.detectChanges();
+    const page = fixture.nativeElement as HTMLElement;
+    page
+      .querySelector('form')!
+      .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    fixture.detectChanges();
+    expect(page.querySelector('#email')!.getAttribute('aria-invalid')).toBe('true');
+    expect(page.querySelector('#senha')!.getAttribute('aria-invalid')).toBe('true');
+    expect(page.querySelector('#email')!.getAttribute('aria-describedby')).toContain('email-error');
+    expect(page.querySelectorAll('[role="alert"]')).toHaveLength(2);
+    TestBed.inject(HttpTestingController).expectNone(API_BASE_URL + '/Auth/login');
+  });
   it('sends only email and senha to login and navigates to the feed after success', () => {
     const { fixture, page, http } = submit();
     const request = http.expectOne(API_BASE_URL + '/Auth/login');

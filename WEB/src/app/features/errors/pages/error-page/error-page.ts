@@ -22,10 +22,10 @@ export class ErrorPage {
   protected readonly code = this.notFound ? '404' : this.forbidden ? '403' : '401';
 
   protected readonly title = this.notFound
-    ? 'Essa conversa tomou outro caminho.'
+    ? 'Página não encontrada'
     : this.forbidden
-      ? 'Este espaço tem acesso restrito.'
-      : 'Vamos nos conectar de novo?';
+      ? 'Acesso restrito'
+      : 'Sessão encerrada';
 
   protected readonly description = this.notFound
     ? 'A página ou o conteúdo que você procura não está disponível. Pode ter sido removido ou o endereço está incorreto.'

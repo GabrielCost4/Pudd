@@ -177,7 +177,7 @@ export class ProfilePage {
   protected removeAvatar(): void {
     if (this.busy()) return;
     this.confirmation.confirm({
-      header: 'Cuidar da comunidade',
+      header: 'Remover foto de perfil',
       message: 'Remover sua foto de perfil?',
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Confirmar',

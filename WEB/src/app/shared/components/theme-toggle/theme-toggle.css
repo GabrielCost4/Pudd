@@ -1,0 +1,99 @@
+/* Adapted from Uiverse.io by andrew-demchenk0 (MIT).
+   https://uiverse.io/andrew-demchenk0/honest-stingray-90
+   License: docs/THIRD_PARTY_NOTICES.md */
+:host {
+  display: inline-flex;
+  align-items: center;
+}
+.theme-switch {
+  position: relative;
+  display: inline-block;
+  width: 64px;
+  height: 44px;
+  cursor: pointer;
+}
+.input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  z-index: 3;
+  cursor: pointer;
+}
+.slider {
+  position: absolute;
+  top: 5px;
+  left: 0;
+  width: 64px;
+  height: 34px;
+  border-radius: 30px;
+  background-color: #73c0fc;
+  transition: background-color 0.4s;
+}
+.handle {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  z-index: 2;
+  background-color: #e8e8e8;
+  box-shadow: 0 1px 3px #0003;
+  transition: transform 0.4s;
+}
+.sun,
+.moon {
+  position: absolute;
+  top: 5px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  font-size: 22px;
+}
+.sun {
+  right: 4px;
+  color: #ffd43b;
+  animation: rotate 15s linear infinite;
+}
+.moon {
+  left: 4px;
+  color: #73c0fc;
+  animation: tilt 5s linear infinite;
+}
+.input:checked + .slider {
+  background-color: #183153;
+}
+.input:checked + .slider .handle {
+  transform: translateX(30px);
+}
+.input:focus-visible + .slider {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+@keyframes rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes tilt {
+  25% {
+    transform: rotate(-10deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sun,
+  .moon {
+    animation: none;
+  }
+  .slider,
+  .handle {
+    transition: none;
+  }
+}

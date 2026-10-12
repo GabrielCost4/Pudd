@@ -5,7 +5,16 @@ import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmationService } from 'primeng/api';
 import { DatePipe } from '@angular/common';
-import { Component, DestroyRef, effect, inject, input, output, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  inject,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { finalize, Subscription } from 'rxjs';
@@ -37,6 +46,25 @@ export class PostCard {
   private readonly confirmation = inject(ConfirmationService);
   readonly post = input.required<Post>();
   readonly deleted = output<string>();
+  readonly editInPlace = input(false);
+  readonly editRequested = output<Post>();
+  readonly collapseText = input(true);
+  protected readonly expanded = signal(false);
+  protected readonly canExpand = computed(() => {
+    const content = this.post().content;
+    return (
+      this.collapseText() && (Array.from(content).length > 350 || content.split(/\r?\n/).length > 5)
+    );
+  });
+  protected readonly visibleContent = computed(() => {
+    const content = this.post().content;
+    if (!this.canExpand() || this.expanded()) return content;
+    const preview = Array.from(content.split(/\r?\n/).slice(0, 5).join('\n'))
+      .slice(0, 350)
+      .join('');
+    const boundary = preview.lastIndexOf(' ');
+    return (boundary > 250 ? preview.slice(0, boundary) : preview).trimEnd() + '…';
+  });
   protected readonly session = inject(SessionStore);
   private readonly posts = inject(PostService);
   private readonly likes = inject(LikeService);
@@ -52,6 +80,10 @@ export class PostCard {
   protected readonly likesVersion = signal(0);
 
   constructor() {
+    effect(() => {
+      this.post();
+      this.expanded.set(false);
+    });
     effect((cleanup) => {
       const id = this.post().id;
       this.likesVersion();
@@ -112,7 +144,7 @@ export class PostCard {
   protected remove(): void {
     if (this.busy()) return;
     this.confirmation.confirm({
-      header: 'Cuidar da comunidade',
+      header: 'Excluir publicação',
       message: 'Excluir esta publicação e seus comentários? Esta ação é definitiva.',
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Confirmar',

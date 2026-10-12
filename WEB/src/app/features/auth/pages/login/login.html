@@ -1,62 +1,133 @@
 <main class="login-layout">
-  <app-login-intro class="intro-panel" />
-  <section class="login-panel" aria-labelledby="login-title">
-    <p-card class="login-card">
-      <a class="wordmark" routerLink="/login" aria-label="Pudd">pudd<span>✳</span></a>
-      <p class="eyebrow">
-        {{ registering ? 'COMECE A SUA HISTÓRIA' : 'SEU ESPAÇO PARA CONECTAR' }}
-      </p>
-      <h1 id="login-title">
-        {{ registering ? 'Boas ideias merecem companhia.' : 'Bom ter você por aqui.' }}
-      </h1>
-      <p class="subtitle">
-        {{
-          registering
-            ? 'Crie sua conta e encontre seu lugar na conversa.'
-            : 'Entre na sua conta e compartilhe o próximo capítulo.'
-        }}
-      </p>
-      <form [formGroup]="form" (ngSubmit)="submit()" ngNativeValidate [attr.aria-busy]="loading()">
-        @if (registering) {
+  <header class="auth-toolbar">
+    <a class="product-name" routerLink="/login" aria-label="Pudd: entrar">
+      <app-brand-logo [dark]="theme.mode() === 'dark'" />
+    </a>
+    <app-theme-toggle [dark]="theme.mode() === 'dark'" (toggled)="theme.toggle()" />
+  </header>
+  <div class="auth-content">
+    <app-login-intro class="intro-panel" [dark]="theme.mode() === 'dark'" />
+    <section class="login-panel" aria-labelledby="login-title">
+      <svg
+        class="panel-curve"
+        viewBox="0 0 120 1000"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path d="M120 0 H70 C-30 200 130 320 60 500 C-10 680 -10 820 70 1000 H120 Z" />
+      </svg>
+      <p-card class="login-card">
+        <div class="auth-heading">
+          <span class="auth-symbol"
+            ><i [class]="registering ? 'pi pi-user-plus' : 'pi pi-sign-in'" aria-hidden="true"></i
+          ></span>
+          <h1 id="login-title">{{ registering ? 'Criar conta' : 'Entrar' }}</h1>
+          <p>
+            {{
+              registering
+                ? 'Preencha seus dados para se cadastrar no Pudd.'
+                : 'Use seu e-mail e senha para acessar sua conta.'
+            }}
+          </p>
+        </div>
+        <form
+          [formGroup]="form"
+          (ngSubmit)="submit()"
+          ngNativeValidate
+          [attr.aria-busy]="loading()"
+        >
+          @if (registering) {
+            <app-label-input
+              inputId="nome"
+              label="Seu nome"
+              autocomplete="name"
+              [control]="form.controls.nome"
+              [required]="true"
+              [stacked]="true"
+              icon="pi pi-user"
+              placeholder="Como quer ser chamado"
+              [error]="fieldError('nome')"
+            />
+          }
           <app-label-input
-            inputId="nome"
-            label="Seu nome"
-            autocomplete="name"
-            [control]="form.controls.nome"
+            inputId="email"
+            label="E-mail"
+            type="email"
+            autocomplete="username"
+            [control]="form.controls.email"
             [required]="true"
+            [stacked]="true"
+            icon="pi pi-envelope"
+            placeholder="voce@exemplo.com"
+            [error]="fieldError('email')"
+            [describedBy]="messages().length ? 'auth-errors' : null"
           />
-        }
-        <app-label-input
-          inputId="email"
-          label="E-mail"
-          type="email"
-          autocomplete="username"
-          [control]="form.controls.email"
-          [required]="true"
-          [describedBy]="messages().length ? 'auth-errors' : null"
-        />
-        <app-label-input
-          inputId="senha"
-          label="Senha"
-          type="password"
-          [autocomplete]="registering ? 'new-password' : 'current-password'"
-          [control]="form.controls.senha"
-          [required]="true"
-          [describedBy]="messages().length ? 'auth-errors' : null"
-        />
-        <app-feedback id="auth-errors" [errors]="messages()" />
-        <button pButton type="submit" [loading]="loading()" [disabled]="loading()">
-          {{ loading() ? 'Só um instante…' : registering ? 'Criar minha conta' : 'Entrar no Pudd' }}
-          <span aria-hidden="true">↗</span>
-        </button>
-      </form>
-      <p class="switch-account">
-        {{ registering ? 'Já faz parte?' : 'Ainda não tem uma conta?' }}
-        <a [routerLink]="registering ? '/login' : '/register'">{{
-          registering ? 'Entrar' : 'Criar conta'
-        }}</a>
-      </p>
-    </p-card>
-    <p class="panel-caption">Ideias, conexões e tudo o que existe entre um commit e outro.</p>
-  </section>
+          <app-label-input
+            inputId="senha"
+            label="Senha"
+            type="password"
+            [autocomplete]="registering ? 'new-password' : 'current-password'"
+            [control]="form.controls.senha"
+            [required]="true"
+            [stacked]="true"
+            icon="pi pi-lock"
+            [placeholder]="registering ? 'Crie uma senha' : 'Sua senha'"
+            [error]="fieldError('senha')"
+            [describedBy]="
+              registering
+                ? messages().length
+                  ? 'password-hint auth-errors'
+                  : 'password-hint'
+                : messages().length
+                  ? 'auth-errors'
+                  : null
+            "
+          />
+          @if (registering) {
+            <small class="field-hint" id="password-hint"
+              >Use de 8 a 20 caracteres, incluindo maiúscula, número e símbolo.</small
+            >
+          }
+          @if (messages().length) {
+            <app-feedback id="auth-errors" [errors]="messages()" />
+          }
+          <button
+            class="submit-button"
+            pButton
+            type="submit"
+            [loading]="loading()"
+            [disabled]="loading()"
+          >
+            <span>{{
+              loading()
+                ? registering
+                  ? 'Criando conta…'
+                  : 'Entrando…'
+                : registering
+                  ? 'Criar minha conta'
+                  : 'Entrar no Pudd'
+            }}</span>
+            @if (!loading()) {
+              <i class="pi pi-arrow-right" aria-hidden="true"></i>
+            }
+          </button>
+        </form>
+        <p-divider><span class="divider-label">ou</span></p-divider>
+        <p class="switch-account">
+          {{ registering ? 'Já tem uma conta?' : 'Ainda não tem uma conta?' }}
+        </p>
+        <a
+          class="account-button"
+          pButton
+          [outlined]="true"
+          severity="secondary"
+          [routerLink]="registering ? '/login' : '/register'"
+        >
+          <i [class]="registering ? 'pi pi-sign-in' : 'pi pi-user-plus'" aria-hidden="true"></i>
+          <span>{{ registering ? 'Entrar' : 'Criar conta' }}</span>
+        </a>
+      </p-card>
+    </section>
+  </div>
 </main>

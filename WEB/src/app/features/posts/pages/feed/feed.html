@@ -1,88 +1,93 @@
-<div class="feed-grid">
-  <section aria-labelledby="feed-title">
-    <header class="page-header">
-      <div>
-        <p class="eyebrow">IDEIAS EM MOVIMENTO</p>
-        <h1 id="feed-title">
-          {{ authorId() ? 'Um olhar, muitas histórias.' : 'O que está acontecendo?' }}
-        </h1>
-        <p class="muted">
-          {{
-            authorId()
-              ? 'Publicações deste membro da comunidade.'
-              : 'Um espaço para compartilhar o que você está construindo.'
-          }}
-        </p>
-      </div>
-    </header>
-    <nav class="feed-tabs" aria-label="Filtrar publicações">
-      <a
-        pButton
-        [text]="true"
-        severity="secondary"
-        routerLink="/feed"
-        [class.selected]="!authorId()"
-        >Comunidade</a
-      ><a
-        pButton
-        [text]="true"
-        severity="secondary"
-        routerLink="/feed"
-        [queryParams]="{ authorId: session.user().id }"
-        [class.selected]="authorId() === session.user().id"
-        >Minhas publicações</a
-      >
+<section class="feed" aria-labelledby="feed-title">
+  <header class="feed-heading">
+    <div>
+      <h1 id="feed-title">{{ authorId() ? 'Publicações do perfil' : 'Feed' }}</h1>
       @if (authorId() && authorId() !== session.user().id) {
         <a pButton [text]="true" severity="secondary" [routerLink]="['/profile', authorId()]"
-          >Ver perfil ↗</a
+          >Ver perfil</a
         >
       }
-    </nav>
-    <a class="composer" routerLink="/posts/new"
-      ><p-avatar shape="circle" icon="pi pi-plus" /><span
-        >Uma ideia, uma conquista, uma pergunta…</span
-      ><span class="compose-arrow" aria-hidden="true">↗</span></a
-    >
-    <app-feedback [errors]="errors()" />
-    @if (loading()) {
-      <div class="loading" role="status">
-        <p-progress-spinner ariaLabel="Carregando" /><span>Buscando novas conversas…</span>
-      </div>
-    } @else if (errors().length) {
-      <button severity="secondary" type="button" pButton (click)="reload()">
-        Tentar novamente
-      </button>
-    } @else {
-      <div class="stack">
-        @for (post of posts(); track post.id) {
-          <app-post-card [post]="post" (deleted)="removed($event)" />
-        } @empty {
-          <p-card class="empty"
-            ><span class="symbol" aria-hidden="true">✳</span>
-            <h2>A conversa começa com uma ideia.</h2>
-            <p>Ainda não há publicações por aqui.</p>
-            <a severity="secondary" pButton routerLink="/posts/new">Publicar a primeira</a></p-card
-          >
-        }
-      </div>
-      <app-pagination [page]="page()" [hasNext]="hasNext()" (changed)="changePage($event)" />
-    }
-  </section>
-  <aside class="feed-aside">
-    <p-card class="welcome"
-      ><span class="big-star" aria-hidden="true">✳</span>
-      <p class="eyebrow">MENOS RUÍDO. MAIS TROCA.</p>
-      <h2>A próxima conexão pode começar com você.</h2>
-      <p class="muted">
-        Mostre o projeto que está saindo do papel. Compartilhe o bug que virou aprendizado. Puxe uma
-        conversa.
-      </p>
-      <a pButton [text]="true" routerLink="/posts/new">Compartilhar algo ↗</a></p-card
-    >
-    <div class="side-note">
-      <span>01 / COMUNIDADE</span>
-      <p>Tem gente do outro lado do código.</p>
-      <small>Respeite as diferenças, dê crédito e construa boas conversas.</small>
     </div>
-  </aside>
-</div>
+    <a pButton routerLink="/posts/new"
+      ><i class="pi pi-plus" aria-hidden="true"></i><span>Nova publicação</span></a
+    >
+  </header>
+  <nav class="feed-tabs" aria-label="Filtrar publicações">
+    <a
+      pButton
+      [text]="true"
+      severity="secondary"
+      routerLink="/feed"
+      [class.selected]="!authorId()"
+      [attr.aria-current]="!authorId() ? 'page' : null"
+      >Comunidade</a
+    >
+    <a
+      pButton
+      [text]="true"
+      severity="secondary"
+      routerLink="/feed"
+      [queryParams]="{ authorId: session.user().id }"
+      [class.selected]="authorId() === session.user().id"
+      [attr.aria-current]="authorId() === session.user().id ? 'page' : null"
+      >Minhas publicações</a
+    >
+  </nav>
+  <app-feedback [errors]="errors()" />
+  @if (loading()) {
+    <div class="loading" role="status">
+      <p-progress-spinner ariaLabel="Carregando publicações" /><span>Carregando publicações…</span>
+    </div>
+  } @else if (errors().length) {
+    <button pButton type="button" severity="secondary" (click)="reload()">Tentar novamente</button>
+  } @else {
+    <div class="post-list">
+      @for (post of posts(); track post.id) {
+        <app-post-card
+          [post]="post"
+          [editInPlace]="true"
+          (editRequested)="openEditor($event)"
+          (deleted)="removed($event)"
+        />
+      } @empty {
+        <p-card class="empty">
+          <i class="pi pi-inbox" aria-hidden="true"></i>
+          <h2>Nenhuma publicação</h2>
+          <p>
+            {{
+              authorId()
+                ? 'Este perfil ainda não publicou.'
+                : 'As publicações da comunidade aparecerão aqui.'
+            }}
+          </p>
+          <a pButton routerLink="/posts/new">Criar publicação</a>
+        </p-card>
+      }
+    </div>
+    <app-pagination [page]="page()" [hasNext]="hasNext()" (changed)="changePage($event)" />
+  }
+</section>
+<p-dialog
+  header="Editar publicação"
+  (onHide)="restoreEditFocus()"
+  [visible]="!!editingPost()"
+  (visibleChange)="!$event && closeEditor()"
+  [modal]="true"
+  [blockScroll]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="!editSaving()"
+  [closeOnEscape]="!editSaving()"
+  appendTo="body"
+  styleClass="post-edit-dialog"
+>
+  @if (editingPost(); as post) {
+    <app-post-editor
+      [postId]="post.id"
+      [embedded]="true"
+      (saved)="updated($event)"
+      (cancelled)="closeEditor()"
+      (savingChanged)="editSaving.set($event)"
+    />
+  }
+</p-dialog>

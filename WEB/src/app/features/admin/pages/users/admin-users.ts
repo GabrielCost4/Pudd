@@ -69,7 +69,7 @@ export class AdminUsers {
   protected toggle(user: AdminUser): void {
     if (this.changing()) return;
     this.confirmation.confirm({
-      header: 'Cuidar da comunidade',
+      header: 'Alterar acesso',
       message: 'Alterar o acesso desta pessoa à comunidade?',
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Confirmar',

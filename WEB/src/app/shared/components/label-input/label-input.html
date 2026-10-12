@@ -1,4 +1,4 @@
-<p-floatlabel variant="on">
+<ng-template #field>
   @if (type() === 'password') {
     <input
       pInputPassword
@@ -7,7 +7,13 @@
       [formControl]="control()"
       [autocomplete]="autocomplete()"
       [required]="required()"
-      [attr.aria-describedby]="describedBy()"
+      [placeholder]="placeholder()"
+      [pSize]="stacked() ? 'large' : undefined"
+      [invalid]="!!error()"
+      [attr.aria-invalid]="!!error()"
+      [attr.aria-describedby]="
+        error() ? inputId() + '-error' + (describedBy() ? ' ' + describedBy() : '') : describedBy()
+      "
     />
   } @else {
     <input
@@ -17,16 +23,22 @@
       [formControl]="control()"
       [autocomplete]="autocomplete()"
       [required]="required()"
-      [attr.aria-describedby]="describedBy()"
+      [placeholder]="placeholder()"
+      [pSize]="stacked() ? 'large' : undefined"
+      [invalid]="!!error()"
+      [attr.aria-invalid]="!!error()"
+      [attr.aria-describedby]="
+        error() ? inputId() + '-error' + (describedBy() ? ' ' + describedBy() : '') : describedBy()
+      "
     />
   }
-  <label [for]="inputId()">{{ label() }}</label>
   @if (type() === 'password') {
     <button
       pButton
       type="button"
       severity="secondary"
       [text]="true"
+      [rounded]="true"
       class="password-toggle"
       [disabled]="control().disabled"
       [attr.aria-pressed]="showPassword()"
@@ -36,4 +48,23 @@
       <i [class]="showPassword() ? 'pi pi-eye-slash' : 'pi pi-eye'" aria-hidden="true"></i>
     </button>
   }
-</p-floatlabel>
+</ng-template>
+@if (stacked()) {
+  <label class="field-label" [for]="inputId()">{{ label() }}</label>
+  <div class="input-field">
+    <p-iconfield>
+      @if (icon()) {
+        <p-inputicon><i [class]="icon()" aria-hidden="true"></i></p-inputicon>
+      }
+      <ng-container [ngTemplateOutlet]="field" />
+    </p-iconfield>
+  </div>
+} @else {
+  <p-floatlabel variant="on">
+    <ng-container [ngTemplateOutlet]="field" />
+    <label [for]="inputId()">{{ label() }}</label>
+  </p-floatlabel>
+}
+@if (error()) {
+  <small class="field-error" [id]="inputId() + '-error'" role="alert">{{ error() }}</small>
+}

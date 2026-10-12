@@ -1,14 +1,21 @@
 @import 'primeicons/primeicons.css';
 
 :root {
-  color-scheme: dark;
-  --background: var(--p-surface-950);
-  --surface: var(--p-surface-900);
-  --surface-raised: var(--p-surface-800);
+  color-scheme: light;
+  --background: var(--p-surface-50);
+  --surface: var(--p-surface-0);
+  --surface-raised: var(--p-surface-100);
   --border: var(--p-content-border-color);
   --text: var(--p-text-color);
   --muted: var(--p-text-muted-color);
   --accent: var(--p-primary-color);
+  --danger: var(--p-red-600);
+}
+.pudd-dark {
+  color-scheme: dark;
+  --background: var(--p-surface-950);
+  --surface: var(--p-surface-900);
+  --surface-raised: var(--p-surface-800);
   --danger: var(--p-red-300);
 }
 * {
@@ -74,19 +81,6 @@ p {
   color: var(--accent);
   margin: 0 0 16px;
 }
-.wordmark {
-  font-size: 2.5rem;
-  font-weight: 750;
-  letter-spacing: -2px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.wordmark span {
-  color: var(--accent);
-  font-size: 1.4rem;
-}
-
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -107,7 +101,7 @@ p {
 }
 .field label {
   font-size: 0.8rem;
-  color: #ced4cf;
+  color: var(--text);
 }
 
 .field textarea {
@@ -133,10 +127,6 @@ p {
 }
 .empty h2 {
   color: var(--text);
-}
-.empty .symbol {
-  font-size: 3rem;
-  color: var(--accent);
 }
 .loading {
   display: grid;
@@ -164,8 +154,8 @@ p {
   left: 10px;
   top: -100px;
   z-index: 100;
-  background: var(--accent);
-  color: #111;
+  background: var(--p-primary-color);
+  color: var(--p-primary-contrast-color);
   padding: 12px;
 }
 .skip-link:focus {
@@ -204,6 +194,10 @@ p-avatar {
 }
 .confirmation-dialog {
   width: min(92vw, 28rem);
+}
+.post-edit-dialog {
+  width: min(42rem, calc(100vw - 2rem));
+  max-height: 90dvh;
 }
 .member-columns {
   min-width: 38rem;

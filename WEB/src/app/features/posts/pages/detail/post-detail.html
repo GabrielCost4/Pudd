@@ -1,8 +1,7 @@
 <div class="detail">
   <a [text]="true" severity="secondary" pButton routerLink="/feed" class="back-link"
-    >← Voltar para o feed</a
+    ><i class="pi pi-arrow-left" aria-hidden="true"></i> Voltar para o feed</a
   >
-  <p class="eyebrow">UMA IDEIA. NOVAS CONVERSAS.</p>
   <h1>Publicação</h1>
   <app-feedback [errors]="errors()" />
   @if (loading()) {
@@ -11,6 +10,8 @@
     </div>
   }
   @if (post(); as item) {
-    <app-post-card [post]="item" (deleted)="removed()" /><app-comments [postId]="item.id" />
+    <app-post-card [post]="item" [collapseText]="false" (deleted)="removed()" /><app-comments
+      [postId]="item.id"
+    />
   }
 </div>

@@ -1,8 +1,11 @@
+import { DividerModule } from 'primeng/divider';
+import { ThemeStore } from '../../../../core/config/theme.store';
+import { ThemeToggle } from '../../../../shared/components/theme-toggle/theme-toggle';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { SessionStore } from '../../../../core/auth/session.store';
@@ -11,10 +14,13 @@ import { LabelInput } from '../../../../shared/components/label-input/label-inpu
 import { Feedback } from '../../../../shared/components/feedback/feedback';
 import { apiErrors } from '../../../../shared/utils/api-errors';
 import { LoginIntro } from '../../components/login-intro/login-intro';
+import { BrandLogo } from '../../../../shared/components/brand-logo/brand-logo';
 
 @Component({
   selector: 'app-login',
   imports: [
+    DividerModule,
+    ThemeToggle,
     CardModule,
     ButtonModule,
     ReactiveFormsModule,
@@ -22,11 +28,13 @@ import { LoginIntro } from '../../components/login-intro/login-intro';
     LabelInput,
     Feedback,
     LoginIntro,
+    BrandLogo,
   ],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
 export class Login {
+  protected readonly theme = inject(ThemeStore);
   private readonly auth = inject(AuthService);
 
   private readonly session = inject(SessionStore);
@@ -44,13 +52,32 @@ export class Login {
   protected readonly messages = signal<string[]>([]);
 
   protected readonly form = new FormGroup({
-    nome: new FormControl('', { nonNullable: true }),
-    email: new FormControl('', { nonNullable: true }),
-    senha: new FormControl('', { nonNullable: true }),
+    nome: new FormControl('', {
+      nonNullable: true,
+      validators: this.registering ? [Validators.required] : [],
+    }),
+    email: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.email],
+    }),
+    senha: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
   });
+
+  protected fieldError(field: 'nome' | 'email' | 'senha'): string | null {
+    const control = this.form.controls[field];
+    if (!control.touched || !control.invalid) return null;
+    if (control.hasError('email')) return 'Informe um e-mail válido.';
+    return { nome: 'Informe seu nome.', email: 'Informe seu e-mail.', senha: 'Informe sua senha.' }[
+      field
+    ];
+  }
 
   protected submit(): void {
     if (this.loading()) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     this.messages.set([]);
     this.loading.set(true);
 

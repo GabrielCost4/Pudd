@@ -15,9 +15,25 @@
     @if (session.user().id === post().userID || session.isAdmin()) {
       <div class="post-menu">
         @if (session.user().id === post().userID) {
-          <a [text]="true" severity="secondary" pButton [routerLink]="['/posts', post().id, 'edit']"
-            >Editar</a
-          >
+          @if (editInPlace()) {
+            <button
+              [text]="true"
+              severity="secondary"
+              pButton
+              type="button"
+              (click)="editRequested.emit(post())"
+            >
+              Editar
+            </button>
+          } @else {
+            <a
+              [text]="true"
+              severity="secondary"
+              pButton
+              [routerLink]="['/posts', post().id, 'edit']"
+              >Editar</a
+            >
+          }
         }
         <button
           [text]="true"
@@ -34,7 +50,20 @@
       </div>
     }
   </header>
-  <p class="content-text">{{ post().content }}</p>
+  <p class="content-text" [id]="'post-content-' + post().id">{{ visibleContent() }}</p>
+  @if (canExpand()) {
+    <button
+      pButton
+      [text]="true"
+      type="button"
+      class="read-more"
+      [attr.aria-expanded]="expanded()"
+      [attr.aria-controls]="'post-content-' + post().id"
+      (click)="expanded.set(!expanded())"
+    >
+      {{ expanded() ? 'Ler menos' : 'Ler mais' }}
+    </button>
+  }
   @if (post().hasImage) {
     <div class="post-image">
       @if (imageUrl() && !imageFailed()) {
@@ -54,7 +83,7 @@
             type="button"
             (click)="imageVersion.set(imageVersion() + 1)"
           >
-            Tentar novamente ↗
+            Tentar novamente
           </button>
         </div>
       } @else {
@@ -75,11 +104,27 @@
         class="like-button"
         [class.liked]="likes.liked"
         [attr.aria-pressed]="likes.liked"
+        [attr.aria-label]="
+          (likes.liked ? 'Descurtir' : 'Curtir') +
+          ' publicação, ' +
+          likes.count +
+          (likes.count === 1 ? ' curtida' : ' curtidas')
+        "
+        [attr.aria-busy]="liking()"
         [disabled]="liking()"
         [loading]="liking()"
         (click)="toggleLike()"
       >
-        <span aria-hidden="true">{{ likes.liked ? '♥' : '♡' }}</span> {{ likes.count }}
+        <span class="heart-container" aria-hidden="true">
+          <i class="pi pi-heart heart-outline"></i>
+          <i class="pi pi-heart-fill heart-filled"></i>
+          <svg class="heart-celebrate" viewBox="0 0 100 100" focusable="false">
+            <path
+              d="M10 10 L20 20 M10 50 L20 50 M20 80 L30 70 M90 10 L80 20 M90 50 L80 50 M80 80 L70 70"
+            />
+          </svg>
+        </span>
+        {{ likes.count }}
         <span>{{ likes.count === 1 ? 'curtida' : 'curtidas' }}</span>
       </button>
     } @else if (likeErrors().length) {
@@ -102,16 +147,7 @@
       pButton
       class="comment-link"
       [routerLink]="['/posts', post().id]"
-      ><span aria-hidden="true">↳</span> Conversar</a
-    >
-    <a
-      [text]="true"
-      severity="secondary"
-      pButton
-      class="detail-link"
-      [routerLink]="['/posts', post().id]"
-      aria-label="Abrir publicação"
-      >↗</a
+      ><i class="pi pi-comment" aria-hidden="true"></i> Comentar</a
     >
   </footer>
 </p-card>

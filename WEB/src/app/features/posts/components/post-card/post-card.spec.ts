@@ -12,13 +12,13 @@ describe('PostCard', () => {
     }),
   );
   afterEach(() => TestBed.inject(HttpTestingController).verify());
-  function setup(hasImage = false) {
+  function setup(hasImage = false, content = 'Hello') {
     const f = TestBed.createComponent(PostCard);
     f.componentRef.setInput('post', {
       id: 'post',
       userID: 'member',
       authorName: 'Member',
-      content: 'Hello',
+      content,
       hasImage,
       createdAt: '2026-10-11T00:00:00Z',
       updatedAt: null,
@@ -29,6 +29,28 @@ describe('PostCard', () => {
     f.detectChanges();
     return { f, http };
   }
+  it('expands and collapses a long post without losing its content', () => {
+    const content = 'Um projeto com aprendizados. '.repeat(25) + 'Final da publicação.';
+    const { f } = setup(false, content);
+    const text = f.nativeElement.querySelector('.content-text') as HTMLElement;
+    const button = f.nativeElement.querySelector('.read-more') as HTMLButtonElement;
+    expect(text.textContent).not.toContain('Final da publicação.');
+    expect(button.textContent).toContain('Ler mais');
+    button.click();
+    f.detectChanges();
+    expect(text.textContent).toBe(content);
+    expect(button.getAttribute('aria-expanded')).toBe('true');
+    expect(button.textContent).toContain('Ler menos');
+    button.click();
+    f.detectChanges();
+    expect(text.textContent).not.toContain('Final da publicação.');
+    expect(button.getAttribute('aria-expanded')).toBe('false');
+  });
+  it('keeps short posts fully visible without a read more button', () => {
+    const { f } = setup();
+    expect(f.nativeElement.querySelector('.read-more')).toBeNull();
+    expect(f.nativeElement.querySelector('.content-text').textContent).toBe('Hello');
+  });
   it('likes and unlikes through the visible button', () => {
     const { f, http } = setup();
     const button = f.nativeElement.querySelector('.like-button') as HTMLButtonElement;

@@ -2,6 +2,11 @@
   max-width: 740px;
   margin: auto;
 }
+.editor.embedded {
+  --p-card-shadow: none;
+  --p-card-body-padding: 0;
+  max-width: none;
+}
 .editor > p.muted {
   font-size: 0.9rem;
   margin-bottom: 30px;

@@ -1,19 +1,26 @@
-.feed-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 680px) minmax(220px, 280px);
-  gap: 32px;
-  justify-content: center;
+.feed {
+  max-width: 40rem;
+  margin: 0 auto;
+  min-width: 0;
 }
-.page-header p.muted {
-  font-size: 0.85rem;
-  max-width: 420px;
+.feed-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+h1 {
+  font-size: 1.5rem;
+  margin: 0;
+  letter-spacing: -0.4px;
 }
 .feed-tabs {
   display: flex;
-  gap: 22px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 22px;
+  gap: 0.25rem;
   overflow-x: auto;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1rem;
 }
 .feed-tabs a {
   white-space: nowrap;
@@ -21,69 +28,19 @@
 .feed-tabs .selected {
   border-bottom: 2px solid var(--accent);
 }
-.composer {
-  display: flex;
-  gap: 14px;
-  align-items: center;
-  padding: 20px;
-  border: 1px dashed #ffffff26;
-  border-radius: 16px;
-  color: var(--muted);
-  margin-bottom: 24px;
-  font-size: 0.8rem;
+.post-list {
+  display: grid;
+  gap: 1rem;
 }
-.compose-arrow {
-  margin-left: auto;
-  color: var(--accent);
-  font-size: 1.4rem;
-}
-.feed-aside {
-  padding-top: 6px;
-}
-.welcome {
-  overflow: hidden;
-  padding-top: 36px;
-}
-.big-star {
-  display: block;
-  color: var(--accent);
-  font-size: 6rem;
-  line-height: 1;
-  margin-bottom: 44px;
-  transform: rotate(-15deg);
-}
-.welcome h2 {
-  font-size: 1.7rem;
-  letter-spacing: -0.7px;
-  line-height: 1.3;
-}
-.welcome p.muted {
-  font-size: 0.8rem;
-}
-.welcome a {
-  margin-top: 18px;
-}
-.side-note {
-  padding: 30px 12px;
-}
-.side-note span {
-  font-size: 0.6rem;
-  letter-spacing: 1.6px;
+.empty > i {
+  font-size: 1.75rem;
   color: var(--muted);
 }
-.side-note p {
-  font-size: 0.9rem;
-}
-.side-note small {
-  color: var(--muted);
-  line-height: 1.7;
-  display: block;
-}
-@media (max-width: 1150px) {
-  .feed-grid {
-    grid-template-columns: minmax(0, 680px);
+@media (max-width: 420px) {
+  .feed-heading {
+    flex-wrap: wrap;
   }
-  .feed-aside {
-    display: none;
+  .feed-heading > a {
+    margin-left: auto;
   }
 }

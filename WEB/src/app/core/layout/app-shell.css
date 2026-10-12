@@ -1,172 +1,63 @@
-.app-layout {
-  display: grid;
-  grid-template-columns: 248px minmax(0, 1fr);
-  max-width: 1600px;
-  margin: auto;
+:host {
+  display: block;
   min-height: 100dvh;
 }
-.sidebar {
-  position: sticky;
-  top: 0;
-  height: 100dvh;
-  padding: 36px 24px 24px;
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-}
-.nav-caption {
-  margin: 14px 0 -16px;
-  font-size: 0.6rem;
-  letter-spacing: 1.8px;
-  color: var(--muted);
-}
-nav {
-  display: grid;
-  gap: 8px;
-}
-nav a {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  color: var(--muted);
-  padding: 13px;
-  border-radius: 12px;
-  font-size: 0.9rem;
-}
-nav a span {
-  font-size: 1.3rem;
-}
-nav a.active {
-  color: var(--accent);
-  background: #c0ed9910;
-}
-nav a:hover {
-  background: var(--surface-raised);
-  color: var(--text);
-}
-.sidebar-bottom {
-  margin-top: auto;
-  display: grid;
-  gap: 18px;
-}
-.identity {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  min-width: 0;
-}
-.identity div {
-  min-width: 0;
-}
-.identity strong {
-  font-size: 0.7rem;
-}
-.identity small {
-  display: block;
-  color: var(--muted);
-  font-size: 0.65rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-top: 5px;
-}
 .main-column {
+  position: relative;
   min-width: 0;
 }
-.topbar {
+.app-controls {
+  position: absolute;
+  top: 0.75rem;
+  right: 1.5rem;
+  z-index: 2;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 24px 40px;
-  border-bottom: 1px solid var(--border);
-  color: var(--muted);
-  font-size: 0.75rem;
-}
-p-tag {
-  font-size: 0.6rem;
-  letter-spacing: 1.4px;
-  display: flex;
-  gap: 10px;
+  justify-content: flex-end;
   align-items: center;
 }
 main {
-  padding: 42px;
-  min-height: calc(100dvh - 150px);
+  padding: 1.75rem 2rem;
+  min-width: 0;
 }
-footer {
+.brand-image {
   display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  margin: 0 42px;
-  padding: 24px 0;
-  border-top: 1px solid var(--border);
-  color: var(--muted);
-  font-size: 0.65rem;
+  align-items: center;
+  min-height: 5rem;
 }
-@media (max-width: 1000px) {
-  .app-layout {
-    grid-template-columns: 205px minmax(0, 1fr);
-  }
-  .sidebar {
-    padding-inline: 16px;
+.brand-image app-brand-logo {
+  width: 8.5rem;
+}
+.account {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+}
+.account > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.75rem;
+}
+.logout {
+  width: 100%;
+  justify-content: flex-start;
+}
+p-sidebar-footer {
+  display: grid;
+  gap: 0.5rem;
+}
+@media (max-width: 760px) {
+  .app-controls {
+    left: 1rem;
+    right: 1rem;
+    justify-content: space-between;
   }
   main {
-    padding: 24px;
-  }
-  p-tag {
-    display: none;
+    padding: 5rem 0.875rem 1.25rem;
   }
 }
-@media (max-width: 700px) {
-  .app-layout {
-    display: block;
-  }
-  .sidebar {
-    position: relative;
-    height: auto;
-    padding: 16px 20px;
-    border-right: 0;
-    border-bottom: 1px solid var(--border);
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 16px;
-  }
-  .sidebar .wordmark {
-    font-size: 1.8rem;
-  }
-  .nav-caption,
-  .sidebar-bottom .identity,
-  .sidebar > a.p-button,
-  .topbar {
-    display: none;
-  }
-  nav {
-    display: flex;
-    gap: 4px;
-    flex: 1;
-    justify-content: flex-end;
-  }
-  nav a {
-    padding: 8px;
-    font-size: 0.75rem;
-  }
-  nav a span {
-    display: none;
-  }
-  .sidebar-bottom {
-    margin: 0;
-  }
-  .sidebar-bottom button {
-    font-size: 0.7rem;
-  }
+@media (min-width: 761px) and (max-width: 1100px) {
   main {
-    padding: 24px 16px;
-  }
-  footer {
-    margin: 0 16px;
-  }
-  footer span {
-    display: none;
+    padding-top: 5rem;
   }
 }

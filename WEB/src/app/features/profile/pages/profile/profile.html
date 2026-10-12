@@ -1,9 +1,8 @@
 <div class="profile-page">
   <a [text]="true" severity="secondary" pButton class="back-link" routerLink="/feed"
-    >← Voltar para a comunidade</a
+    ><i class="pi pi-arrow-left" aria-hidden="true"></i> Voltar para o feed</a
   >
-  <p class="eyebrow">PESSOAS POR TRÁS DO CÓDIGO</p>
-  <h1>{{ isOwner() ? 'Seu perfil.' : 'Conheça esta pessoa.' }}</h1>
+  <h1>{{ isOwner() ? 'Meu perfil' : 'Perfil' }}</h1>
   <app-feedback [errors]="errors()" [success]="success()" />
   @if (loading()) {
     <div class="loading" role="status">
@@ -12,7 +11,7 @@
   }
   @if (profile(); as person) {
     <p-card class="profile-card">
-      <div class="cover" aria-hidden="true"><span>✳</span></div>
+      <div class="cover" aria-hidden="true"></div>
       <div class="profile-info">
         @if (avatarUrl() && !avatarFailed()) {
           <p-avatar
@@ -37,11 +36,11 @@
           </button>
         }
         <h2>{{ person.name }}</h2>
-        <p class="content-text bio">{{ person.bio || 'Ainda há muita história para contar.' }}</p>
+        <p class="content-text bio">{{ person.bio || 'Sem bio.' }}</p>
         <div class="actions">
           <a severity="secondary" pButton routerLink="/feed" [queryParams]="{ authorId: person.id }"
-            >Ver publicações ↗</a
-          >
+            >Ver publicações <i class="pi pi-arrow-right" aria-hidden="true"></i
+          ></a>
           @if (isOwner()) {
             <button pButton type="button" (click)="editing.set(!editing())" [disabled]="busy()">
               {{ editing() ? 'Fechar edição' : 'Editar perfil' }}
@@ -92,7 +91,7 @@
       </p-card>
       <p-card class="edit-profile"
         ><h2>Sua foto de perfil</h2>
-        <p class="muted">Uma imagem para acompanhar suas ideias.</p>
+        <p class="muted">Selecione uma imagem para atualizar sua foto.</p>
         @for (version of [pickerVersion()]; track version) {
           <app-image-picker [disabled]="busy()" (selected)="selectedImage.set($event)" />
         }

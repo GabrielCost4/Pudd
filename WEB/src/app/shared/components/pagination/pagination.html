@@ -6,7 +6,7 @@
     [disabled]="page() <= 1 || busy()"
     (click)="changed.emit(page() - 1)"
   >
-    ← Anterior
+    <i class="pi pi-chevron-left" aria-hidden="true"></i> Anterior
   </button>
   <span aria-live="polite">Página {{ page() }}</span>
   <button
@@ -16,6 +16,6 @@
     [disabled]="!hasNext() || busy()"
     (click)="changed.emit(page() + 1)"
   >
-    Próxima →
+    Próxima <i class="pi pi-chevron-right" aria-hidden="true"></i>
   </button>
 </nav>

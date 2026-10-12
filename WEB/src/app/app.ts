@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { ThemeStore } from './core/config/theme.store';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
@@ -6,4 +7,8 @@ import { RouterOutlet } from '@angular/router';
   selector: 'app-root',
   templateUrl: './app.html',
 })
-export class App {}
+export class App {
+  constructor() {
+    inject(ThemeStore);
+  }
+}

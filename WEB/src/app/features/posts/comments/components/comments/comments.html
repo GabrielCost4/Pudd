@@ -1,5 +1,5 @@
 <section class="comments" aria-labelledby="comments-title">
-  <h2 id="comments-title">Continue a conversa<span aria-hidden="true"> ↳</span></h2>
+  <h2 id="comments-title">Comentários</h2>
   <form (submit)="$event.preventDefault(); submit()" class="comment-form">
     <div class="field">
       <label for="comment-content">Seu comentário</label
@@ -8,7 +8,7 @@
         id="comment-content"
         [formControl]="content"
         required
-        placeholder="Acrescente uma ideia à conversa…"
+        placeholder="Escreva um comentário…"
         [readOnly]="saving()"
       ></textarea>
     </div>

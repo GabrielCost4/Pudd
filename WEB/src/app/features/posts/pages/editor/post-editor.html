@@ -1,15 +1,16 @@
-<div class="editor">
-  <a
-    [text]="true"
-    severity="secondary"
-    pButton
-    class="back-link"
-    [routerLink]="id ? ['/posts', id] : ['/feed']"
-    >← Voltar</a
-  >
-  <p class="eyebrow">{{ id ? 'SEMPRE DÁ PARA REFINAR' : 'COMPARTILHE UM POUCO DE VOCÊ' }}</p>
-  <h1>{{ id ? 'Editar publicação.' : 'O que você está construindo?' }}</h1>
-  <p class="muted">Uma descoberta, um projeto ou aquela dúvida que pode render uma boa conversa.</p>
+<div class="editor" [class.embedded]="embedded()">
+  @if (!embedded()) {
+    <a
+      [text]="true"
+      severity="secondary"
+      pButton
+      class="back-link"
+      [routerLink]="id ? ['/posts', id] : ['/feed']"
+      ><i class="pi pi-arrow-left" aria-hidden="true"></i> Voltar</a
+    >
+    <h1>{{ id ? 'Editar publicação' : 'Nova publicação' }}</h1>
+    <p class="muted">Escreva sua publicação e adicione uma imagem, se quiser.</p>
+  }
   <app-feedback [errors]="errors()" />
   @if (loading()) {
     <div class="loading" role="status">
@@ -31,10 +32,10 @@
             id="post-content"
             formControlName="content"
             required
-            placeholder="Comece por uma ideia…"
-            rows="8"
+            placeholder="Escreva o texto da publicação…"
+            [rows]="embedded() ? 5 : 8"
           ></textarea
-          ><small>A comunidade está aqui para trocar experiências.</small>
+          ><small>Você poderá editar ou excluir sua publicação depois.</small>
         </div>
         <div class="field">
           <span>Imagem opcional</span
@@ -57,10 +58,24 @@
         }
         <div class="actions">
           <button pButton type="submit" [loading]="saving()" [disabled]="saving()">
-            {{ saving() ? 'Enviando…' : id ? 'Salvar alterações' : 'Publicar ↗' }}</button
-          ><a severity="secondary" pButton [routerLink]="id ? ['/posts', id] : ['/feed']"
-            >Cancelar</a
-          >
+            {{ saving() ? 'Enviando…' : id ? 'Salvar alterações' : 'Publicar' }}
+          </button>
+          @if (embedded()) {
+            <button
+              severity="secondary"
+              pButton
+              [outlined]="true"
+              type="button"
+              [disabled]="saving()"
+              (click)="cancelled.emit()"
+            >
+              Cancelar
+            </button>
+          } @else {
+            <a severity="secondary" pButton [routerLink]="id ? ['/posts', id] : ['/feed']"
+              >Cancelar</a
+            >
+          }
         </div>
       </form></p-card
     >

@@ -16,7 +16,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
   webServer: {
-    command: 'npm run build -- --configuration production && node e2e/serve-preview.mjs',
+    command: 'npm start -- --configuration production --host 127.0.0.1 --port 4300',
     url: 'http://127.0.0.1:4300',
     reuseExistingServer: !process.env['CI'],
     timeout: 120000,

@@ -1,7 +1,8 @@
 :host {
   display: block;
 }
-p-floatlabel {
+p-floatlabel,
+.input-field {
   display: block;
   position: relative;
 }
@@ -9,9 +10,22 @@ input {
   width: 100%;
   padding-right: 3.25rem;
 }
+.field-label {
+  display: block;
+  margin-bottom: 0.625rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+}
 .password-toggle {
   position: absolute;
-  right: 0.25rem;
+  right: 0.375rem;
   top: 50%;
   transform: translateY(-50%);
+}
+.field-error {
+  display: block;
+  margin-top: 0.5rem;
+  color: var(--p-red-500);
+  font-size: 0.75rem;
 }

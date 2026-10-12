@@ -2,6 +2,8 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { AvatarModule } from 'primeng/avatar';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
+import { DOCUMENT } from '@angular/common';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -13,6 +15,7 @@ import { apiErrors } from '../../../../shared/utils/api-errors';
 import { PostCard } from '../../components/post-card/post-card';
 import { PostService } from '../../services/post.service';
 import type { Post } from '../../models/post';
+import { PostEditor } from '../editor/post-editor';
 
 @Component({
   selector: 'app-feed',
@@ -25,6 +28,8 @@ import type { Post } from '../../models/post';
     Feedback,
     Pagination,
     PostCard,
+    DialogModule,
+    PostEditor,
   ],
   templateUrl: './feed.html',
   styleUrl: './feed.css',
@@ -32,6 +37,8 @@ import type { Post } from '../../models/post';
 export class Feed {
   protected readonly session = inject(SessionStore);
   private readonly api = inject(PostService);
+  private readonly document = inject(DOCUMENT);
+  private editTrigger: HTMLElement | null = null;
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   protected readonly posts = signal<Post[]>([]);
@@ -40,6 +47,31 @@ export class Feed {
   protected readonly page = signal(1);
   protected readonly hasNext = signal(false);
   protected readonly authorId = signal('');
+  protected readonly editingPost = signal<Post | null>(null);
+  protected readonly editSaving = signal(false);
+
+  protected openEditor(post: Post): void {
+    if (post.userID !== this.session.user().id) return;
+    const activeElement = this.document.activeElement;
+    this.editTrigger = activeElement instanceof HTMLElement ? activeElement : null;
+    this.editSaving.set(false);
+    this.editingPost.set(post);
+  }
+
+  protected closeEditor(): void {
+    if (!this.editSaving()) this.editingPost.set(null);
+  }
+
+  protected restoreEditFocus(): void {
+    this.editTrigger?.focus({ preventScroll: true });
+    this.editTrigger = null;
+  }
+
+  protected updated(post: Post): void {
+    this.posts.update((items) => items.map((item) => (item.id === post.id ? post : item)));
+    this.editSaving.set(false);
+    this.editingPost.set(null);
+  }
   constructor() {
     this.route.queryParamMap
       .pipe(

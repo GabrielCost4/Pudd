@@ -1,0 +1,16 @@
+<label class="theme-switch" [title]="dark() ? 'Ativar modo claro' : 'Ativar modo escuro'">
+  <input
+    class="input"
+    type="checkbox"
+    role="switch"
+    [checked]="dark()"
+    [attr.aria-checked]="dark()"
+    [attr.aria-label]="dark() ? 'Ativar modo claro' : 'Ativar modo escuro'"
+    (change)="toggled.emit()"
+  />
+  <span class="slider" aria-hidden="true">
+    <i class="pi pi-sun sun"></i>
+    <i class="pi pi-moon moon"></i>
+    <span class="handle"></span>
+  </span>
+</label>

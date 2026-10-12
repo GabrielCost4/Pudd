@@ -33,7 +33,7 @@ describe('AppShell', () => {
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     const f = TestBed.createComponent(AppShell);
     f.detectChanges();
-    f.nativeElement.querySelector('button').click();
+    f.nativeElement.querySelector('.logout').click();
     await Promise.resolve();
     expect(navigate).toHaveBeenCalledWith(['/login']);
     expect(TestBed.inject(SessionStore).accessToken()).toBeNull();

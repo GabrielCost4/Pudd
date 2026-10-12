@@ -97,7 +97,7 @@ export class Comments {
   protected remove(comment: PostComment): void {
     if (this.deleting()) return;
     this.confirmation.confirm({
-      header: 'Cuidar da comunidade',
+      header: 'Excluir comentário',
       message: 'Excluir este comentário definitivamente?',
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Confirmar',
