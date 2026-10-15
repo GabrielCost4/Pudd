@@ -61,6 +61,7 @@ export class ImagePicker {
   }
 
   protected clear(): void {
+    if (this.disabled()) return;
     this.release();
     this.preview.set('');
     this.filename.set('');

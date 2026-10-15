@@ -13,6 +13,14 @@ footer {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  min-width: 0;
+}
+.author strong {
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+.author:hover strong {
+  color: var(--accent);
 }
 .author small {
   display: block;
@@ -39,11 +47,26 @@ footer {
   margin: 1rem 0;
   overflow: hidden;
   border-radius: var(--p-border-radius-lg);
+  background: var(--surface-raised);
 }
 .post-image img {
   display: block;
   width: 100%;
   max-height: 420px;
+  object-fit: contain;
+}
+.image-trigger {
+  display: block;
+  width: 100%;
+  cursor: zoom-in;
+}
+.image-trigger:focus-visible {
+  outline-offset: -3px;
+}
+.gallery-image {
+  display: block;
+  max-width: calc(100vw - 2rem);
+  max-height: calc(100dvh - 6rem);
   object-fit: contain;
 }
 .image-fallback {
@@ -55,6 +78,15 @@ footer {
   margin-top: 1rem;
   border-top: 1px solid var(--border);
   padding-top: 1rem;
+}
+@media (max-width: 420px) {
+  .post-menu {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  footer {
+    gap: 0.25rem;
+  }
 }
 .like-button {
   --heart-color: var(--p-red-500);

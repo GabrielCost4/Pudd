@@ -117,7 +117,13 @@ test('registers a user and opens a paginated feed with author filtering', async 
   await page.getByRole('button', { name: 'Próxima' }).click();
   await expect(page.getByLabel('Paginação')).toContainText('Página 2');
   await page.getByRole('link', { name: 'Minhas publicações', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Publicações do perfil' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Minhas publicações', exact: true }),
+  ).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Minhas publicações', exact: true })).toHaveAttribute(
+    'aria-current',
+    'page',
+  );
   expect(
     api.calls.some((c) => c.path === '/Auth/register' && JSON.parse(c.body).nome === 'Nova Pessoa'),
   ).toBeTruthy();
@@ -210,7 +216,9 @@ test('updates profile and uploads/removes avatar, then opens another profile', a
     buffer: Buffer.from('RIFF0000WEBP'),
   });
   await page.getByRole('button', { name: 'Enviar foto' }).click();
-  await expect(page.getByRole('status')).toContainText('Foto de perfil atualizada.');
+  await expect(page.locator('p-toast .p-toast-message-success')).toContainText(
+    'Foto de perfil atualizada.',
+  );
   expect(api.profile.hasAvatar).toBeTruthy();
   await page.getByRole('button', { name: 'Remover foto atual' }).click();
   await page
@@ -219,7 +227,9 @@ test('updates profile and uploads/removes avatar, then opens another profile', a
     })
     .getByRole('button', { name: 'Confirmar', exact: true })
     .click();
-  await expect(page.getByRole('status')).toContainText('Foto de perfil removida.');
+  await expect(page.locator('p-toast .p-toast-message-success')).toContainText(
+    'Foto de perfil removida.',
+  );
   expect(api.profile.hasAvatar).toBeFalsy();
   await page.getByRole('link', { name: 'Ver publicações' }).click();
   await page

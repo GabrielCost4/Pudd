@@ -9,7 +9,6 @@
       ><i class="pi pi-arrow-left" aria-hidden="true"></i> Voltar</a
     >
     <h1>{{ id ? 'Editar publicação' : 'Nova publicação' }}</h1>
-    <p class="muted">Escreva sua publicação e adicione uma imagem, se quiser.</p>
   }
   <app-feedback [errors]="errors()" />
   @if (loading()) {
@@ -17,49 +16,78 @@
       <p-progress-spinner ariaLabel="Carregando" /><span>Carregando publicação…</span>
     </div>
   } @else if (ready()) {
-    <p-card
-      ><form
-        class="stack"
-        [formGroup]="form"
-        (ngSubmit)="save()"
-        ngNativeValidate
-        [attr.aria-busy]="saving()"
-      >
-        <div class="field">
-          <label for="post-content">Sua publicação</label
-          ><textarea
-            pTextarea
-            id="post-content"
-            formControlName="content"
-            required
-            placeholder="Escreva o texto da publicação…"
-            [rows]="embedded() ? 5 : 8"
-          ></textarea
-          ><small>Você poderá editar ou excluir sua publicação depois.</small>
-        </div>
-        <div class="field">
-          <span>Imagem opcional</span
-          ><app-image-picker [disabled]="saving()" (selected)="selectImage($event)" />
-        </div>
-        @if (id && hasImage()) {
-          <p class="muted image-note">
-            {{
-              image()
-                ? 'A nova imagem substituirá a atual.'
-                : 'A imagem atual será mantida, a menos que você escolha removê-la.'
-            }}
-          </p>
-          @if (!image()) {
-            <label for="remove-image" class="checkbox"
-              ><p-checkbox inputId="remove-image" formControlName="removeImage" [binary]="true" />
-              Remover a imagem atual</label
-            >
-          }
+    <p-card [dt]="editorCardTokens">
+      <form class="composer" [formGroup]="form" (ngSubmit)="save()" [attr.aria-busy]="saving()">
+        @if (!embedded()) {
+          <div class="composer-author">
+            @if (account.avatarUrl()) {
+              <p-avatar
+                size="large"
+                shape="circle"
+                [image]="account.avatarUrl()"
+                ariaLabel="Sua foto de perfil"
+                (onImageError)="account.imageFailed()"
+              />
+            } @else {
+              <p-avatar
+                size="large"
+                shape="circle"
+                [label]="(account.name() || 'Você').slice(0, 1).toUpperCase()"
+              />
+            }
+            <div>
+              <small>{{ id ? 'Editando como' : 'Publicando como' }}</small
+              ><strong>{{ account.name() || 'Você' }}</strong>
+            </div>
+          </div>
         }
-        <div class="actions">
-          <button pButton type="submit" [loading]="saving()" [disabled]="saving()">
-            {{ saving() ? 'Enviando…' : id ? 'Salvar alterações' : 'Publicar' }}
-          </button>
+        <div class="writing-area">
+          <div class="field content-field">
+            <label for="post-content">Sua publicação</label
+            ><textarea
+              pTextarea
+              id="post-content"
+              formControlName="content"
+              required
+              aria-describedby="post-character-count"
+              [attr.aria-invalid]="overLimit() ? 'true' : null"
+              placeholder="O que você quer publicar?"
+              [dt]="editorTextareaTokens"
+              [rows]="embedded() ? 5 : 7"
+            ></textarea>
+            <small
+              id="post-character-count"
+              class="character-count"
+              [class.over-limit]="overLimit()"
+              [attr.aria-label]="contentLength() + ' de ' + maxContentLength + ' caracteres'"
+            >
+              {{ contentLength() }} / {{ maxContentLength }}
+            </small>
+          </div>
+          <div class="attachment">
+            <div class="attachment-label">
+              <span><i class="pi pi-paperclip" aria-hidden="true"></i> Imagem</span
+              ><small>Opcional</small>
+            </div>
+            <app-image-picker [disabled]="saving()" (selected)="selectImage($event)" />
+          </div>
+          @if (id && hasImage()) {
+            <p class="muted image-note">
+              {{
+                image()
+                  ? 'A nova imagem substituirá a atual.'
+                  : 'A imagem atual será mantida, a menos que você escolha removê-la.'
+              }}
+            </p>
+            @if (!image()) {
+              <label for="remove-image" class="checkbox"
+                ><p-checkbox inputId="remove-image" formControlName="removeImage" [binary]="true" />
+                Remover a imagem atual</label
+              >
+            }
+          }
+        </div>
+        <footer class="composer-actions">
           @if (embedded()) {
             <button
               severity="secondary"
@@ -72,12 +100,22 @@
               Cancelar
             </button>
           } @else {
-            <a severity="secondary" pButton [routerLink]="id ? ['/posts', id] : ['/feed']"
+            <a
+              severity="secondary"
+              [text]="true"
+              pButton
+              [routerLink]="id ? ['/posts', id] : ['/feed']"
               >Cancelar</a
             >
           }
-        </div>
-      </form></p-card
-    >
+          <button pButton type="submit" [loading]="saving()" [disabled]="saving() || overLimit()">
+            @if (!saving()) {
+              <i [class]="id ? 'pi pi-check' : 'pi pi-send'" aria-hidden="true"></i>
+            }
+            {{ saving() ? 'Enviando…' : id ? 'Salvar alterações' : 'Publicar' }}
+          </button>
+        </footer>
+      </form>
+    </p-card>
   }
 </div>

@@ -1,3 +1,4 @@
+import { NotificationStore } from '../../../../core/notifications/notification.store';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
@@ -19,7 +20,7 @@ describe('PostDetail', () => {
       .expectOne(API_BASE_URL + '/posts/')
       .flush({ title: 'Request failed' }, { status: 503, statusText: 'Unavailable' });
     f.detectChanges();
-    expect(f.nativeElement.querySelector('[role="alert"]').textContent).toContain('Request failed');
+    expect(TestBed.inject(NotificationStore).notification()?.detail).toContain('Request failed');
   });
   it('navigates to not found when the post was removed', () => {
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);

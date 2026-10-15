@@ -51,7 +51,7 @@ builder
                 }
                 var users =
                     context.HttpContext.RequestServices.GetRequiredService<IUserRepository>();
-                var user = await users.GetByIdAsync(userId);
+    
                 if (user is null || user.IsBlocked)
                     context.Fail("Conta indisponível.");
             },

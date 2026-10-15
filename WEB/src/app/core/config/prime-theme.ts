@@ -4,32 +4,32 @@ import Aura from '@primeuix/themes/aura';
 export const puddTheme = definePreset(Aura, {
   semantic: {
     primary: {
-      50: '#eff6ff',
-      100: '#dbeafe',
-      200: '#bfdbfe',
-      300: '#93c5fd',
-      400: '#60a5fa',
-      500: '#3b82f6',
-      600: '#2563eb',
-      700: '#1d4ed8',
-      800: '#1e40af',
-      900: '#1e3a8a',
-      950: '#172554',
+      50: '#f1f5ea',
+      100: '#e0e4ce',
+      200: '#c3d3ba',
+      300: '#9bbdaa',
+      400: '#6e9987',
+      500: '#4e8374',
+      600: '#286a61',
+      700: '#114d4d',
+      800: '#103e3f',
+      900: '#0e3031',
+      950: '#0a2425',
     },
     colorScheme: {
       light: {
         primary: {
-          color: '{primary.600}',
-          contrastColor: '#ffffff',
-          hoverColor: '{primary.700}',
-          activeColor: '{primary.800}',
+          color: '{primary.700}',
+          contrastColor: '{primary.100}',
+          hoverColor: '{primary.800}',
+          activeColor: '{primary.900}',
         },
         surface: {
           0: '#ffffff',
-          50: '#fafafa',
-          100: '#f4f4f5',
-          200: '#e4e4e7',
-          300: '#d4d4d8',
+          50: '#eef0f4',
+          100: '#e4e7ed',
+          200: '#d5dae3',
+          300: '#bfc6d2',
           400: '#a1a1aa',
           500: '#71717a',
           600: '#52525b',
@@ -41,10 +41,10 @@ export const puddTheme = definePreset(Aura, {
       },
       dark: {
         primary: {
-          color: '{primary.400}',
-          contrastColor: '#09090b',
-          hoverColor: '{primary.300}',
-          activeColor: '{primary.500}',
+          color: '{primary.300}',
+          contrastColor: '{primary.950}',
+          hoverColor: '{primary.200}',
+          activeColor: '{primary.400}',
         },
         surface: {
           0: '#ffffff',
@@ -64,7 +64,95 @@ export const puddTheme = definePreset(Aura, {
     },
   },
   components: {
-    card: { body: { padding: '1.25rem', gap: '1rem' } },
-    sidebar: { menuButton: { height: '2.75rem' } },
+    button: {
+      root: {
+        borderRadius: '0.75rem',
+        label: { fontWeight: '600' },
+        primary: {
+          background: '{primary.700}',
+          hoverBackground: '{primary.800}',
+          activeBackground: '{primary.900}',
+          borderColor: 'light-dark({primary.700}, {primary.400})',
+          hoverBorderColor: 'light-dark({primary.800}, {primary.300})',
+          activeBorderColor: 'light-dark({primary.900}, {primary.400})',
+          color: '{primary.100}',
+          hoverColor: '{primary.100}',
+          activeColor: '{primary.100}',
+        },
+        secondary: {
+          background: 'light-dark({primary.100}, #2d3839)',
+          hoverBackground: 'light-dark({primary.200}, #3a4948)',
+          activeBackground: 'light-dark({primary.300}, #475b55)',
+          borderColor: 'light-dark({surface.200}, {surface.600})',
+          hoverBorderColor: 'light-dark({primary.400}, {surface.500})',
+          activeBorderColor: '{primary.400}',
+          color: 'light-dark(#27191c, {primary.100})',
+          hoverColor: 'light-dark({primary.900}, {primary.50})',
+          activeColor: 'light-dark({primary.950}, {primary.50})',
+        },
+      },
+      text: { secondary: { color: '{text.muted.color}' } },
+    },
+    toast: { root: { width: 'min(24rem, calc(100vw - 2.5rem))' } },
+    fileupload: {
+      root: { borderRadius: '1rem' },
+      header: { padding: '0', borderWidth: '0' },
+      content: { padding: '1rem', highlightBorderColor: '{primary.color}' },
+    },
+    card: {
+      root: {
+        borderRadius: '1.25rem',
+        shadow:
+          '0 0 0 1px {content.border.color}, 0 4px 14px color-mix(in srgb, {text.color} 7%, transparent)',
+      },
+      body: { padding: '1.5rem', gap: '1rem' },
+      colorScheme: {
+        dark: {
+          root: { shadow: '0 0 0 1px {surface.800}, 0 4px 16px rgb(0 0 0 / 0.12)' },
+        },
+      },
+    },
+    avatar: {
+      root: { background: '{primary.100}', color: '{primary.800}' },
+      lg: { width: '3rem', height: '3rem', fontSize: '1.25rem' },
+      xl: { width: '7rem', height: '7rem', fontSize: '2.75rem' },
+      colorScheme: {
+        light: { root: { background: '{primary.100}', color: '{primary.800}' } },
+        dark: { root: { background: '{primary.950}', color: '{primary.300}' } },
+      },
+    },
+    sidebar: {
+      header: { padding: '2rem 1.25rem', gap: '0.5rem' },
+      footer: { padding: '1rem', gap: '0.625rem' },
+      layout: { background: 'light-dark({surface.50}, {surface.950})' },
+      main: { background: 'light-dark({surface.50}, {surface.950})' },
+      menu: { gap: '0.625rem' },
+      menuButton: {
+        height: '3.25rem',
+        borderRadius: '0.625rem',
+        padding: '0.875rem 1rem',
+        gap: '0.875rem',
+        fontWeight: '600',
+        icon: { color: 'currentColor', focusColor: 'currentColor' },
+      },
+      colorScheme: {
+        light: {
+          menuButton: {
+            activeBackground: '{primary.700}',
+            activeColor: '{primary.100}',
+            focusBackground: '{primary.100}',
+            focusColor: '{primary.900}',
+          },
+        },
+        dark: {
+          menuButton: {
+            activeBackground: '{primary.700}',
+            activeColor: '{primary.100}',
+            focusBackground: '{surface.700}',
+            focusColor: '{primary.100}',
+          },
+        },
+      },
+    },
   },
 });

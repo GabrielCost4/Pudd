@@ -1,3 +1,4 @@
+import { NotificationStore } from '../../../../core/notifications/notification.store';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
@@ -95,7 +96,7 @@ describe('Login and registration', () => {
       { status: 400, statusText: 'Bad Request' },
     );
     fixture.detectChanges();
-    expect(page.querySelector('[role="alert"]')!.textContent).toContain(
+    expect(TestBed.inject(NotificationStore).notification()?.detail).toContain(
       'Senha não atende aos requisitos.',
     );
   });
@@ -105,7 +106,7 @@ describe('Login and registration', () => {
       .expectOne(API_BASE_URL + '/Auth/login')
       .flush({ title: 'E-mail ou senha inválidos.' }, { status: 401, statusText: 'Unauthorized' });
     fixture.detectChanges();
-    expect(page.querySelector('[role="alert"]')!.textContent).toContain(
+    expect(TestBed.inject(NotificationStore).notification()?.detail).toContain(
       'E-mail ou senha inválidos.',
     );
     expect(page.querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(false);

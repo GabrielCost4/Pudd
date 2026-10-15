@@ -3,13 +3,25 @@ import { CardModule } from 'primeng/card';
 import { CheckboxModule } from 'primeng/checkbox';
 import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
+import { AvatarModule } from 'primeng/avatar';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, DestroyRef, inject, input, OnInit, output, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  input,
+  OnInit,
+  output,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { SessionStore } from '../../../../core/auth/session.store';
+import { AccountStore } from '../../../../core/account/account.store';
+import { NotificationStore } from '../../../../core/notifications/notification.store';
 import { Feedback } from '../../../../shared/components/feedback/feedback';
 import { ImagePicker } from '../../../../shared/components/image-picker/image-picker';
 import { apiErrors } from '../../../../shared/utils/api-errors';
@@ -24,6 +36,7 @@ import type { Post } from '../../models/post';
     CheckboxModule,
     TextareaModule,
     ButtonModule,
+    AvatarModule,
     RouterLink,
     ReactiveFormsModule,
     Feedback,
@@ -33,12 +46,23 @@ import type { Post } from '../../models/post';
   styleUrl: './post-editor.css',
 })
 export class PostEditor implements OnInit {
+  protected readonly account = inject(AccountStore);
+  protected readonly editorCardTokens = { body: { padding: '0', gap: '0' } };
+  protected readonly editorTextareaTokens = {
+    root: {
+      fontSize: '1rem',
+      paddingX: '0.875rem',
+      paddingY: '0.75rem',
+      borderRadius: '0.5rem',
+    },
+  };
   readonly postId = input<string | null>(null);
   readonly embedded = input(false);
   readonly saved = output<Post>();
   readonly cancelled = output<void>();
   readonly savingChanged = output<boolean>();
   private readonly api = inject(PostService);
+  private readonly notifications = inject(NotificationStore);
   private readonly session = inject(SessionStore);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
@@ -52,10 +76,19 @@ export class PostEditor implements OnInit {
   protected readonly errors = signal<string[]>([]);
   protected readonly hasImage = signal(false);
   protected readonly image = signal<File | null>(null);
+  protected readonly maxContentLength = 5000;
   protected readonly form = new FormGroup({
-    content: new FormControl('', { nonNullable: true }),
+    content: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.maxLength(this.maxContentLength)],
+    }),
     removeImage: new FormControl(false, { nonNullable: true }),
   });
+  private readonly content = toSignal(this.form.controls.content.valueChanges, {
+    initialValue: this.form.controls.content.value,
+  });
+  protected readonly contentLength = computed(() => this.content().length);
+  protected readonly overLimit = computed(() => this.contentLength() > this.maxContentLength);
   ngOnInit(): void {
     this.ready.set(!this.id);
     if (this.id) {
@@ -97,6 +130,16 @@ export class PostEditor implements OnInit {
   protected save(): void {
     if (this.saving() || this.loading() || !this.ready()) return;
     this.errors.set([]);
+    if (this.form.controls.content.hasError('maxlength')) {
+      this.errors.set(['A publicação deve ter no máximo 5.000 caracteres.']);
+      this.form.markAllAsTouched();
+      return;
+    }
+    if (!this.form.controls.content.value.trim()) {
+      this.errors.set(['Escreva o conteúdo da publicação.']);
+      this.form.markAllAsTouched();
+      return;
+    }
     this.saving.set(true);
     this.savingChanged.emit(true);
     const data = new FormData();
@@ -120,6 +163,9 @@ export class PostEditor implements OnInit {
             this.saved.emit(post);
             return;
           }
+          this.notifications.success(
+            this.id ? 'Publicação atualizada com sucesso.' : 'Publicação criada com sucesso.',
+          );
           void this.router.navigate(['/posts', post.id]);
         },
         error: (error: unknown) => this.errors.set(apiErrors(error)),

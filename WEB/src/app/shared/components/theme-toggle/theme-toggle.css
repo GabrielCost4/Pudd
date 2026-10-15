@@ -29,7 +29,7 @@
   width: 64px;
   height: 34px;
   border-radius: 30px;
-  background-color: #73c0fc;
+  background-color: var(--p-primary-700);
   transition: background-color 0.4s;
 }
 .handle {
@@ -40,8 +40,8 @@
   height: 30px;
   border-radius: 50%;
   z-index: 2;
-  background-color: #e8e8e8;
-  box-shadow: 0 1px 3px #0003;
+  background-color: var(--p-primary-100);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--p-primary-950) 20%, transparent);
   transition: transform 0.4s;
 }
 .sun,
@@ -56,16 +56,16 @@
 }
 .sun {
   right: 4px;
-  color: #ffd43b;
+  color: var(--p-primary-100);
   animation: rotate 15s linear infinite;
 }
 .moon {
   left: 4px;
-  color: #73c0fc;
+  color: var(--p-primary-300);
   animation: tilt 5s linear infinite;
 }
 .input:checked + .slider {
-  background-color: #183153;
+  background-color: var(--p-primary-950);
 }
 .input:checked + .slider .handle {
   transform: translateX(30px);

@@ -28,6 +28,45 @@ describe('ImagePicker', () => {
     Object.defineProperty(input, 'files', { value: [file], configurable: true });
     input.dispatchEvent(new Event('change'));
   }
+  function drop(element: HTMLElement, file: File) {
+    const event = new Event('drop', { bubbles: true, cancelable: true });
+    Object.defineProperty(event, 'dataTransfer', { value: { files: [file] } });
+    element.dispatchEvent(event);
+  }
+  it('opens the native chooser through the dropzone button', () => {
+    const { f, input } = setup();
+    const click = vi.spyOn(input, 'click');
+    f.nativeElement.querySelector('.dropzone-choose').click();
+    expect(click).toHaveBeenCalledOnce();
+  });
+  it('accepts a dropped image and keeps it when an invalid replacement is dropped', () => {
+    const { f, selected } = setup();
+    const zone = f.nativeElement.querySelector('.dropzone') as HTMLElement;
+    const file = new File(['image'], 'dropped.png', { type: 'image/png' });
+    drop(zone, file);
+    f.detectChanges();
+    expect(selected).toHaveBeenLastCalledWith(file);
+    expect(f.nativeElement.querySelector('.preview').textContent).toContain('dropped.png');
+    drop(zone, new File(['text'], 'invalid.txt', { type: 'text/plain' }));
+    f.detectChanges();
+    expect(selected).toHaveBeenCalledTimes(1);
+    expect(f.nativeElement.querySelector('.preview').textContent).toContain('dropped.png');
+    expect(f.nativeElement.querySelector('[role="alert"]')).not.toBeNull();
+    f.destroy();
+  });
+  it('ignores drops while the parent is busy', () => {
+    const { f, selected } = setup();
+    f.componentRef.setInput('disabled', true);
+    f.detectChanges();
+    expect(f.nativeElement.querySelector('.dropzone-choose').disabled).toBe(true);
+    drop(
+      f.nativeElement.querySelector('.dropzone'),
+      new File(['image'], 'dropped.png', { type: 'image/png' }),
+    );
+    f.detectChanges();
+    expect(selected).not.toHaveBeenCalled();
+    expect(f.nativeElement.querySelector('.preview')).toBeNull();
+  });
   it('emits an image, shows a preview and releases it on discard', () => {
     const { f, selected, input } = setup();
     const file = new File(['image'], 'photo.png', { type: 'image/png' });
@@ -35,7 +74,7 @@ describe('ImagePicker', () => {
     f.detectChanges();
     expect(selected).toHaveBeenCalledWith(file);
     expect(f.nativeElement.querySelector('img').getAttribute('src')).toBe('blob:preview');
-    f.nativeElement.querySelector('.preview button').click();
+    f.nativeElement.querySelector('.preview button:last-child').click();
     f.detectChanges();
     expect(selected).toHaveBeenLastCalledWith(null);
     expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:preview');
@@ -90,7 +129,11 @@ describe('ImagePicker', () => {
     f.componentRef.setInput('disabled', true);
     f.detectChanges();
     expect(input.disabled).toBe(true);
-    expect(f.nativeElement.querySelector('.preview button').disabled).toBe(true);
+    expect(
+      Array.from(
+        f.nativeElement.querySelectorAll('.preview button') as NodeListOf<HTMLButtonElement>,
+      ).every((button) => button.disabled),
+    ).toBe(true);
     f.destroy();
   });
 });

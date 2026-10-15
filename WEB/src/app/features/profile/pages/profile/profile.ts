@@ -13,6 +13,7 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError, finalize, of, Subscription, switchMap } from 'rxjs';
 import { SessionStore } from '../../../../core/auth/session.store';
+import { AccountStore } from '../../../../core/account/account.store';
 import { Feedback } from '../../../../shared/components/feedback/feedback';
 import { ImagePicker } from '../../../../shared/components/image-picker/image-picker';
 import { apiErrors } from '../../../../shared/utils/api-errors';
@@ -44,6 +45,7 @@ export class ProfilePage {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly session = inject(SessionStore);
+  private readonly account = inject(AccountStore);
   private readonly destroyRef = inject(DestroyRef);
   private avatarRequest?: Subscription;
   private avatarTimer?: ReturnType<typeof setTimeout>;
@@ -131,9 +133,14 @@ export class ProfilePage {
   }
   protected save(): void {
     if (this.busy()) return;
-    this.busy.set(true);
     this.errors.set([]);
     this.success.set('');
+    if (!this.form.controls.name.value.trim()) {
+      this.errors.set(['Informe seu nome.']);
+      this.form.markAllAsTouched();
+      return;
+    }
+    this.busy.set(true);
     this.api
       .update(this.form.getRawValue())
       .pipe(
@@ -145,6 +152,7 @@ export class ProfilePage {
           this.setProfile(profile);
           this.editing.set(false);
           this.success.set('Seu perfil foi atualizado.');
+          this.account.refresh();
         },
         error: (error: unknown) => this.errors.set(apiErrors(error)),
       });
@@ -170,6 +178,7 @@ export class ProfilePage {
           this.pickerVersion.update((v) => v + 1);
           this.loadAvatar();
           this.success.set('Foto de perfil atualizada.');
+          this.account.refresh();
         },
         error: (error: unknown) => this.errors.set(apiErrors(error)),
       });
@@ -203,6 +212,7 @@ export class ProfilePage {
           this.avatarUrl.set('');
           this.profile.update((p) => (p ? { ...p, hasAvatar: false } : p));
           this.success.set('Foto de perfil removida.');
+          this.account.refresh();
         },
         error: (error: unknown) => this.errors.set(apiErrors(error)),
       });

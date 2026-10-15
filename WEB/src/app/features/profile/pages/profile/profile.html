@@ -2,6 +2,7 @@
   <a [text]="true" severity="secondary" pButton class="back-link" routerLink="/feed"
     ><i class="pi pi-arrow-left" aria-hidden="true"></i> Voltar para o feed</a
   >
+
   <h1>{{ isOwner() ? 'Meu perfil' : 'Perfil' }}</h1>
   <app-feedback [errors]="errors()" [success]="success()" />
   @if (loading()) {
@@ -11,7 +12,10 @@
   }
   @if (profile(); as person) {
     <p-card class="profile-card">
-      <div class="cover" aria-hidden="true"></div>
+      <div class="cover" aria-hidden="true">
+        <span class="cover-code">&lt;hello, community /&gt;</span>
+        <span class="cover-mark">&#123; &#125;</span>
+      </div>
       <div class="profile-info">
         @if (avatarUrl() && !avatarFailed()) {
           <p-avatar
@@ -36,6 +40,7 @@
           </button>
         }
         <h2>{{ person.name }}</h2>
+        <p class="profile-caption">Usuário da comunidade Pudd <3</p>
         <p class="content-text bio">{{ person.bio || 'Sem bio.' }}</p>
         <div class="actions">
           <a severity="secondary" pButton routerLink="/feed" [queryParams]="{ authorId: person.id }"
@@ -43,16 +48,23 @@
           ></a>
           @if (isOwner()) {
             <button pButton type="button" (click)="editing.set(!editing())" [disabled]="busy()">
+              <i class="pi pi-pencil" aria-hidden="true"></i>
               {{ editing() ? 'Fechar edição' : 'Editar perfil' }}
             </button>
           }
         </div>
       </div>
     </p-card>
+    @if (isOwner() && !editing()) {
+      <div class="profile-note">
+        <i class="pi pi-sparkles" aria-hidden="true"></i>
+        <p>Seja você mesmo.</p>
+      </div>
+    }
     @if (isOwner() && editing()) {
       <p-card class="edit-profile"
         ><h2>Como você quer se apresentar?</h2>
-        <form class="stack" [formGroup]="form" (ngSubmit)="save()" ngNativeValidate>
+        <form class="stack" [formGroup]="form" (ngSubmit)="save()">
           <div class="field">
             <label for="profile-name">Nome</label
             ><input

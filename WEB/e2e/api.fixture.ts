@@ -18,6 +18,9 @@ export async function mockApi(page:Page) {
     ],
     comments:[{id:'55555555-5555-4555-8555-555555555555',postID:FIRST,userID:OTHER,authorName:'Ana Dev',content:'Ótimo começo!',createdAt:'2026-10-06T12:05:00Z'}],
     likes:new Map<string,boolean>(),
+    avatarUsers:new Set<string>(),avatarVersion:0,
+    postValidation:null as Record<string,string[]>|null,
+    profileValidation:null as Record<string,string[]>|null,
   };
   await page.route('https://images.unsplash.com/**',route=>route.abort());
   await page.route('http://localhost:5193/api/**',async route=>{
@@ -43,11 +46,18 @@ export async function mockApi(page:Page) {
     if(path.endsWith('/blocked')&&method==='PUT'){
       const user=state.users.find(item=>path.includes(item.id));if(user)user.isBlocked=req.postDataJSON().isBlocked;return send(null,204);
     }
-    if(path==='/users/me'&&method==='PUT'){Object.assign(state.profile,req.postDataJSON());return send(state.profile);}
-    if(path==='/users/me/avatar'&&(method==='PUT'||method==='DELETE')){state.profile.hasAvatar=method==='PUT';return send(null,204);}
-    if(path.endsWith('/avatar'))return send({url:pixel,expiresInSeconds:3600});
+    if(path==='/users/me'&&method==='PUT'){
+      if(state.profileValidation)return send({title:'Verifique os dados informados.',errors:state.profileValidation},400);
+      Object.assign(state.profile,req.postDataJSON());return send(state.profile);
+    }
+    if(path==='/users/me/avatar'&&(method==='PUT'||method==='DELETE')){state.profile.hasAvatar=method==='PUT';state.avatarVersion++;return send(null,204);}
+    if(path.endsWith('/avatar')){
+      const id=path.split('/')[2];
+      if(!(id===ME?state.profile.hasAvatar:state.avatarUsers.has(id)))return send({title:'Nenhuma imagem cadastrada.'},404);
+      return send({url:pixel+'#'+id+'-'+state.avatarVersion,expiresInSeconds:3600});
+    }
     if(path==='/users/me'||path==='/users/'+ME)return send(state.profile);
-    if(path==='/users/'+OTHER)return send({id:OTHER,name:'Ana Dev',bio:'Aprendendo em comunidade.',hasAvatar:false});
+    if(path==='/users/'+OTHER)return send({id:OTHER,name:'Ana Dev',bio:'Aprendendo em comunidade.',hasAvatar:state.avatarUsers.has(OTHER)});
     if(path==='/posts'&&method==='GET'){
       const author=url.searchParams.get('authorId');return send(paginated(state.posts.filter(p=>!author||p.userID===author)));
     }
@@ -68,6 +78,7 @@ export async function mockApi(page:Page) {
     if(method==='DELETE'&&path.includes('/comments/')){state.comments=state.comments.filter(c=>!path.endsWith(c.id));return send(null,204);}
     if(method==='DELETE'&&path.includes('/posts/')){state.posts=state.posts.filter(p=>!path.endsWith(p.id));return send(null,204);}
     if(path.startsWith('/posts')&&(method==='POST'||method==='PUT')){
+      if(state.postValidation)return send({title:'Verifique os dados informados.',errors:state.postValidation},400);
       const body=req.postData()||'';
       const content=body.match(/name="Content"\r\n\r\n([\s\S]*?)\r\n--/)?.[1]||'';
       const hasNew=body.includes('name="Image"'),remove=body.includes('name="RemoveImage"\r\n\r\ntrue');

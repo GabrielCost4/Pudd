@@ -26,6 +26,9 @@ describe('PostCard', () => {
     f.detectChanges();
     const http = TestBed.inject(HttpTestingController);
     http.expectOne(API_BASE_URL + '/posts/post/like').flush({ liked: false, count: 0 });
+    http
+      .expectOne(API_BASE_URL + '/users/member/avatar')
+      .flush(null, { status: 404, statusText: 'Not Found' });
     f.detectChanges();
     return { f, http };
   }

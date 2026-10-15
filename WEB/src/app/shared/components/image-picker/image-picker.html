@@ -1,24 +1,75 @@
 <div class="picker">
   <p-fileupload
     #picker
-    mode="basic"
-    chooseLabel="Escolher uma imagem"
+    mode="advanced"
     accept="image/jpeg,image/png,image/webp"
     [customUpload]="true"
     [auto]="false"
+    [multiple]="false"
+    [maxFileSize]="5 * 1024 * 1024"
+    [showUploadButton]="false"
+    [showCancelButton]="false"
     [disabled]="disabled()"
     (onSelect)="choose($event, picker)"
-  />
-  <small>JPG, PNG ou WebP · até 5 MB</small>
-  @if (preview()) {
-    <div class="preview">
-      <img [src]="preview()" alt="Prévia da imagem selecionada" />
-      <span>{{ filename() }}</span>
-      <button pButton type="button" severity="secondary" [disabled]="disabled()" (click)="clear()">
-        Descartar seleção
-      </button>
-    </div>
-  }
+  >
+    <ng-template #header></ng-template>
+    <ng-template #content let-chooseCallback="chooseCallback">
+      <div
+        class="dropzone"
+        role="group"
+        aria-label="Anexar imagem"
+        [attr.aria-disabled]="disabled()"
+      >
+        @if (preview()) {
+          <div class="preview">
+            <img [src]="preview()" alt="Prévia da imagem selecionada" />
+            <strong class="filename">{{ filename() }}</strong>
+            <small>Arraste outra imagem para substituir ou use o botão abaixo.</small>
+            <div class="actions">
+              <button
+                pButton
+                type="button"
+                severity="secondary"
+                [outlined]="true"
+                [disabled]="disabled()"
+                (click)="chooseCallback()"
+              >
+                <i class="pi pi-images" aria-hidden="true"></i>
+                Trocar imagem
+              </button>
+              <button
+                pButton
+                type="button"
+                severity="secondary"
+                [text]="true"
+                [disabled]="disabled()"
+                (click)="clear()"
+              >
+                <i class="pi pi-times" aria-hidden="true"></i>
+                Descartar seleção
+              </button>
+            </div>
+          </div>
+        } @else {
+          <button
+            pButton
+            type="button"
+            class="dropzone-choose"
+            severity="secondary"
+            [text]="true"
+            [disabled]="disabled()"
+            aria-label="Escolher uma imagem"
+            (click)="chooseCallback()"
+          >
+            <i class="pi pi-cloud-upload dropzone-icon" aria-hidden="true"></i>
+            <strong>Arraste uma imagem aqui</strong>
+            <span>ou clique para escolher</span>
+            <small>JPG, PNG ou WebP · até 5 MB</small>
+          </button>
+        }
+      </div>
+    </ng-template>
+  </p-fileupload>
   @if (error()) {
     <p-message severity="error" role="alert">{{ error() }}</p-message>
   }

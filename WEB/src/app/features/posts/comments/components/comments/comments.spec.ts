@@ -1,3 +1,4 @@
+import { NotificationStore } from '../../../../../core/notifications/notification.store';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
@@ -57,8 +58,6 @@ describe('Comments', () => {
       .expectOne(API_BASE_URL + '/posts/post/comments')
       .flush({ title: 'Comment rejected' }, { status: 400, statusText: 'Bad Request' });
     f.detectChanges();
-    expect(f.nativeElement.querySelector('[role="alert"]').textContent).toContain(
-      'Comment rejected',
-    );
+    expect(TestBed.inject(NotificationStore).notification()?.detail).toContain('Comment rejected');
   });
 });

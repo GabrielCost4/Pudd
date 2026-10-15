@@ -1,3 +1,4 @@
+import { NotificationStore } from '../../../../core/notifications/notification.store';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
@@ -19,7 +20,7 @@ describe('Feed', () => {
       .expectOne(API_BASE_URL + '/posts?page=1&pageSize=6')
       .flush({ title: 'Request failed' }, { status: 503, statusText: 'Unavailable' });
     f.detectChanges();
-    expect(f.nativeElement.querySelector('[role="alert"]').textContent).toContain('Request failed');
+    expect(TestBed.inject(NotificationStore).notification()?.detail).toContain('Request failed');
   });
   it('renders a successful response without an error alert', () => {
     const f = TestBed.createComponent(Feed);

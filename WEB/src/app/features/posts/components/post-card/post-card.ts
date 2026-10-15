@@ -3,6 +3,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { AvatarModule } from 'primeng/avatar';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
+import { GalleriaModule } from 'primeng/galleria';
 import { ConfirmationService } from 'primeng/api';
 import { DatePipe } from '@angular/common';
 import {
@@ -19,6 +20,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { finalize, Subscription } from 'rxjs';
 import { SessionStore } from '../../../../core/auth/session.store';
+import { AvatarStore } from '../../../../core/account/avatar.store';
 import { Feedback } from '../../../../shared/components/feedback/feedback';
 import { apiErrors } from '../../../../shared/utils/api-errors';
 import type { Post } from '../../models/post';
@@ -35,6 +37,7 @@ import { LikeService } from '../../likes/services/like.service';
     AvatarModule,
     CardModule,
     ButtonModule,
+    GalleriaModule,
     DatePipe,
     RouterLink,
     Feedback,
@@ -67,10 +70,23 @@ export class PostCard {
   });
   protected readonly session = inject(SessionStore);
   private readonly posts = inject(PostService);
+  private readonly avatars = inject(AvatarStore);
+  protected readonly authorAvatar = signal('');
+  protected readonly authorAvatarFailed = signal(false);
   private readonly likes = inject(LikeService);
   private readonly destroyRef = inject(DestroyRef);
   protected readonly likeState = signal<LikeResponse | null>(null);
   protected readonly imageUrl = signal('');
+  protected readonly galleryVisible = signal(false);
+  protected readonly galleryImages = computed(() => (this.imageUrl() ? [this.imageUrl()] : []));
+  protected readonly galleryPt = {
+    mask: { 'aria-label': 'Imagem da publicação' },
+    closeButton: { 'aria-label': 'Fechar imagem' },
+  };
+  protected readonly imageButtonTokens = {
+    root: { paddingX: '0', paddingY: '0', borderRadius: '0' },
+  };
+  private imageTrigger: HTMLElement | null = null;
   protected readonly imageFailed = signal(false);
   protected readonly likeErrors = signal<string[]>([]);
   protected readonly errors = signal<string[]>([]);
@@ -80,6 +96,17 @@ export class PostCard {
   protected readonly likesVersion = signal(0);
 
   constructor() {
+    effect((cleanup) => {
+      const id = this.post().userID;
+      this.avatars.revision();
+      this.authorAvatar.set('');
+      this.authorAvatarFailed.set(false);
+      const request = this.avatars.image(id).subscribe((url) => {
+        this.authorAvatar.set(url);
+        this.authorAvatarFailed.set(false);
+      });
+      cleanup(() => request.unsubscribe());
+    });
     effect(() => {
       this.post();
       this.expanded.set(false);
@@ -139,6 +166,19 @@ export class PostCard {
         next: (value) => this.likeState.set(value),
         error: (error: unknown) => this.errors.set(apiErrors(error)),
       });
+  }
+
+  protected openGallery(event: Event): void {
+    if (!this.imageUrl() || this.imageFailed()) return;
+    this.imageTrigger = event.currentTarget as HTMLElement;
+    this.galleryVisible.set(true);
+  }
+
+  protected closeGallery(event?: Event): void {
+    event?.stopPropagation();
+    this.galleryVisible.set(false);
+    this.imageTrigger?.focus({ preventScroll: true });
+    this.imageTrigger = null;
   }
 
   protected remove(): void {

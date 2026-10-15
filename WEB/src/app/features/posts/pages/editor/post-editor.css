@@ -1,30 +1,120 @@
 .editor {
-  max-width: 740px;
+  max-width: 44rem;
   margin: auto;
+}
+.back-link {
+  margin-left: -0.75rem;
+  margin-bottom: 1.25rem;
+}
+h1 {
+  margin-bottom: 1.75rem;
 }
 .editor.embedded {
   --p-card-shadow: none;
   --p-card-body-padding: 0;
   max-width: none;
 }
-.editor > p.muted {
-  font-size: 0.9rem;
-  margin-bottom: 30px;
+.composer-author {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1.5rem 1.5rem 0;
 }
-.field > span,
+.composer-author > div {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+}
+.composer-author small {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+.composer-author strong {
+  font-size: 0.9375rem;
+  overflow-wrap: anywhere;
+}
+.writing-area {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.5rem;
+}
+.content-field label {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.content-field textarea {
+  min-height: 12rem;
+  line-height: 1.7;
+  resize: vertical;
+}
+.character-count {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.character-count.over-limit {
+  color: var(--danger);
+}
+.attachment {
+  display: grid;
+  gap: 0.75rem;
+}
+.attachment-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.8125rem;
+}
+.attachment-label > span {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.attachment-label small {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
 .checkbox {
   font-size: 0.85rem;
-}
-.checkbox {
   display: flex;
-  gap: 10px;
+  gap: 0.625rem;
   align-items: center;
 }
 .image-note {
   font-size: 0.8rem;
   margin: 0;
 }
-.actions {
+.composer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
   border-top: 1px solid var(--border);
-  padding-top: 22px;
+  padding: 1rem 1.5rem;
+}
+.composer-actions button[type='submit'] {
+  min-width: 8rem;
+}
+.embedded .writing-area {
+  padding: 0;
+}
+.embedded .content-field textarea {
+  min-height: 8rem;
+}
+.embedded .composer-actions {
+  padding: 1rem 0 0;
+  margin-top: 1.5rem;
+}
+@media (max-width: 420px) {
+  .composer-author {
+    padding: 1rem 1rem 0;
+  }
+  .writing-area {
+    padding: 1rem;
+    gap: 1.25rem;
+  }
+  .composer-actions {
+    padding: 1rem;
+    gap: 0.5rem;
+  }
 }

@@ -7,6 +7,7 @@ import { DOCUMENT } from '@angular/common';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { SessionStore } from '../auth/session.store';
+import { AccountStore } from '../account/account.store';
 import { ThemeStore } from '../config/theme.store';
 import { ThemeToggle } from '../../shared/components/theme-toggle/theme-toggle';
 import { BrandLogo } from '../../shared/components/brand-logo/brand-logo';
@@ -28,6 +29,7 @@ import { BrandLogo } from '../../shared/components/brand-logo/brand-logo';
 })
 export class AppShell {
   protected readonly session = inject(SessionStore);
+  protected readonly account = inject(AccountStore);
   protected readonly theme = inject(ThemeStore);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);

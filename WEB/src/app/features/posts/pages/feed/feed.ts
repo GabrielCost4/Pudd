@@ -9,6 +9,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError, finalize, of, switchMap } from 'rxjs';
 import { SessionStore } from '../../../../core/auth/session.store';
+import { AccountStore } from '../../../../core/account/account.store';
 import { Feedback } from '../../../../shared/components/feedback/feedback';
 import { Pagination } from '../../../../shared/components/pagination/pagination';
 import { apiErrors } from '../../../../shared/utils/api-errors';
@@ -35,6 +36,11 @@ import { PostEditor } from '../editor/post-editor';
   styleUrl: './feed.css',
 })
 export class Feed {
+  protected readonly account = inject(AccountStore);
+  protected readonly composerCardTokens = { body: { padding: '1rem', gap: '0' } };
+  protected readonly composerButtonTokens = {
+    root: { paddingX: '0.25rem', paddingY: '0.25rem', gap: '0.875rem' },
+  };
   protected readonly session = inject(SessionStore);
   private readonly api = inject(PostService);
   private readonly document = inject(DOCUMENT);
@@ -43,7 +49,9 @@ export class Feed {
   private readonly router = inject(Router);
   protected readonly posts = signal<Post[]>([]);
   protected readonly loading = signal(true);
+  protected readonly loaded = signal(false);
   protected readonly errors = signal<string[]>([]);
+  protected readonly success = signal('');
   protected readonly page = signal(1);
   protected readonly hasNext = signal(false);
   protected readonly authorId = signal('');
@@ -52,6 +60,7 @@ export class Feed {
 
   protected openEditor(post: Post): void {
     if (post.userID !== this.session.user().id) return;
+    this.success.set('');
     const activeElement = this.document.activeElement;
     this.editTrigger = activeElement instanceof HTMLElement ? activeElement : null;
     this.editSaving.set(false);
@@ -68,6 +77,7 @@ export class Feed {
   }
 
   protected updated(post: Post): void {
+    this.success.set('Publicação atualizada com sucesso.');
     this.posts.update((items) => items.map((item) => (item.id === post.id ? post : item)));
     this.editSaving.set(false);
     this.editingPost.set(null);
@@ -81,7 +91,7 @@ export class Feed {
           this.authorId.set(params.get('authorId') || '');
           this.loading.set(true);
           this.errors.set([]);
-          this.posts.set([]);
+          this.success.set('');
           return this.api.list(this.page(), this.authorId() || undefined).pipe(
             catchError((error: unknown) => {
               this.errors.set(apiErrors(error));
@@ -96,6 +106,7 @@ export class Feed {
         if (response) {
           this.posts.set(response.items);
           this.hasNext.set(response.hasNextPage);
+          this.loaded.set(true);
         }
       });
   }

@@ -9,6 +9,8 @@
   --text: var(--p-text-color);
   --muted: var(--p-text-muted-color);
   --accent: var(--p-primary-color);
+  --accent-soft: color-mix(in srgb, var(--accent) 9%, var(--surface));
+  --accent-border: color-mix(in srgb, var(--accent) 22%, var(--border));
   --danger: var(--p-red-600);
 }
 .pudd-dark {
@@ -80,6 +82,16 @@ p {
   font-weight: 600;
   color: var(--accent);
   margin: 0 0 16px;
+}
+.community-kicker {
+  color: var(--accent);
+  font:
+    600 0.7rem/1.5 'Cascadia Code',
+    Consolas,
+    monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0 0 0.75rem;
 }
 .page-header {
   display: flex;
@@ -180,6 +192,12 @@ p {
 .loading-spinner {
   width: 2rem;
   height: 2rem;
+}
+.feedback-toast {
+  margin-top: 3.5rem;
+}
+.feedback-toast-detail {
+  white-space: pre-line;
 }
 p-card {
   display: block;

@@ -9,10 +9,11 @@ internal static class UploadedImage
     {
         if (file is null)
             return null;
+
         if (file.Length < 1 || file.Length > ImageUpload.MaxBytes)
             throw new AppException(ErrorCode.InvalidInput, "Envie uma imagem de até 5 MB.");
 
-        // Um único buffer para o arquivo, sem MemoryStream + cópia por ToArray.
+  
         var bytes = new byte[(int)file.Length];
         await using var stream = file.OpenReadStream();
         try

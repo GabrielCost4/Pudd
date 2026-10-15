@@ -4,11 +4,44 @@
 }
 small {
   color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.6;
+}
+.dropzone {
+  min-width: 0;
+}
+.dropzone-choose {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 11rem;
+  white-space: normal;
+  text-align: center;
+}
+.dropzone-choose > span {
+  font-size: 0.8125rem;
+  font-weight: 400;
+}
+.dropzone-icon {
+  color: var(--accent);
+  font-size: 2rem;
 }
 .preview {
   display: grid;
-  justify-items: start;
+  justify-items: center;
   gap: 0.75rem;
+  text-align: center;
+}
+.preview .actions {
+  justify-content: center;
+}
+.filename {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font-size: 0.875rem;
 }
 .preview img {
   max-width: 100%;

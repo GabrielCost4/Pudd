@@ -13,6 +13,7 @@ export const appConfig: ApplicationConfig = {
       pt: {
         progressspinner: { root: { class: 'loading-spinner' } },
         confirmdialog: { root: { class: 'confirmation-dialog' } },
+        toast: { root: { class: 'feedback-toast' }, detail: { class: 'feedback-toast-detail' } },
       },
       translation: {
         accept: 'Confirmar',

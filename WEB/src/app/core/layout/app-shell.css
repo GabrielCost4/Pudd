@@ -2,6 +2,24 @@
   display: block;
   min-height: 100dvh;
 }
+.navigation-aside {
+  position: fixed;
+  top: 0;
+  height: 100dvh;
+}
+p-sidebar-header,
+p-sidebar-footer {
+  flex-shrink: 0;
+}
+p-sidebar-header {
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+p-sidebar-content {
+  padding-inline: 0.75rem;
+  overscroll-behavior: contain;
+}
 .main-column {
   position: relative;
   min-width: 0;
@@ -16,27 +34,53 @@
   align-items: center;
 }
 main {
-  padding: 1.75rem 2rem;
+  padding: 4.75rem 2.5rem 2.5rem;
   min-width: 0;
 }
 .brand-image {
   display: flex;
   align-items: center;
-  min-height: 5rem;
+  min-height: 3.5rem;
 }
 .brand-image app-brand-logo {
-  width: 8.5rem;
+  width: 9rem;
 }
 .account {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.75rem;
   min-width: 0;
+  width: 100%;
+  justify-content: flex-start;
+  text-align: left;
+  padding: 0.75rem;
 }
-.account > span {
+.account-info {
+  display: grid;
+  gap: 0.1875rem;
+  min-width: 0;
+  flex: 1;
+  line-height: 1.4;
+}
+.account-info strong {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.account-info > span {
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: 0.75rem;
+  font-weight: 400;
+  white-space: nowrap;
+  color: var(--muted);
+}
+.account-arrow {
+  font-size: 0.75rem;
+  flex-shrink: 0;
 }
 .logout {
   width: 100%;
@@ -45,6 +89,7 @@ main {
 p-sidebar-footer {
   display: grid;
   gap: 0.5rem;
+  border-top: 1px solid var(--border);
 }
 @media (max-width: 760px) {
   .app-controls {
