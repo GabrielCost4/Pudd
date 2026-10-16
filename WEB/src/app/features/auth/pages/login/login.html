@@ -8,20 +8,8 @@
   <div class="auth-content">
     <app-login-intro class="intro-panel" [dark]="theme.mode() === 'dark'" />
     <section class="login-panel" aria-labelledby="login-title">
-      <svg
-        class="panel-curve"
-        viewBox="0 0 120 1000"
-        preserveAspectRatio="none"
-        aria-hidden="true"
-        focusable="false"
-      >
-        <path d="M120 0 H70 C-30 200 130 320 60 500 C-10 680 -10 820 70 1000 H120 Z" />
-      </svg>
       <p-card class="login-card">
-        <div class="auth-heading">
-          <span class="auth-symbol"
-            ><i [class]="registering ? 'pi pi-user-plus' : 'pi pi-sign-in'" aria-hidden="true"></i
-          ></span>
+        <div class="auth-heading" [class.login-heading]="!registering">
           <h1 id="login-title">{{ registering ? 'Criar conta' : 'Entrar' }}</h1>
           <p>
             {{

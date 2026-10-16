@@ -62,6 +62,11 @@ export class AppShell {
     });
   }
 
+  protected focusContent(event: Event, content: HTMLElement): void {
+    event.preventDefault();
+    content.focus();
+  }
+
   protected closeNavigation(): void {
     if (this.mobile()) this.navigationOpen.set(false);
   }

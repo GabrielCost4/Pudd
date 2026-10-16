@@ -41,21 +41,13 @@
   min-width: 0;
   padding: 5rem 1.5rem 1rem;
   background: var(--surface);
-}
-.panel-curve {
-  position: absolute;
-  left: -7.4375rem;
-  top: 0;
-  width: 7.5rem;
-  height: 100%;
-  fill: var(--surface);
-  pointer-events: none;
+  border-left: 1px solid var(--border);
 }
 .login-card {
-  --p-inputtext-border-radius: 0.75rem;
+  --p-inputtext-border-radius: var(--radius-small);
   --p-inputtext-lg-padding-y: 0.7rem;
   --p-inputtext-lg-font-size: 0.875rem;
-  --p-button-border-radius: 0.75rem;
+  --p-button-border-radius: var(--radius-small);
   --p-card-shadow: none;
   --p-card-background: transparent;
   --p-card-body-padding: 0.75rem;
@@ -63,25 +55,17 @@
   position: relative;
   display: block;
   width: 100%;
-  max-width: 23rem;
+  max-width: 25rem;
 }
 .auth-heading {
   margin-bottom: 1.25rem;
 }
-.auth-symbol {
-  display: inline-grid;
-  place-items: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  margin-bottom: 0.625rem;
-  border-radius: 0.75rem;
-  background: var(--surface-raised);
-  color: var(--accent);
-  font-size: 1rem;
-}
 h1 {
-  font-size: 1.75rem;
-  margin-bottom: 0.5rem;
+  font-size: var(--type-h1);
+  margin-bottom: 0.75rem;
+}
+.login-heading {
+  padding-bottom: var(--space-3);
 }
 .auth-heading p {
   margin: 0;
@@ -114,7 +98,7 @@ form {
 .field-hint {
   color: var(--muted);
   font-size: 0.75rem;
-  margin-top: -0.75rem;
+  margin-top: 0;
 }
 app-feedback:empty {
   display: none;
@@ -129,11 +113,8 @@ app-feedback:empty {
   .login-panel {
     padding: 4rem 1rem 0.5rem;
   }
-  .auth-symbol {
-    display: none;
-  }
   .auth-heading {
-    margin-bottom: 0.75rem;
+    margin-bottom: 0;
   }
   h1 {
     font-size: 1.5rem;
@@ -161,8 +142,7 @@ app-feedback:empty {
     padding: 4rem 1rem 0.5rem;
     min-height: 100dvh;
   }
-  .intro-panel,
-  .panel-curve {
+  .intro-panel {
     display: none;
   }
 }

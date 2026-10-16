@@ -81,7 +81,11 @@ test('shows API validation and success messages for creating and editing posts a
   await page.getByRole('button', { name: 'Editar perfil', exact: true }).click();
   await page.getByLabel('Nome', { exact: true }).fill('');
   await page.getByRole('button', { name: 'Salvar perfil', exact: true }).click();
-  await expect(page.getByRole('alert')).toContainText('Informe seu nome.');
+  await expect(page.locator('#profile-name-error')).toHaveText('Informe seu nome.');
+  await expect(page.getByLabel('Nome', { exact: true })).toHaveAttribute(
+    'aria-describedby',
+    'profile-name-error',
+  );
   await page.getByLabel('Nome', { exact: true }).fill('Gabriel Atualizado');
   api.profileValidation = {
     Name: ['Nome deve ter até 50 caracteres.'],

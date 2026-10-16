@@ -18,6 +18,15 @@ test('opens post images in Galleria and restores focus after keyboard, close but
   for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: 900 });
     const trigger = page.getByRole('button', { name: 'Ampliar imagem da publicação', exact: true });
+    const card = page.locator('app-post-card').first();
+    const contentBounds = await card.locator('.content-text').boundingBox();
+    const mediaBounds = await card.locator('.post-image').boundingBox();
+    expect(Math.abs(mediaBounds!.width - contentBounds!.width)).toBeLessThanOrEqual(1);
+    expect(Math.abs(mediaBounds!.x - contentBounds!.x)).toBeLessThanOrEqual(1);
+    expect(
+      await trigger.locator('img').evaluate((image) => getComputedStyle(image).objectFit),
+    ).toBe('contain');
+    await page.screenshot({ path: `test-results/post-media-${width}.png`, fullPage: true });
     const url = page.url();
     await trigger.focus();
     await page.keyboard.press('Enter');

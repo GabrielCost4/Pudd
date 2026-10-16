@@ -3,7 +3,6 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { AvatarModule } from 'primeng/avatar';
 import { CardModule } from 'primeng/card';
 import { TextareaModule } from 'primeng/textarea';
-import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmationService } from 'primeng/api';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -14,6 +13,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError, finalize, of, Subscription, switchMap } from 'rxjs';
 import { SessionStore } from '../../../../core/auth/session.store';
 import { AccountStore } from '../../../../core/account/account.store';
+import { LabelInput } from '../../../../shared/components/label-input/label-input';
 import { Feedback } from '../../../../shared/components/feedback/feedback';
 import { ImagePicker } from '../../../../shared/components/image-picker/image-picker';
 import { apiErrors } from '../../../../shared/utils/api-errors';
@@ -29,11 +29,11 @@ import { ProfileService } from '../../services/profile.service';
     AvatarModule,
     CardModule,
     TextareaModule,
-    InputTextModule,
     ButtonModule,
     RouterLink,
     ReactiveFormsModule,
     Feedback,
+    LabelInput,
     ImagePicker,
   ],
   templateUrl: './profile.html',
@@ -129,14 +129,19 @@ export class ProfilePage {
   protected cancelEdit(): void {
     const profile = this.profile();
     if (profile) this.setProfile(profile);
+    this.selectedImage.set(null);
     this.editing.set(false);
+  }
+  protected nameError(): string | null {
+    return this.form.controls.name.touched && !this.form.controls.name.value.trim()
+      ? 'Informe seu nome.'
+      : null;
   }
   protected save(): void {
     if (this.busy()) return;
     this.errors.set([]);
     this.success.set('');
     if (!this.form.controls.name.value.trim()) {
-      this.errors.set(['Informe seu nome.']);
       this.form.markAllAsTouched();
       return;
     }
@@ -150,6 +155,7 @@ export class ProfilePage {
       .subscribe({
         next: (profile) => {
           this.setProfile(profile);
+          this.selectedImage.set(null);
           this.editing.set(false);
           this.success.set('Seu perfil foi atualizado.');
           this.account.refresh();

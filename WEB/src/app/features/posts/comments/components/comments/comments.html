@@ -49,7 +49,7 @@
           @if (comment.userID === session.user().id || session.isAdmin()) {
             <button
               [text]="true"
-              severity="secondary"
+              severity="danger"
               pButton
               type="button"
               [disabled]="!!deleting()"
@@ -69,7 +69,7 @@
       </article>
     } @empty {
       @if (!errors().length) {
-        <p class="empty">Seja a primeira pessoa a comentar.</p>
+        <p class="empty">Nenhum comentário nesta publicação.</p>
       }
     }
     <app-pagination

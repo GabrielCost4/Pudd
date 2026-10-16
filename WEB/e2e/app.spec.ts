@@ -75,6 +75,17 @@ test('fits login and registration within desktop and mobile viewport height', as
     for (const route of ['/login', '/register']) {
       await page.goto(route);
       await expect(page.locator('#login-title')).toBeVisible();
+      if (route === '/login') {
+        const title = await page.locator('#login-title').boundingBox();
+        const subtitle = await page.locator('.auth-heading p').boundingBox();
+        const emailLabel = await page.locator('label[for="email"]').boundingBox();
+        expect(Math.abs(subtitle!.y - title!.y - title!.height - 12)).toBeLessThanOrEqual(1);
+        const expectedGap = viewport.height <= 740 ? 12 : 32;
+        expect(
+          Math.abs(emailLabel!.y - subtitle!.y - subtitle!.height - expectedGap),
+        ).toBeLessThanOrEqual(1);
+      }
+
       await expect
         .poll(() =>
           page.evaluate(() => document.documentElement.scrollHeight <= window.innerHeight + 1),

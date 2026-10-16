@@ -24,7 +24,7 @@ test('keeps community pages accessible within desktop and mobile viewports in bo
 }) => {
   await mockApi(page);
   await login(page);
-  for (const width of [1440, 390, 320]) {
+  for (const width of [1440, 820, 390, 320]) {
     await page.setViewportSize({ width, height: 900 });
     for (const mode of ['light', 'dark']) {
       if (mode === 'dark') {
@@ -62,6 +62,11 @@ test('keeps community pages accessible within desktop and mobile viewports in bo
             },
           );
           await expect(page.locator('app-post-card')).toHaveCount(2);
+          const cards = page.locator('app-post-card .post-card');
+          const upper = await cards.nth(0).boundingBox();
+          const lower = await cards.nth(1).boundingBox();
+          expect(lower!.y - upper!.y - upper!.height).toBeGreaterThanOrEqual(47);
+
           const community = page.getByRole('link', { name: 'Comunidade', exact: true });
           const mine = page.getByRole('link', { name: 'Minhas publicações', exact: true });
           await expect(community).toHaveAttribute('aria-current', 'page');

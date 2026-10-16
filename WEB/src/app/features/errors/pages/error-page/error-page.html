@@ -3,8 +3,8 @@
     class="brand-placeholder"
     [routerLink]="session.isAuthenticated() ? '/feed' : '/login'"
     aria-label="Pudd"
-    ><i class="pi pi-image" aria-hidden="true"></i
-  ></a>
+    >pudd<span aria-hidden="true">.</span></a
+  >
   <p-card class="error-card">
     <div class="error-code" aria-hidden="true">{{ code }}</div>
     <p class="eyebrow">{{ notFound ? 'CAMINHO NÃO ENCONTRADO' : 'ACESSO NÃO AUTORIZADO' }}</p>

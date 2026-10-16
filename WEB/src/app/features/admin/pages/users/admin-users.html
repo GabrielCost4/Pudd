@@ -52,7 +52,8 @@
             } @else {
               <button
                 pButton
-                severity="secondary"
+                [severity]="user.isBlocked ? 'secondary' : 'danger'"
+                [outlined]="true"
                 type="button"
                 [disabled]="!!changing()"
                 [loading]="changing() === user.id"

@@ -30,7 +30,7 @@
   height: 34px;
   border-radius: 30px;
   background-color: var(--p-primary-700);
-  transition: background-color 0.4s;
+  transition: background-color 160ms;
 }
 .handle {
   position: absolute;
@@ -42,7 +42,7 @@
   z-index: 2;
   background-color: var(--p-primary-100);
   box-shadow: 0 1px 3px color-mix(in srgb, var(--p-primary-950) 20%, transparent);
-  transition: transform 0.4s;
+  transition: transform 160ms;
 }
 .sun,
 .moon {
@@ -57,12 +57,10 @@
 .sun {
   right: 4px;
   color: var(--p-primary-100);
-  animation: rotate 15s linear infinite;
 }
 .moon {
   left: 4px;
   color: var(--p-primary-300);
-  animation: tilt 5s linear infinite;
 }
 .input:checked + .slider {
   background-color: var(--p-primary-950);
@@ -73,19 +71,6 @@
 .input:focus-visible + .slider {
   outline: 3px solid var(--accent);
   outline-offset: 3px;
-}
-@keyframes rotate {
-  to {
-    transform: rotate(360deg);
-  }
-}
-@keyframes tilt {
-  25% {
-    transform: rotate(-10deg);
-  }
-  75% {
-    transform: rotate(10deg);
-  }
 }
 @media (prefers-reduced-motion: reduce) {
   .sun,

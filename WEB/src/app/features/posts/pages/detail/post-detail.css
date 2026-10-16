@@ -1,7 +1,7 @@
 .detail {
-  max-width: 740px;
+  max-width: 44rem;
   margin: auto;
 }
 h1 {
-  margin-bottom: 30px;
+  margin-bottom: var(--space-8);
 }

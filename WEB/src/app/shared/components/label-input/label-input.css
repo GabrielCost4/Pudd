@@ -8,7 +8,9 @@ p-floatlabel,
 }
 input {
   width: 100%;
-  padding-right: 3.25rem;
+}
+.password-input {
+  padding-inline-end: 3.25rem;
 }
 .field-label {
   display: block;
@@ -26,6 +28,6 @@ input {
 .field-error {
   display: block;
   margin-top: 0.5rem;
-  color: var(--p-red-500);
+  color: var(--danger);
   font-size: 0.75rem;
 }

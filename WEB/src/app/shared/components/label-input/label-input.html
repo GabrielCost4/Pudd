@@ -2,11 +2,13 @@
   @if (type() === 'password') {
     <input
       pInputPassword
+      class="password-input"
       [mask]="!showPassword()"
       [id]="inputId()"
       [formControl]="control()"
       [autocomplete]="autocomplete()"
       [required]="required()"
+      [readOnly]="readOnly()"
       [placeholder]="placeholder()"
       [pSize]="stacked() ? 'large' : undefined"
       [invalid]="!!error()"
@@ -23,6 +25,7 @@
       [formControl]="control()"
       [autocomplete]="autocomplete()"
       [required]="required()"
+      [readOnly]="readOnly()"
       [placeholder]="placeholder()"
       [pSize]="stacked() ? 'large' : undefined"
       [invalid]="!!error()"

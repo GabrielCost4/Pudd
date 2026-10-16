@@ -23,7 +23,7 @@
 h1 {
   font-size: clamp(1.75rem, 3vw, 2.25rem);
   margin: 0;
-  letter-spacing: -0.07em;
+  letter-spacing: -0.045em;
 }
 .feed-composer {
   margin-bottom: 1.5rem;
@@ -46,11 +46,9 @@ h1 {
   gap: 0.375rem;
   width: fit-content;
   max-width: 100%;
-  padding: 0.375rem;
-  border: 1px solid var(--border);
-  border-radius: 2rem;
-  background: var(--surface-raised);
-  margin-bottom: 1.25rem;
+  padding: 0 0 0.75rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1rem;
 }
 .feed-tabs a {
   min-height: 2.75rem;
@@ -61,7 +59,7 @@ h1 {
     width: 100%;
     grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
     gap: 0.125rem;
-    padding: 0.25rem;
+    padding: 0 0 0.75rem;
   }
   .feed-tabs a {
     gap: 0.375rem;
@@ -70,7 +68,7 @@ h1 {
 }
 .post-list {
   display: grid;
-  gap: 1.25rem;
+  gap: var(--space-12, 3rem);
 }
 .feed-update {
   display: flex;
@@ -128,7 +126,8 @@ h1 {
   margin-bottom: 0;
 }
 .rail-footer {
-  padding: 0.5rem 0.75rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--border);
   font-size: 0.7rem;
 }
 @media (max-width: 1250px) {
@@ -154,4 +153,47 @@ h1 {
   .create-post-link {
     width: 100%;
   }
+}
+
+.feed-tabs a[aria-current='page'] {
+  --p-button-text-secondary-color: var(--p-primary-100);
+  --p-button-text-secondary-hover-background: var(--p-primary-800);
+  --p-button-text-secondary-active-background: var(--p-primary-900);
+  background: var(--p-primary-700);
+}
+.community-about {
+  border-top: 2px solid var(--accent);
+  padding-top: var(--space-5);
+}
+.load-error {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-4);
+  padding-block: var(--space-8);
+  border-block: 1px solid var(--border);
+}
+.load-error h2 {
+  margin: 0;
+  font-size: var(--type-h3);
+}
+
+.feed-skeleton,
+.skeleton-lines {
+  display: grid;
+  gap: var(--space-3);
+}
+.feed-skeleton {
+  gap: var(--space-4);
+}
+.skeleton-author {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.skeleton-lines {
+  flex: 1;
+  min-width: 0;
+}
+.skeleton-content {
+  margin-block: var(--space-6);
 }

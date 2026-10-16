@@ -3,6 +3,7 @@ import Aura from '@primeuix/themes/aura';
 
 export const puddTheme = definePreset(Aura, {
   semantic: {
+    formField: { borderRadius: '0.375rem' },
     primary: {
       50: '#f1f5ea',
       100: '#e0e4ce',
@@ -18,6 +19,7 @@ export const puddTheme = definePreset(Aura, {
     },
     colorScheme: {
       light: {
+        text: { mutedColor: '{surface.600}' },
         primary: {
           color: '{primary.700}',
           contrastColor: '{primary.100}',
@@ -40,6 +42,7 @@ export const puddTheme = definePreset(Aura, {
         },
       },
       dark: {
+        text: { mutedColor: '{surface.400}' },
         primary: {
           color: '{primary.300}',
           contrastColor: '{primary.950}',
@@ -66,7 +69,7 @@ export const puddTheme = definePreset(Aura, {
   components: {
     button: {
       root: {
-        borderRadius: '0.75rem',
+        borderRadius: '0.375rem',
         label: { fontWeight: '600' },
         primary: {
           background: '{primary.700}',
@@ -91,24 +94,26 @@ export const puddTheme = definePreset(Aura, {
           activeColor: 'light-dark({primary.950}, {primary.50})',
         },
       },
-      text: { secondary: { color: '{text.muted.color}' } },
+      text: {
+        secondary: { color: '{text.muted.color}' },
+        danger: { color: 'light-dark({red.700}, {red.300})' },
+      },
     },
     toast: { root: { width: 'min(24rem, calc(100vw - 2.5rem))' } },
     fileupload: {
-      root: { borderRadius: '1rem' },
+      root: { borderRadius: '0.5rem' },
       header: { padding: '0', borderWidth: '0' },
       content: { padding: '1rem', highlightBorderColor: '{primary.color}' },
     },
     card: {
       root: {
-        borderRadius: '1.25rem',
-        shadow:
-          '0 0 0 1px {content.border.color}, 0 4px 14px color-mix(in srgb, {text.color} 7%, transparent)',
+        borderRadius: '0.625rem',
+        shadow: '0 0 0 1px {content.border.color}',
       },
       body: { padding: '1.5rem', gap: '1rem' },
       colorScheme: {
         dark: {
-          root: { shadow: '0 0 0 1px {surface.800}, 0 4px 16px rgb(0 0 0 / 0.12)' },
+          root: { shadow: '0 0 0 1px {surface.800}' },
         },
       },
     },
@@ -122,15 +127,15 @@ export const puddTheme = definePreset(Aura, {
       },
     },
     sidebar: {
-      header: { padding: '2rem 1.25rem', gap: '0.5rem' },
+      header: { padding: '1.5rem 1.25rem', gap: '0.5rem' },
       footer: { padding: '1rem', gap: '0.625rem' },
       layout: { background: 'light-dark({surface.50}, {surface.950})' },
       main: { background: 'light-dark({surface.50}, {surface.950})' },
-      menu: { gap: '0.625rem' },
+      menu: { gap: '0.375rem' },
       menuButton: {
-        height: '3.25rem',
-        borderRadius: '0.625rem',
-        padding: '0.875rem 1rem',
+        height: '2.875rem',
+        borderRadius: '0.375rem',
+        padding: '0.75rem 1rem',
         gap: '0.875rem',
         fontWeight: '600',
         icon: { color: 'currentColor', focusColor: 'currentColor' },

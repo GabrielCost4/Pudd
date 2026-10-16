@@ -1,4 +1,6 @@
-<a class="skip-link" href="#main-content">Pular para o conteúdo</a>
+<a class="skip-link" href="#main-content" (click)="focusContent($event, mainContent)"
+  >Pular para o conteúdo</a
+>
 <p-sidebar-layout>
   <p-sidebar
     id="navigation"
@@ -164,6 +166,6 @@
       }
       <app-theme-toggle [dark]="theme.mode() === 'dark'" (toggled)="theme.toggle()" />
     </div>
-    <main id="main-content" tabindex="-1"><router-outlet /></main>
+    <main #mainContent id="main-content" tabindex="-1"><router-outlet /></main>
   </p-sidebar-main>
 </p-sidebar-layout>

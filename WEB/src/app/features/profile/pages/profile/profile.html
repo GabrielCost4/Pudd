@@ -12,10 +12,7 @@
   }
   @if (profile(); as person) {
     <p-card class="profile-card">
-      <div class="cover" aria-hidden="true">
-        <span class="cover-code">&lt;hello, community /&gt;</span>
-        <span class="cover-mark">&#123; &#125;</span>
-      </div>
+      <div class="cover" aria-hidden="true"></div>
       <div class="profile-info">
         @if (avatarUrl() && !avatarFailed()) {
           <p-avatar
@@ -40,14 +37,21 @@
           </button>
         }
         <h2>{{ person.name }}</h2>
-        <p class="profile-caption">Usuário da comunidade Pudd <3</p>
+        <p class="profile-caption">Membro da comunidade Pudd</p>
         <p class="content-text bio">{{ person.bio || 'Sem bio.' }}</p>
         <div class="actions">
           <a severity="secondary" pButton routerLink="/feed" [queryParams]="{ authorId: person.id }"
             >Ver publicações <i class="pi pi-arrow-right" aria-hidden="true"></i
           ></a>
           @if (isOwner()) {
-            <button pButton type="button" (click)="editing.set(!editing())" [disabled]="busy()">
+            <button
+              pButton
+              type="button"
+              (click)="editing() ? cancelEdit() : editing.set(true)"
+              [disabled]="busy()"
+              [attr.aria-expanded]="editing()"
+              aria-controls="profile-edit-fields"
+            >
               <i class="pi pi-pencil" aria-hidden="true"></i>
               {{ editing() ? 'Fechar edição' : 'Editar perfil' }}
             </button>
@@ -55,27 +59,20 @@
         </div>
       </div>
     </p-card>
-    @if (isOwner() && !editing()) {
-      <div class="profile-note">
-        <i class="pi pi-sparkles" aria-hidden="true"></i>
-        <p>Seja você mesmo.</p>
-      </div>
-    }
     @if (isOwner() && editing()) {
-      <p-card class="edit-profile"
-        ><h2>Como você quer se apresentar?</h2>
-        <form class="stack" [formGroup]="form" (ngSubmit)="save()">
-          <div class="field">
-            <label for="profile-name">Nome</label
-            ><input
-              pInputText
-              id="profile-name"
-              formControlName="name"
-              autocomplete="name"
-              required
-              [readOnly]="busy()"
-            />
-          </div>
+      <p-card class="edit-profile" id="profile-edit-fields"
+        ><h2>Editar perfil</h2>
+        <form class="stack" [formGroup]="form" (ngSubmit)="save()" [attr.aria-busy]="busy()">
+          <app-label-input
+            inputId="profile-name"
+            label="Nome"
+            autocomplete="name"
+            [control]="form.controls.name"
+            [required]="true"
+            [stacked]="true"
+            [error]="nameError()"
+            [readOnly]="busy()"
+          />
           <div class="field">
             <label for="profile-bio">Bio</label
             ><textarea
@@ -111,6 +108,7 @@
           <button
             pButton
             type="button"
+            [loading]="busy()"
             [disabled]="busy() || !selectedImage()"
             (click)="uploadAvatar()"
           >
@@ -118,6 +116,7 @@
           </button>
           @if (person.hasAvatar) {
             <button
+              [text]="true"
               severity="danger"
               pButton
               type="button"

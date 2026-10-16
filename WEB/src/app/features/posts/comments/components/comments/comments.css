@@ -1,26 +1,26 @@
 .comments {
-  margin-top: 32px;
+  margin-top: var(--space-8);
 }
 .comments h2 {
-  margin-bottom: 24px;
+  margin-bottom: var(--space-6);
 }
 .comments h2 span {
   color: var(--accent);
 }
 .comment-form {
   display: grid;
-  gap: 14px;
+  gap: var(--space-4);
 }
 .comment-form button {
   justify-self: end;
 }
 .comment-form textarea {
-  min-height: 100px;
+  min-height: 6rem;
 }
 .comment {
   display: flex;
-  gap: 14px;
-  padding: 24px 0;
+  gap: var(--space-4);
+  padding: var(--space-6) 0;
   border-bottom: 1px solid var(--border);
 }
 .comment-body {
@@ -30,18 +30,18 @@
 .comment header {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: var(--space-3);
   align-items: center;
 }
 .comment header a {
-  font-size: 0.85rem;
+  font-size: var(--type-small);
   font-weight: 600;
 }
 .comment small {
   color: var(--muted);
-  font-size: 0.65rem;
+  font-size: var(--type-caption);
 }
 .comment p {
-  font-size: 0.85rem;
-  margin: 12px 0;
+  font-size: var(--type-small);
+  margin: var(--space-3) 0;
 }

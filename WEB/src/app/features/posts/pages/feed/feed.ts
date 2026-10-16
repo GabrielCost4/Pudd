@@ -1,4 +1,4 @@
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { SkeletonModule } from 'primeng/skeleton';
 import { AvatarModule } from 'primeng/avatar';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
@@ -21,7 +21,7 @@ import { PostEditor } from '../editor/post-editor';
 @Component({
   selector: 'app-feed',
   imports: [
-    ProgressSpinnerModule,
+    SkeletonModule,
     AvatarModule,
     CardModule,
     ButtonModule,

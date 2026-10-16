@@ -30,6 +30,7 @@ export class LabelInput {
   readonly type = input<'text' | 'email' | 'password'>('text');
   readonly autocomplete = input('off');
   readonly required = input(false);
+  readonly readOnly = input(false);
   readonly describedBy = input<string | null>(null);
   readonly stacked = input(false);
   readonly icon = input<string | null>(null);

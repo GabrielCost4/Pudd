@@ -17,7 +17,7 @@
           >
         }
       </div>
-      <a pButton class="create-post-link" [rounded]="true" [raised]="true" routerLink="/posts/new"
+      <a pButton class="create-post-link" routerLink="/posts/new"
         ><i class="pi pi-pencil" aria-hidden="true"></i><span>Nova publicação</span></a
       >
     </header>
@@ -55,16 +55,16 @@
     <nav class="feed-tabs" aria-label="Filtrar publicações">
       <a
         pButton
-        [severity]="!authorId() ? 'primary' : 'secondary'"
-        [rounded]="true"
+        severity="secondary"
+        [text]="true"
         routerLink="/feed"
         [attr.aria-current]="!authorId() ? 'page' : null"
         ><i class="pi pi-users" aria-hidden="true"></i><span>Comunidade</span></a
       >
       <a
         pButton
-        [severity]="authorId() === session.user().id ? 'primary' : 'secondary'"
-        [rounded]="true"
+        severity="secondary"
+        [text]="true"
         routerLink="/feed"
         [queryParams]="{ authorId: session.user().id }"
         [attr.aria-current]="authorId() === session.user().id ? 'page' : null"
@@ -79,15 +79,31 @@
       }
     </div>
     @if (loading() && !loaded()) {
-      <div class="loading" role="status">
-        <p-progress-spinner ariaLabel="Carregando publicações" /><span
-          >Carregando publicações…</span
-        >
+      <div class="feed-skeleton" role="status" aria-label="Carregando publicações" aria-busy="true">
+        @for (placeholder of [1, 2, 3]; track placeholder) {
+          <p-card aria-hidden="true">
+            <div class="skeleton-author">
+              <p-skeleton shape="circle" size="3rem" />
+              <div class="skeleton-lines">
+                <p-skeleton width="45%" height="0.875rem" />
+                <p-skeleton width="30%" height="0.75rem" />
+              </div>
+            </div>
+            <div class="skeleton-lines skeleton-content">
+              <p-skeleton width="100%" height="0.875rem" />
+              <p-skeleton width="90%" height="0.875rem" />
+              <p-skeleton width="65%" height="0.875rem" />
+            </div>
+          </p-card>
+        }
       </div>
     } @else if (errors().length) {
-      <button pButton type="button" severity="secondary" (click)="reload()">
-        Tentar novamente
-      </button>
+      <div class="load-error" role="status">
+        <h2>Não foi possível carregar as publicações.</h2>
+        <button pButton type="button" severity="secondary" (click)="reload()">
+          Tentar novamente
+        </button>
+      </div>
     } @else {
       <div
         class="feed-results"
@@ -124,8 +140,8 @@
     }
   </section>
   <aside class="community-rail" aria-label="Sobre a comunidade">
-    <p-card>
-      <h2><i class="pi pi-users" aria-hidden="true"></i> Sobre o Pudd</h2>
+    <div class="community-about">
+      <h2>Sobre o Pudd</h2>
       <p class="rail-description">
         Uma rede social para designers, devs e pessoas de outras áreas, incluindo quem está
         começando ou cria por hobby.
@@ -133,7 +149,7 @@
       <p class="rail-description">
         Publique seus trabalhos, compartilhe projetos e troque experiências com a comunidade.
       </p>
-    </p-card>
+    </div>
     <p class="rail-footer">&copy; Pudd 2026 - Todos os direitos reservados</p>
   </aside>
 </div>

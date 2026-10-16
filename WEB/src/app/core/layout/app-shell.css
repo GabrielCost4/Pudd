@@ -6,6 +6,7 @@
   position: fixed;
   top: 0;
   height: 100dvh;
+  border-inline-end: 1px solid var(--border);
 }
 p-sidebar-header,
 p-sidebar-footer {
@@ -25,16 +26,18 @@ p-sidebar-content {
   min-width: 0;
 }
 .app-controls {
-  position: absolute;
-  top: 0.75rem;
-  right: 1.5rem;
+  position: relative;
+  min-height: 4rem;
+  padding: 0.75rem 2.5rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--background);
   z-index: 2;
   display: flex;
   justify-content: flex-end;
   align-items: center;
 }
 main {
-  padding: 4.75rem 2.5rem 2.5rem;
+  padding: 2rem 2.5rem 2.5rem;
   min-width: 0;
 }
 .brand-image {
@@ -43,7 +46,7 @@ main {
   min-height: 3.5rem;
 }
 .brand-image app-brand-logo {
-  width: 9rem;
+  width: 7rem;
 }
 .account {
   display: flex;
@@ -93,16 +96,15 @@ p-sidebar-footer {
 }
 @media (max-width: 760px) {
   .app-controls {
-    left: 1rem;
-    right: 1rem;
+    padding: 0.75rem 1rem;
     justify-content: space-between;
   }
   main {
-    padding: 5rem 0.875rem 1.25rem;
+    padding: 1.5rem 0.875rem;
   }
 }
 @media (min-width: 761px) and (max-width: 1100px) {
   main {
-    padding-top: 5rem;
+    padding: 2rem 1.5rem;
   }
 }

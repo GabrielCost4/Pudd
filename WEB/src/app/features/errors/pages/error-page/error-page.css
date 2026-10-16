@@ -12,8 +12,9 @@
   place-items: center;
   width: 4rem;
   height: 3rem;
-  border: 1px dashed var(--border);
-  border-radius: 0.5rem;
+  font-size: var(--type-h2);
+  font-weight: 800;
+  letter-spacing: -0.04em;
   color: var(--muted);
   margin-bottom: 2rem;
 }
@@ -22,7 +23,7 @@
   text-align: center;
 }
 .error-code {
-  font-size: 4rem;
+  font-size: var(--type-display);
   font-weight: 650;
   color: var(--muted);
   margin-bottom: 1rem;
