@@ -1,3 +1,5 @@
+using Pudd.API.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Mvc;
 using Pudd.Application.Contracts;
 using Pudd.Application.Services;
@@ -12,6 +14,7 @@ public class CommentsController(CommentService comments) : SocialControllerBase
         Ok(await comments.GetPageAsync(ActorId, postId, page, pageSize));
 
     [HttpPost("posts/{postId:guid}/comments")]
+    [EnableRateLimiting(ApiRateLimiting.Comments)]
     public async Task<IActionResult> Create(Guid postId, [FromBody] CreateCommentRequest request)
     {
         var comment = await comments.CreateAsync(ActorId, postId, request);
@@ -19,6 +22,7 @@ public class CommentsController(CommentService comments) : SocialControllerBase
     }
 
     [HttpDelete("comments/{id:guid}")]
+    [EnableRateLimiting(ApiRateLimiting.Comments)]
     public async Task<IActionResult> Delete(Guid id)
     {
         await comments.DeleteAsync(ActorId, id);

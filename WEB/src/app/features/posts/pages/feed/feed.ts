@@ -128,4 +128,19 @@ export class Feed {
     this.posts.update((items) => items.filter((item) => item.id !== id));
     if (!this.posts().length && this.page() > 1) this.changePage(this.page() - 1);
   }
+
+  public saudacao(): string {
+    const data = new Date();
+    const horaLogin = data.getHours()
+    if(horaLogin < 12) {
+      return "Bom dia"
+    }
+    else if (horaLogin < 18) {
+      return "Boa tarde"
+    }
+    else {
+      return "Boa noite"
+    }
+  }
+
 }

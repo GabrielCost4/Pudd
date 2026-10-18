@@ -1,3 +1,5 @@
+using Pudd.API.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Mvc;
 using Pudd.Application.Contracts;
 using Pudd.Application.Services;
@@ -16,6 +18,7 @@ public class AdminController(
         Ok(await users.GetUsersAsync(ActorId, page, pageSize));
 
     [HttpPut("users/{id:guid}/blocked")]
+    [EnableRateLimiting(ApiRateLimiting.Moderation)]
     public async Task<IActionResult> SetBlocked(Guid id, [FromBody] SetBlockedRequest request)
     {
         await users.SetBlockedAsync(ActorId, id, request.IsBlocked);
@@ -23,6 +26,7 @@ public class AdminController(
     }
 
     [HttpDelete("posts/{id:guid}")]
+    [EnableRateLimiting(ApiRateLimiting.Moderation)]
     public async Task<IActionResult> DeletePost(Guid id)
     {
         await posts.DeleteAsync(ActorId, id, moderation: true);
@@ -30,6 +34,7 @@ public class AdminController(
     }
 
     [HttpDelete("comments/{id:guid}")]
+    [EnableRateLimiting(ApiRateLimiting.Moderation)]
     public async Task<IActionResult> DeleteComment(Guid id)
     {
         await comments.DeleteAsync(ActorId, id, moderation: true);

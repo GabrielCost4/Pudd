@@ -23,7 +23,7 @@ export async function mockApi(page:Page) {
     profileValidation:null as Record<string,string[]>|null,
   };
   await page.route('https://images.unsplash.com/**',route=>route.abort());
-  await page.route('http://localhost:5193/api/**',async route=>{
+  await page.route('**/api/**',async route=>{
     const req=route.request(), url=new URL(req.url()), path=url.pathname.replace('/api',''), method=req.method();
     state.calls.push({method,path,body:req.postData()||'',authorization:req.headers()['authorization']});
     const send=(body:unknown,status=200)=>route.fulfill({status,contentType:'application/json',headers:{'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'*','Access-Control-Allow-Methods':'*'},body:status===204?'':JSON.stringify(body)});

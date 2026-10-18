@@ -1,3 +1,5 @@
+using Pudd.API.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Mvc;
 using Pudd.Application.Contracts;
 using Pudd.Application.Contracts.Enums;
@@ -10,6 +12,7 @@ namespace Pudd.API.Controllers;
 public class AuthController : ControllerBase
 {
     [HttpPost("login")]
+    [EnableRateLimiting(ApiRateLimiting.Login)]
     public async Task<IActionResult> Login(
         [FromBody] LoginRequest request,
         [FromServices] AuthService authService)
@@ -25,6 +28,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
+    [EnableRateLimiting(ApiRateLimiting.Registration)]
     public async Task<IActionResult> Cadastrar(
         [FromBody] RegisterRequest request,
         [FromServices] RegisterService registerService)

@@ -12,6 +12,7 @@ using Pudd.API.Workers;
 using Pudd.Application.Contracts;
 using Pudd.Application.Interfaces;
 using Pudd.Domain.Entities;
+using Pudd.Domain.Enums.Roles;
 using Pudd.Infrastructure;
 using Xunit;
 
@@ -135,7 +136,147 @@ public class ApiTests
         var url = $"/api/posts/{Guid.NewGuid()}/like";
         for (int i = 0; i < 30; i++)
             Assert.Equal(HttpStatusCode.NotFound, (await client.PutAsync(url, null)).StatusCode);
-        Assert.Equal(HttpStatusCode.TooManyRequests, (await client.PutAsync(url, null)).StatusCode);
+        using var rejected = await client.PutAsync(url, null);
+        await AssertRateLimited(rejected);
+        // Ler curtidas não consome a cota de curtir/descurtir.
+        for (int i = 0; i < 35; i++)
+            Assert.Equal(HttpStatusCode.NotFound, (await client.GetAsync(url)).StatusCode);
+        Assert.Equal(HttpStatusCode.TooManyRequests, (await client.DeleteAsync(url)).StatusCode);
+        using var otherClient = await CreateAuthenticatedClient(factory);
+        Assert.Equal(HttpStatusCode.NotFound, (await otherClient.PutAsync(url, null)).StatusCode);
+    }
+
+    [Theory]
+    [InlineData("login", 10, "register")]
+    [InlineData("register", 5, "login")]
+    public async Task AuthenticationLimitsCountInvalidRequestsAndKeepPoliciesSeparate(
+        string action, int limit, string otherAction)
+    {
+        await using var factory = new ApiFactory();
+        using var client = factory.CreateClient(new() { BaseAddress = new Uri("https://localhost") });
+        for (var i = 0; i < limit; i++)
+        {
+            // Um cabeçalho enviado pelo cliente não pode trocar o IP confiável da conexão.
+            client.DefaultRequestHeaders.Remove("X-Forwarded-For");
+            client.DefaultRequestHeaders.Add("X-Forwarded-For", $"192.0.2.{i + 1}");
+            using var response = await client.PostAsJsonAsync($"/api/auth/{action}", new { });
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+        using var rejected = await client.PostAsJsonAsync($"/api/auth/{action}", new { });
+        await AssertRateLimited(rejected);
+        using var independent = await client.PostAsJsonAsync($"/api/auth/{otherAction}", new { });
+        Assert.Equal(HttpStatusCode.BadRequest, independent.StatusCode);
+    }
+
+    [Fact]
+    public async Task LoginQuotaDoesNotBlockAnotherConnectionIp()
+    {
+        await using var factory = new ApiFactory();
+        using var client = factory.CreateClient(new() { BaseAddress = new Uri("https://localhost") });
+        async Task<int> Send(string ip)
+        {
+            var context = await factory.Server.SendAsync(context =>
+            {
+                context.Connection.RemoteIpAddress = IPAddress.Parse(ip);
+                context.Request.Scheme = "https";
+                context.Request.Method = "POST";
+                context.Request.Path = "/api/auth/login";
+                context.Request.ContentType = "application/json";
+                context.Request.ContentLength = 2;
+                context.Request.Body = new MemoryStream("{}"u8.ToArray());
+            });
+            return context.Response.StatusCode;
+        }
+        for (var i = 0; i < 10; i++)
+            Assert.Equal(400, await Send("192.0.2.1"));
+        Assert.Equal(429, await Send("192.0.2.1"));
+        Assert.Equal(400, await Send("192.0.2.2"));
+    }
+
+    [Theory]
+    [InlineData("POST", "/api/posts", 10, true, 400)]
+    [InlineData("PUT", "/api/posts/11111111-1111-4111-8111-111111111111", 10, true, 400)]
+    [InlineData("DELETE", "/api/posts/11111111-1111-4111-8111-111111111111", 10, false, 404)]
+    [InlineData("POST", "/api/posts/11111111-1111-4111-8111-111111111111/comments", 30, false, 400)]
+    [InlineData("DELETE", "/api/comments/11111111-1111-4111-8111-111111111111", 30, false, 404)]
+    [InlineData("PUT", "/api/users/me", 20, false, 400)]
+    [InlineData("PUT", "/api/users/me/avatar", 5, true, 400)]
+    [InlineData("DELETE", "/api/users/me/avatar", 5, false, 204)]
+    [InlineData("PUT", "/api/admin/users/11111111-1111-4111-8111-111111111111/blocked", 30, false, 404)]
+    [InlineData("DELETE", "/api/admin/posts/11111111-1111-4111-8111-111111111111", 30, false, 404)]
+    [InlineData("DELETE", "/api/admin/comments/11111111-1111-4111-8111-111111111111", 30, false, 404)]
+    public async Task WriteRoutesHaveTheirOwnLimits(
+        string method, string url, int limit, bool multipart, int expectedStatus)
+    {
+        await using var factory = new ApiFactory();
+        using var client = await CreateAuthenticatedClient(factory, UserRole.Admin);
+        for (var i = 0; i < limit; i++)
+        {
+            using var request = CreateRequest(method, url, multipart);
+            using var response = await client.SendAsync(request);
+            Assert.Equal((HttpStatusCode)expectedStatus, response.StatusCode);
+        }
+        using var excess = CreateRequest(method, url, multipart);
+        using var rejected = await client.SendAsync(excess);
+        await AssertRateLimited(rejected);
+        // Esgotar uma ação não impede o usuário de ler o próprio perfil.
+        Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/api/users/me")).StatusCode);
+    }
+
+    [Fact]
+    public async Task ReadQuotaIsPerUserAndDoesNotConsumeWriteQuota()
+    {
+        await using var factory = new ApiFactory();
+        using var client = await CreateAuthenticatedClient(factory);
+        for (var i = 0; i < 180; i++)
+        {
+            using var response = await client.GetAsync("/api/users/me");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+        using var rejected = await client.GetAsync("/api/posts");
+        await AssertRateLimited(rejected);
+        using var update = await client.PutAsJsonAsync("/api/users/me", new { });
+        Assert.Equal(HttpStatusCode.BadRequest, update.StatusCode);
+        using var otherClient = await CreateAuthenticatedClient(factory);
+        Assert.Equal(HttpStatusCode.OK, (await otherClient.GetAsync("/api/users/me")).StatusCode);
+    }
+
+    private static HttpRequestMessage CreateRequest(string method, string url, bool multipart)
+    {
+        HttpContent content;
+        if (multipart)
+        {
+            var form = new MultipartFormDataContent();
+            form.Add(new StringContent(""), "Content");
+            content = form;
+        }
+        else content = JsonContent.Create(new { });
+        return new HttpRequestMessage(new HttpMethod(method), url) { Content = content };
+    }
+
+    private static async Task<HttpClient> CreateAuthenticatedClient(ApiFactory factory, UserRole role = UserRole.User)
+    {
+        using var scope = factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<PuddDbContext>();
+        var user = new User { ID = Guid.NewGuid(), Name = "Rate test", Email = $"{Guid.NewGuid()}@example.test", Role = role };
+        db.users.Add(user);
+        await db.SaveChangesAsync();
+        var client = factory.CreateClient(new() { BaseAddress = new Uri("https://localhost") });
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer",
+            scope.ServiceProvider.GetRequiredService<IJwtService>().GerarToken(user).AccessToken);
+        return client;
+    }
+
+    private static async Task AssertRateLimited(HttpResponseMessage response)
+    {
+        Assert.Equal(HttpStatusCode.TooManyRequests, response.StatusCode);
+        Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
+        var retryAfter = response.Headers.RetryAfter?.Delta;
+        Assert.NotNull(retryAfter);
+        Assert.InRange(retryAfter.Value.TotalSeconds, 1, 60);
+        var problem = await response.Content.ReadFromJsonAsync<Microsoft.AspNetCore.Mvc.ProblemDetails>();
+        Assert.Equal(429, problem?.Status);
+        Assert.Equal("Muitas tentativas em pouco tempo.", problem?.Title);
     }
 
     private sealed class ApiFactory : WebApplicationFactory<Program>

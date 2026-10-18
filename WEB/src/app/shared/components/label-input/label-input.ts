@@ -1,5 +1,4 @@
 import { FloatLabelModule } from 'primeng/floatlabel';
-import { InputPasswordModule } from 'primeng/inputpassword';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -12,7 +11,6 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
   selector: 'app-label-input',
   imports: [
     FloatLabelModule,
-    InputPasswordModule,
     InputTextModule,
     ButtonModule,
     ReactiveFormsModule,

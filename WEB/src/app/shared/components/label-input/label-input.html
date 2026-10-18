@@ -1,9 +1,9 @@
 <ng-template #field>
   @if (type() === 'password') {
     <input
-      pInputPassword
+      pInputText
       class="password-input"
-      [mask]="!showPassword()"
+      [type]="showPassword() ? 'text' : 'password'"
       [id]="inputId()"
       [formControl]="control()"
       [autocomplete]="autocomplete()"

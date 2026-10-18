@@ -1,12 +1,12 @@
 <main class="login-layout">
   <header class="auth-toolbar">
     <a class="product-name" routerLink="/login" aria-label="Pudd: entrar">
-      <app-brand-logo [dark]="theme.mode() === 'dark'" />
+      <app-brand-logo />
     </a>
     <app-theme-toggle [dark]="theme.mode() === 'dark'" (toggled)="theme.toggle()" />
   </header>
   <div class="auth-content">
-    <app-login-intro class="intro-panel" [dark]="theme.mode() === 'dark'" />
+    <app-login-intro class="intro-panel" />
     <section class="login-panel" aria-labelledby="login-title">
       <p-card class="login-card">
         <div class="auth-heading" [class.login-heading]="!registering">

@@ -46,9 +46,7 @@ test('keeps community pages accessible within desktop and mobile viewports in bo
           .toBe(true);
         if (route === '/feed') {
           if (width === 1440) {
-            const action = await page
-              .getByRole('link', { name: 'Nova publicação', exact: true })
-              .boundingBox();
+            const action = await page.locator('.feed-heading').boundingBox();
             const aside = await page
               .getByRole('complementary', { name: 'Sobre a comunidade' })
               .boundingBox();

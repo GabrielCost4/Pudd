@@ -11,6 +11,11 @@
               : 'Feed'
           }}
         </h1>
+
+        <p class="feed-greeting">
+          {{ saudacao() }}@if (account.name()) {, <strong>{{ account.name() }}</strong>}!
+        </p>
+
         @if (authorId() && authorId() !== session.user().id) {
           <a pButton [text]="true" severity="secondary" [routerLink]="['/profile', authorId()]"
             >Ver perfil</a

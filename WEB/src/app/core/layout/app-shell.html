@@ -1,171 +1,176 @@
 <a class="skip-link" href="#main-content" (click)="focusContent($event, mainContent)"
   >Pular para o conteúdo</a
 >
-<p-sidebar-layout>
-  <p-sidebar
-    id="navigation"
-    [(open)]="navigationOpen"
-    [overlay]="mobile()"
-    [collapsible]="mobile() ? 'offcanvas' : 'none'"
-    width="16rem"
-    aria-label="Navegação principal"
-  >
-    <p-sidebar-spacer />
-    <p-sidebar-aside class="navigation-aside">
-      <p-sidebar-panel>
-        <p-sidebar-header>
-          <div class="brand-block">
-            <a
-              class="brand-image"
-              routerLink="/feed"
-              aria-label="Pudd, página inicial"
-              (click)="closeNavigation()"
-            >
-              <app-brand-logo [dark]="theme.mode() === 'dark'" />
-            </a>
-          </div>
-          @if (mobile()) {
-            <button
-              pButton
-              type="button"
-              [text]="true"
-              severity="secondary"
-              aria-label="Fechar menu"
-              (click)="navigationOpen.set(false)"
-            >
-              <i class="pi pi-times" aria-hidden="true"></i>
-            </button>
-          }
-        </p-sidebar-header>
-        <p-sidebar-content>
-          <nav aria-label="Páginas">
-            <p-sidebar-menu>
-              <p-sidebar-menu-item>
-                <a
-                  pSidebarMenuButton
-                  routerLink="/feed"
-                  aria-label="Feed"
-                  routerLinkActive
-                  #feed="routerLinkActive"
-                  [isActive]="feed.isActive"
-                  [attr.aria-current]="feed.isActive ? 'page' : null"
-                  (click)="closeNavigation()"
-                >
-                  <i class="pi pi-home" aria-hidden="true"></i><span>Feed</span>
-                </a>
-              </p-sidebar-menu-item>
-              <p-sidebar-menu-item>
-                <a
-                  pSidebarMenuButton
-                  routerLink="/profile/me"
-                  aria-label="Meu perfil"
-                  routerLinkActive
-                  #profile="routerLinkActive"
-                  [isActive]="profile.isActive"
-                  [attr.aria-current]="profile.isActive ? 'page' : null"
-                  (click)="closeNavigation()"
-                >
-                  <i class="pi pi-user" aria-hidden="true"></i><span>Meu perfil</span>
-                </a>
-              </p-sidebar-menu-item>
-              <p-sidebar-menu-item>
-                <a
-                  pSidebarMenuButton
-                  routerLink="/posts/new"
-                  aria-label="Criar publicação"
-                  routerLinkActive
-                  #editor="routerLinkActive"
-                  [isActive]="editor.isActive"
-                  [attr.aria-current]="editor.isActive ? 'page' : null"
-                  (click)="closeNavigation()"
-                >
-                  <i class="pi pi-pencil" aria-hidden="true"></i><span>Criar publicação</span>
-                </a>
-              </p-sidebar-menu-item>
-              @if (session.isAdmin()) {
-                <p-sidebar-menu-item>
-                  <a
-                    pSidebarMenuButton
-                    routerLink="/admin"
-                    aria-label="Administração"
-                    routerLinkActive
-                    #admin="routerLinkActive"
-                    [isActive]="admin.isActive"
-                    [attr.aria-current]="admin.isActive ? 'page' : null"
-                    (click)="closeNavigation()"
-                  >
-                    <i class="pi pi-shield" aria-hidden="true"></i><span>Administração</span>
-                  </a>
-                </p-sidebar-menu-item>
-              }
-            </p-sidebar-menu>
-          </nav>
-        </p-sidebar-content>
-        <p-sidebar-footer>
-          <a
-            class="account"
-            pButton
-            severity="secondary"
-            [outlined]="true"
-            routerLink="/profile/me"
-            aria-label="Abrir meu perfil"
-            (click)="closeNavigation()"
-          >
-            @if (account.avatarUrl()) {
-              <p-avatar
-                size="large"
-                shape="circle"
-                [image]="account.avatarUrl()"
-                ariaLabel="Sua foto de perfil"
-                (onImageError)="account.imageFailed()"
-              />
-            } @else {
-              <p-avatar
-                size="large"
-                shape="circle"
-                [label]="(account.name() || session.user().email).slice(0, 1).toUpperCase()"
-              />
-            }
-            <span class="account-info">
-              <strong>{{ account.name() || 'Meu perfil' }}</strong>
-              <span [title]="session.user().email">{{ session.user().email }}</span>
-            </span>
-            <i class="account-arrow pi pi-chevron-right" aria-hidden="true"></i>
-          </a>
-          <button
-            class="logout"
-            pButton
-            type="button"
-            [text]="true"
-            severity="secondary"
-            (click)="logout()"
-          >
-            <i class="pi pi-sign-out" aria-hidden="true"></i><span>Sair da conta</span>
-          </button>
-        </p-sidebar-footer>
-      </p-sidebar-panel>
-    </p-sidebar-aside>
-    @if (mobile()) {
-      <p-sidebar-backdrop />
-    }
-  </p-sidebar>
-  <p-sidebar-main class="main-column">
-    <div class="app-controls">
+<ng-template #navigation>
+  <div class="navigation-panel">
+    <header class="navigation-header">
+      <div class="brand-block">
+        <a
+          class="brand-image"
+          routerLink="/feed"
+          aria-label="Pudd, página inicial"
+          (click)="closeNavigation()"
+        >
+          <app-brand-logo />
+        </a>
+      </div>
       @if (mobile()) {
         <button
           pButton
           type="button"
           [text]="true"
           severity="secondary"
-          pSidebarTrigger
-          target="navigation"
-          aria-label="Abrir menu"
+          aria-label="Fechar menu"
+          (click)="navigationOpen.set(false)"
         >
-          <i class="pi pi-bars" aria-hidden="true"></i>
+          <i class="pi pi-times" aria-hidden="true"></i>
         </button>
       }
-      <app-theme-toggle [dark]="theme.mode() === 'dark'" (toggled)="theme.toggle()" />
+    </header>
+    <div class="navigation-content">
+      <nav aria-label="Páginas">
+        <ul>
+          <li>
+            <a
+              class="navigation-link"
+              routerLink="/feed"
+              aria-label="Feed"
+              routerLinkActive
+              #feed="routerLinkActive"
+              [class.active]="feed.isActive"
+              [attr.aria-current]="feed.isActive ? 'page' : null"
+              (click)="closeNavigation()"
+            >
+              <i class="pi pi-home" aria-hidden="true"></i><span>Feed</span>
+            </a>
+          </li>
+          <li>
+            <a
+              class="navigation-link"
+              routerLink="/profile/me"
+              aria-label="Meu perfil"
+              routerLinkActive
+              #profile="routerLinkActive"
+              [class.active]="profile.isActive"
+              [attr.aria-current]="profile.isActive ? 'page' : null"
+              (click)="closeNavigation()"
+            >
+              <i class="pi pi-user" aria-hidden="true"></i><span>Meu perfil</span>
+            </a>
+          </li>
+          <li>
+            <a
+              class="navigation-link"
+              routerLink="/posts/new"
+              aria-label="Criar publicação"
+              routerLinkActive
+              #editor="routerLinkActive"
+              [class.active]="editor.isActive"
+              [attr.aria-current]="editor.isActive ? 'page' : null"
+              (click)="closeNavigation()"
+            >
+              <i class="pi pi-pencil" aria-hidden="true"></i><span>Criar publicação</span>
+            </a>
+          </li>
+          @if (session.isAdmin()) {
+            <li>
+              <a
+                class="navigation-link"
+                routerLink="/admin"
+                aria-label="Administração"
+                routerLinkActive
+                #admin="routerLinkActive"
+                [class.active]="admin.isActive"
+                [attr.aria-current]="admin.isActive ? 'page' : null"
+                (click)="closeNavigation()"
+              >
+                <i class="pi pi-shield" aria-hidden="true"></i><span>Administração</span>
+              </a>
+            </li>
+          }
+        </ul>
+      </nav>
     </div>
-    <main #mainContent id="main-content" tabindex="-1"><router-outlet /></main>
-  </p-sidebar-main>
-</p-sidebar-layout>
+    <footer class="navigation-footer">
+      <a
+        class="account"
+        pButton
+        severity="secondary"
+        [outlined]="true"
+        routerLink="/profile/me"
+        aria-label="Abrir meu perfil"
+        (click)="closeNavigation()"
+      >
+        @if (account.avatarUrl()) {
+          <p-avatar
+            size="large"
+            shape="circle"
+            [image]="account.avatarUrl()"
+            ariaLabel="Sua foto de perfil"
+            (onImageError)="account.imageFailed()"
+          />
+        } @else {
+          <p-avatar
+            size="large"
+            shape="circle"
+            [label]="(account.name() || session.user().email).slice(0, 1).toUpperCase()"
+          />
+        }
+        <span class="account-info">
+          <strong>{{ account.name() || 'Meu perfil' }}</strong>
+          <span [title]="session.user().email">{{ session.user().email }}</span>
+        </span>
+        <i class="account-arrow pi pi-chevron-right" aria-hidden="true"></i>
+      </a>
+      <button
+        class="logout"
+        pButton
+        type="button"
+        [text]="true"
+        severity="secondary"
+        (click)="logout()"
+      >
+        <i class="pi pi-sign-out" aria-hidden="true"></i><span>Sair da conta</span>
+      </button>
+    </footer>
+  </div>
+</ng-template>
+@if (mobile()) {
+  <p-drawer
+    [(visible)]="navigationOpen"
+    [modal]="true"
+    [blockScroll]="true"
+    [style]="{ width: '16rem' }"
+    aria-label="Navegação principal"
+  >
+    <ng-template #headless>
+      <div id="navigation" class="mobile-navigation">
+        <ng-container [ngTemplateOutlet]="navigation" />
+      </div>
+    </ng-template>
+  </p-drawer>
+} @else {
+  <aside id="navigation" class="navigation-aside" aria-label="Navegação principal">
+    <ng-container [ngTemplateOutlet]="navigation" />
+  </aside>
+}
+<div class="main-column">
+  <div class="app-controls">
+    @if (mobile()) {
+      <button
+        pButton
+        type="button"
+        [text]="true"
+        severity="secondary"
+        (click)="navigationOpen.set(true)"
+        aria-controls="navigation"
+        [attr.aria-expanded]="navigationOpen()"
+        aria-label="Abrir menu"
+      >
+        <i class="pi pi-bars" aria-hidden="true"></i>
+      </button>
+    }
+    <app-theme-toggle [dark]="theme.mode() === 'dark'" (toggled)="theme.toggle()" />
+  </div>
+  <main #mainContent id="main-content" tabindex="-1"><router-outlet /></main>
+</div>

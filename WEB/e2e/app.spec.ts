@@ -387,8 +387,8 @@ test('switches themes, persists the choice and presents the vertical introductio
   await mockApi(page);
   await page.goto('/login');
   await expect(page.getByRole('heading', { name: 'Entrar', exact: true })).toBeVisible();
-  const landscape = page.locator('.landscape');
-  await expect(landscape).toHaveAttribute('src', '/images/auth/day.png');
+  const landscape = page.locator('.dither-effect');
+  await expect(landscape).toHaveClass(/ready/);
   await page.locator('summary').click();
   await page.getByRole('tab', { name: /Complete seu perfil/ }).click();
   await expect(
@@ -400,14 +400,16 @@ test('switches themes, persists the choice and presents the vertical introductio
   await page.keyboard.press('Space');
   await expect(page.getByRole('switch', { name: 'Ativar modo claro', exact: true })).toBeChecked();
   await expect(page.locator('html')).toHaveClass(/pudd-dark/);
-  await expect(landscape).toHaveAttribute('src', '/images/auth/night.png');
+  await expect(landscape).toHaveClass(/ready/);
   await page.reload();
   await expect(page.locator('html')).toHaveClass(/pudd-dark/);
   await expect(page.getByRole('heading', { name: 'Entrar', exact: true })).toBeVisible();
-  await expect(landscape).toHaveAttribute('src', '/images/auth/night.png');
+  await expect(landscape).toHaveClass(/ready/);
   await expect
     .poll(() =>
-      landscape.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0),
+      landscape.evaluate(
+        (canvas: HTMLCanvasElement) => canvas.width > 0 && canvas.classList.contains('ready'),
+      ),
     )
     .toBe(true);
   await page.screenshot({ path: 'test-results/login-dark.png', fullPage: true });
@@ -416,16 +418,18 @@ test('switches themes, persists the choice and presents the vertical introductio
     page.getByRole('switch', { name: 'Ativar modo escuro', exact: true }),
   ).not.toBeChecked();
   await expect(page.locator('html')).not.toHaveClass(/pudd-dark/);
-  await expect(landscape).toHaveAttribute('src', '/images/auth/day.png');
+  await expect(landscape).toHaveClass(/ready/);
   await expect
     .poll(() =>
-      landscape.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0),
+      landscape.evaluate(
+        (canvas: HTMLCanvasElement) => canvas.width > 0 && canvas.classList.contains('ready'),
+      ),
     )
     .toBe(true);
   await page.screenshot({ path: 'test-results/login-light.png', fullPage: true });
   await page.getByRole('link', { name: 'Criar conta', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Criar conta', exact: true })).toBeVisible();
-  await expect(landscape).toHaveAttribute('src', '/images/auth/day.png');
+  await expect(landscape).toHaveClass(/ready/);
   await page.screenshot({ path: 'test-results/register-light.png', fullPage: true });
 });
 

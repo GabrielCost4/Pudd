@@ -63,6 +63,22 @@ test('keeps account and logout accessible on a short mobile screen and closes af
   await page.screenshot({ path: 'test-results/sidebar-mobile.png', fullPage: false });
   await account.click();
   await expect(page).toHaveURL(/\/profile\/me$/);
-  await expect(page.locator('#navigation')).toHaveAttribute('data-state', 'collapsed');
+  await expect(page.locator('#navigation')).not.toBeVisible();
   await expect(page.getByRole('heading', { name: 'Meu perfil', exact: true })).toBeVisible();
+});
+
+test('uses the MIT components without a license banner and supports keyboard dismissal on mobile', async ({
+  page,
+}) => {
+  await mockApi(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await login(page);
+  await expect(page.getByText('Invalid PrimeUI License', { exact: true })).toHaveCount(0);
+  const trigger = page.getByRole('button', { name: 'Abrir menu', exact: true });
+  await trigger.click();
+  await expect(page.locator('#navigation')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#navigation')).not.toBeVisible();
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  await expect(trigger).toBeFocused();
 });

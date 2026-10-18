@@ -1,9 +1,9 @@
 import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
-import { SidebarModule } from 'primeng/sidebar';
+import { DrawerModule } from 'primeng/drawer';
 import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { DOCUMENT } from '@angular/common';
+import { DOCUMENT, NgTemplateOutlet } from '@angular/common';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { SessionStore } from '../auth/session.store';
@@ -17,7 +17,8 @@ import { BrandLogo } from '../../shared/components/brand-logo/brand-logo';
   imports: [
     AvatarModule,
     ButtonModule,
-    SidebarModule,
+    DrawerModule,
+    NgTemplateOutlet,
     RouterLink,
     RouterLinkActive,
     RouterOutlet,

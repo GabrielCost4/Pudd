@@ -1,3 +1,5 @@
+using Pudd.API.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Mvc;
 using Pudd.API.Contracts;
 using Pudd.API.Uploads;
@@ -17,10 +19,12 @@ public class UsersController(UserService users) : SocialControllerBase
         Ok(await users.GetProfileAsync(ActorId, id));
 
     [HttpPut("me")]
+    [EnableRateLimiting(ApiRateLimiting.Profile)]
     public async Task<IActionResult> Update([FromBody] UpdateProfileRequest request) =>
         Ok(await users.UpdateProfileAsync(ActorId, request));
 
     [HttpPut("me/avatar")]
+    [EnableRateLimiting(ApiRateLimiting.Avatar)]
     [Consumes("multipart/form-data")]
     [RequestSizeLimit(6 * 1024 * 1024)]
     public async Task<IActionResult> Avatar([FromForm] AvatarForm form, CancellationToken ct)
@@ -33,6 +37,7 @@ public class UsersController(UserService users) : SocialControllerBase
     }
 
     [HttpDelete("me/avatar")]
+    [EnableRateLimiting(ApiRateLimiting.Avatar)]
     public async Task<IActionResult> RemoveAvatar()
     {
         await users.RemoveAvatarAsync(ActorId);

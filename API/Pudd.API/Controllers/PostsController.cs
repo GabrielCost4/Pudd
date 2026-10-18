@@ -1,3 +1,5 @@
+using Pudd.API.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Mvc;
 using Pudd.API.Contracts;
 using Pudd.API.Uploads;
@@ -17,6 +19,7 @@ public class PostsController(
     public async Task<IActionResult> Get(Guid id) => Ok(await posts.GetAsync(ActorId, id));
 
     [HttpPost]
+    [EnableRateLimiting(ApiRateLimiting.Posts)]
     [Consumes("multipart/form-data")]
     [RequestSizeLimit(6 * 1024 * 1024)]
     public async Task<IActionResult> Create([FromForm] CreatePostForm form, CancellationToken ct)
@@ -28,6 +31,7 @@ public class PostsController(
     }
 
     [HttpPut("{id:guid}")]
+    [EnableRateLimiting(ApiRateLimiting.Posts)]
     [Consumes("multipart/form-data")]
     [RequestSizeLimit(6 * 1024 * 1024)]
     public async Task<IActionResult> Update(
@@ -46,6 +50,7 @@ public class PostsController(
         );
 
     [HttpDelete("{id:guid}")]
+    [EnableRateLimiting(ApiRateLimiting.Posts)]
     public async Task<IActionResult> Delete(Guid id)
     {
         await posts.DeleteAsync(ActorId, id);

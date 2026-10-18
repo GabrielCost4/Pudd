@@ -2,6 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { LoginIntro } from './login-intro';
 
 describe('LoginIntro', () => {
+  beforeEach(() => vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null));
+  afterEach(() => vi.restoreAllMocks());
   it('lets the user read each step through the PrimeNG stepper', () => {
     const fixture = TestBed.createComponent(LoginIntro);
     fixture.detectChanges();
@@ -18,13 +20,13 @@ describe('LoginIntro', () => {
     expect(element.textContent).toContain('Crie publicações com texto e imagem');
   });
 
-  it('switches the landscape when the theme changes', () => {
+  it('keeps the decorative effect separate from the brand and instructions', () => {
     const fixture = TestBed.createComponent(LoginIntro);
     fixture.detectChanges();
-    const image = (fixture.nativeElement as HTMLElement).querySelector('img')!;
-    expect(image.getAttribute('src')).toBe('/images/auth/day.png');
-    fixture.componentRef.setInput('dark', true);
-    fixture.detectChanges();
-    expect(image.getAttribute('src')).toBe('/images/auth/night.png');
+    const element = fixture.nativeElement as HTMLElement;
+    expect(element.querySelector('canvas')?.getAttribute('aria-hidden')).toBe('true');
+    expect(element.querySelector('img.landscape')).toBeNull();
+    expect(element.querySelector('app-brand-logo')).not.toBeNull();
+    expect(element.querySelector('details')).not.toBeNull();
   });
 });

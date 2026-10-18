@@ -1,6 +1,6 @@
 using System.Security.Claims;
 using System.Text;
-using System.Threading.RateLimiting;
+using Pudd.API.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Pudd.API.Errors;
@@ -69,41 +69,23 @@ builder.Services.AddCors(options =>
         .WithOrigins(builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
             ?? ["http://localhost:4200"])
         .AllowAnyHeader()
-        .AllowAnyMethod());
+        .AllowAnyMethod()
+        .WithExposedHeaders("Retry-After"));
 });
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<ApiExceptionHandler>();
-builder.Services.AddRateLimiter(options =>
-{
-    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-    options.AddPolicy(
-        "likes",
-        context =>
-            RateLimitPartition.GetFixedWindowLimiter(
-                context.User.FindFirstValue("sub")
-                    ?? context.Connection.RemoteIpAddress?.ToString()
-                    ?? "anonymous",
-                _ => new FixedWindowRateLimiterOptions
-                {
-                    PermitLimit = 30,
-                    Window = TimeSpan.FromMinutes(1),
-                    QueueLimit = 0,
-                }
-            )
-    );
-});
+builder.Services.AddApiRateLimiting();
 
 builder.Services.AddHostedService<ImageDeletionWorker>();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+if (!app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseHttpsRedirection();
 }
 
 app.UseExceptionHandler();
-app.UseHttpsRedirection();
 app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();

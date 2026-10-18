@@ -1,13 +1,11 @@
 <aside class="intro" aria-label="Apresentação do Pudd">
-  <img
-    class="landscape"
-    [src]="dark() ? '/images/auth/night.png' : '/images/auth/day.png'"
-    alt=""
-    fetchpriority="high"
-    width="1024"
-    height="1536"
-  />
-  <app-brand-logo class="image-brand" [dark]="dark()" />
+  <canvas
+    #ditherCanvas
+    class="dither-effect"
+    [class.ready]="ditherReady()"
+    aria-hidden="true"
+  ></canvas>
+  <app-brand-logo class="image-brand" />
   <details class="getting-started">
     <summary>
       <i class="pi pi-info-circle" aria-hidden="true"></i>Como começar<i
