@@ -17,6 +17,6 @@ services:
         retries: 10
       volumes:
         - pudd_postgres_data:/var/lib/postgresql
-# Preserva os dados do banco mesmo se o container for recriado.
+
 volumes:
     pudd_postgres_data:
