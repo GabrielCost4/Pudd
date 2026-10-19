@@ -67,3 +67,15 @@
 .avatar-actions {
   margin-top: 1rem;
 }
+
+.profile-avatar-trigger {
+  padding: 0;
+  cursor: pointer;
+  line-height: 0;
+}
+.avatar-gallery-image {
+  display: block;
+  max-width: calc(100vw - 2rem);
+  max-height: calc(100dvh - 6rem);
+  object-fit: contain;
+}

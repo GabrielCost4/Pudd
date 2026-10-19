@@ -1,6 +1,7 @@
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { AvatarModule } from 'primeng/avatar';
+import { GalleriaModule } from 'primeng/galleria';
 import { CardModule } from 'primeng/card';
 import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
@@ -27,6 +28,7 @@ import { ProfileService } from '../../services/profile.service';
     ConfirmDialogModule,
     ProgressSpinnerModule,
     AvatarModule,
+    GalleriaModule,
     CardModule,
     TextareaModule,
     ButtonModule,
@@ -58,6 +60,15 @@ export class ProfilePage {
   protected readonly success = signal('');
   protected readonly avatarUrl = signal('');
   protected readonly avatarFailed = signal(false);
+  protected readonly avatarGalleryVisible = signal(false);
+  protected readonly avatarGalleryImages = computed(() =>
+    this.avatarUrl() ? [this.avatarUrl()] : [],
+  );
+  protected readonly avatarGalleryPt = {
+    mask: { 'aria-label': 'Foto de perfil ampliada' },
+    closeButton: { 'aria-label': 'Fechar foto' },
+  };
+  private avatarTrigger: HTMLElement | null = null;
   protected readonly selectedImage = signal<File | null>(null);
   protected readonly pickerVersion = signal(0);
   protected readonly form = new FormGroup({
@@ -76,6 +87,7 @@ export class ProfilePage {
           this.editing.set(false);
           this.selectedImage.set(null);
           this.pickerVersion.update((value) => value + 1);
+          this.closeAvatar();
           this.stopAvatar();
           this.avatarUrl.set('');
           this.avatarFailed.set(false);
@@ -125,6 +137,17 @@ export class ProfilePage {
       },
       error: () => this.avatarFailed.set(true),
     });
+  }
+  protected openAvatar(event: Event): void {
+    if (!this.avatarUrl() || this.avatarFailed()) return;
+    this.avatarTrigger = event.currentTarget as HTMLElement;
+    this.avatarGalleryVisible.set(true);
+  }
+  protected closeAvatar(event?: Event): void {
+    event?.stopPropagation();
+    this.avatarGalleryVisible.set(false);
+    if (this.avatarTrigger?.isConnected) this.avatarTrigger.focus({ preventScroll: true });
+    this.avatarTrigger = null;
   }
   protected cancelEdit(): void {
     const profile = this.profile();

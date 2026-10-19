@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { FIRST, login, mockApi } from './api.fixture';
+import { FIRST, OTHER, login, mockApi } from './api.fixture';
 
 test('opens post images in Galleria and restores focus after keyboard, close button and backdrop dismissal', async ({
   page,
@@ -64,4 +64,32 @@ test('opens post images in Galleria and restores focus after keyboard, close but
     page.getByRole('dialog', { name: 'Imagem da publicação', exact: true }),
   ).toBeVisible();
   await page.keyboard.press('Escape');
+});
+
+test('opens a member profile photo with a pointer cursor and restores focus after closing', async ({
+  page,
+}) => {
+  const api = await mockApi(page);
+  api.avatarUsers.add(OTHER);
+  await login(page);
+  await page.locator('app-post-card').filter({ hasText: 'Ana Dev' }).locator('a.author').click();
+  await expect(page).toHaveURL(new RegExp('/profile/' + OTHER));
+  const trigger = page.getByRole('button', { name: 'Ver foto de Ana Dev ampliada', exact: true });
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    await expect(trigger).toBeVisible();
+    await expect(trigger).toHaveCSS('cursor', 'pointer');
+    await trigger.focus();
+    await page.keyboard.press('Enter');
+    const gallery = page.getByRole('dialog', { name: 'Foto de perfil ampliada', exact: true });
+    await expect(gallery).toBeVisible();
+    await expect(gallery.getByAltText('Foto de Ana Dev', { exact: true })).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(gallery).toBeHidden();
+    await expect(trigger).toBeFocused();
+    await trigger.click();
+    await gallery.getByRole('button', { name: 'Fechar foto', exact: true }).click();
+    await expect(gallery).toBeHidden();
+    await expect(trigger).toBeFocused();
+  }
 });

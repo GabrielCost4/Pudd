@@ -15,14 +15,21 @@
       <div class="cover" aria-hidden="true"></div>
       <div class="profile-info">
         @if (avatarUrl() && !avatarFailed()) {
-          <p-avatar
-            class="profile-avatar"
-            shape="circle"
-            size="xlarge"
-            [image]="avatarUrl()"
-            [ariaLabel]="'Foto de ' + person.name"
-            (onImageError)="avatarFailed.set(true)"
-          />
+          <button
+            type="button"
+            class="profile-avatar profile-avatar-trigger"
+            [attr.aria-label]="'Ver foto de ' + person.name + ' ampliada'"
+            aria-haspopup="dialog"
+            (click)="openAvatar($event)"
+          >
+            <p-avatar
+              shape="circle"
+              size="xlarge"
+              [image]="avatarUrl()"
+              [ariaLabel]="'Foto de ' + person.name"
+              (onImageError)="avatarFailed.set(true); closeAvatar()"
+            />
+          </button>
         } @else {
           <p-avatar
             class="profile-avatar"
@@ -133,3 +140,25 @@
 </div>
 
 <p-confirmdialog [closable]="true" />
+
+<p-galleria
+  [value]="avatarGalleryImages()"
+  [visible]="avatarGalleryVisible()"
+  (visibleChange)="!$event && closeAvatar()"
+  [fullScreen]="true"
+  [showThumbnails]="false"
+  [showItemNavigators]="false"
+  [showIndicators]="false"
+  [baseZIndex]="1100"
+  [pt]="avatarGalleryPt"
+  (keydown.escape)="closeAvatar($event)"
+>
+  <ng-template #item let-image>
+    <img
+      class="avatar-gallery-image"
+      [src]="image"
+      [alt]="'Foto de ' + (profile()?.name || 'perfil')"
+      (error)="avatarFailed.set(true); closeAvatar()"
+    />
+  </ng-template>
+</p-galleria>
