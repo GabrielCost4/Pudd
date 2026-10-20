@@ -7,16 +7,21 @@
         pTextarea
         id="comment-content"
         [formControl]="content"
+        [maxlength]="maxLength"
+        aria-describedby="comment-character-count"
         required
         placeholder="Escreva um comentário…"
         [readOnly]="saving()"
       ></textarea>
+      <small id="comment-character-count" class="character-count">
+        {{ content.value.length }} / {{ maxLength }} caracteres
+      </small>
     </div>
     <button
       pButton
       type="submit"
       [loading]="saving()"
-      [disabled]="saving() || !content.value.trim()"
+      [disabled]="saving() || content.invalid || !content.value.trim()"
     >
       {{ saving() ? 'Enviando…' : 'Comentar' }}
     </button>
@@ -38,8 +43,18 @@
           class="avatar"
           [routerLink]="['/profile', comment.userID]"
           [attr.aria-label]="'Perfil de ' + comment.authorName"
-          ><p-avatar shape="circle" [label]="comment.authorName.slice(0, 1).toUpperCase()"
-        /></a>
+        >
+          @if (authorImages()[comment.userID]) {
+            <p-avatar
+              shape="circle"
+              [image]="authorImages()[comment.userID]"
+              [ariaLabel]="'Foto de ' + comment.authorName"
+              (onImageError)="avatarFailed(comment.userID)"
+            />
+          } @else {
+            <p-avatar shape="circle" [label]="comment.authorName.slice(0, 1).toUpperCase()" />
+          }
+        </a>
         <div class="comment-body">
           <header>
             <a [routerLink]="['/profile', comment.userID]">{{ comment.authorName }}</a

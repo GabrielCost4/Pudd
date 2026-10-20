@@ -12,9 +12,10 @@
           }}
         </h1>
 
-        <p class="feed-greeting">
-          {{ saudacao() }}@if (account.name()) {, <strong>{{ account.name() }}</strong>}!
-        </p>
+        <p
+          class="feed-greeting"
+          [textContent]="saudacao() + (account.name() ? ', ' + account.name() : '') + '!'"
+        ></p>
 
         @if (authorId() && authorId() !== session.user().id) {
           <a pButton [text]="true" severity="secondary" [routerLink]="['/profile', authorId()]"
@@ -22,9 +23,6 @@
           >
         }
       </div>
-      <a pButton class="create-post-link" routerLink="/posts/new"
-        ><i class="pi pi-pencil" aria-hidden="true"></i><span>Nova publicação</span></a
-      >
     </header>
     @if (!authorId() || authorId() === session.user().id) {
       <p-card class="feed-composer" [dt]="composerCardTokens">
@@ -52,8 +50,11 @@
               [label]="(account.name() || session.user().email).slice(0, 1).toUpperCase()"
             />
           }
-          <span class="composer-prompt">Escrever uma publicação…</span>
-          <i class="pi pi-pencil" aria-hidden="true"></i>
+          <span class="composer-prompt"
+            ><strong>Escrever uma publicação</strong
+            ><small>Compartilhe um projeto, uma ideia ou um aprendizado.</small></span
+          >
+          <i class="composer-arrow pi pi-arrow-up-right" aria-hidden="true"></i>
         </a>
       </p-card>
     }
@@ -136,7 +137,11 @@
                     : 'As publicações da comunidade aparecerão aqui.'
                 }}
               </p>
-              <a pButton routerLink="/posts/new">Criar publicação</a>
+              @if (!authorId() || authorId() === session.user().id) {
+                <a pButton routerLink="/posts/new">Criar publicação</a>
+              } @else {
+                <a pButton routerLink="/feed">Explorar a comunidade</a>
+              }
             </p-card>
           }
         </div>
@@ -148,12 +153,15 @@
     <div class="community-about">
       <h2>Sobre o Pudd</h2>
       <p class="rail-description">
-        Uma rede social para designers, devs e pessoas de outras áreas, incluindo quem está
-        começando ou cria por hobby.
+        Um lugar para compartilhar o que você faz, mesmo quando ainda está começando.
       </p>
       <p class="rail-description">
-        Publique seus trabalhos, compartilhe projetos e troque experiências com a comunidade.
+        Designers, devs e pessoas de outras áreas. Projetos prontos, trabalhos em andamento e
+        aprendizados pelo caminho.
       </p>
+      <a class="rail-link" routerLink="/profile/me"
+        >Apresente-se no seu perfil <i class="pi pi-arrow-up-right" aria-hidden="true"></i
+      ></a>
     </div>
     <p class="rail-footer">&copy; Pudd 2026 - Todos os direitos reservados</p>
   </aside>

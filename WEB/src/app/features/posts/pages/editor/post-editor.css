@@ -1,5 +1,5 @@
 .editor {
-  max-width: 44rem;
+  max-width: var(--reading-width);
   margin: auto;
 }
 .back-link {
@@ -7,7 +7,11 @@
   margin-bottom: 1.25rem;
 }
 h1 {
-  margin-bottom: 1.75rem;
+  margin-bottom: 1.5rem;
+}
+.editor-heading .eyebrow {
+  color: var(--accent);
+  margin-bottom: 0.75rem;
 }
 .editor.embedded {
   --p-card-shadow: none;
@@ -18,7 +22,7 @@ h1 {
   display: flex;
   align-items: center;
   gap: 0.875rem;
-  padding: 1.5rem 1.5rem 0;
+  padding: 1.25rem 1.25rem 0;
 }
 .composer-author > div {
   display: grid;
@@ -35,8 +39,8 @@ h1 {
 }
 .writing-area {
   display: grid;
-  gap: 1.5rem;
-  padding: 1.5rem;
+  gap: 1.25rem;
+  padding: 1.25rem;
 }
 .content-field label {
   font-size: 0.75rem;
@@ -45,7 +49,6 @@ h1 {
 .content-field textarea {
   min-height: 12rem;
   line-height: 1.7;
-  resize: vertical;
 }
 .character-count {
   text-align: right;
@@ -90,7 +93,7 @@ h1 {
   justify-content: space-between;
   gap: 1rem;
   border-top: 1px solid var(--border);
-  padding: 1rem 1.5rem;
+  padding: 1rem 1.25rem;
 }
 .composer-actions button[type='submit'] {
   min-width: 8rem;

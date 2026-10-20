@@ -1,7 +1,7 @@
 .detail {
-  max-width: 44rem;
+  max-width: var(--reading-width);
   margin: auto;
 }
 h1 {
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--space-6);
 }

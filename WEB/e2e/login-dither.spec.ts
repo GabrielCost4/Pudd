@@ -30,4 +30,9 @@ test('keeps a static dither frame when reduced motion is requested', async ({ pa
     return first === element.toDataURL();
   });
   expect(unchanged).toBe(true);
+  const light = await canvas.evaluate((element: HTMLCanvasElement) => element.toDataURL());
+  await page.getByRole('switch', { name: 'Ativar modo escuro', exact: true }).check();
+  await expect
+    .poll(() => canvas.evaluate((element: HTMLCanvasElement) => element.toDataURL()))
+    .not.toBe(light);
 });

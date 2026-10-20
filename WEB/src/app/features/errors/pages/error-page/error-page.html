@@ -1,10 +1,13 @@
 <main class="error-layout">
-  <a
-    class="brand-placeholder"
-    [routerLink]="session.isAuthenticated() ? '/feed' : '/login'"
-    aria-label="Pudd"
-    >pudd<span aria-hidden="true">.</span></a
-  >
+  <header class="error-toolbar">
+    <a
+      class="brand-placeholder"
+      [routerLink]="session.isAuthenticated() ? '/feed' : '/login'"
+      aria-label="Pudd"
+      ><app-brand-logo /><span>Pudd</span></a
+    >
+    <app-theme-toggle [dark]="theme.mode() === 'dark'" (toggled)="theme.toggle()" />
+  </header>
   <p-card class="error-card">
     <div class="error-code" aria-hidden="true">{{ code }}</div>
     <p class="eyebrow">{{ notFound ? 'CAMINHO NÃO ENCONTRADO' : 'ACESSO NÃO AUTORIZADO' }}</p>
@@ -12,11 +15,13 @@
     <p class="muted">{{ description }}</p>
     <div class="actions">
       @if (session.isAuthenticated()) {
-        <a severity="secondary" pButton routerLink="/feed">Voltar para o feed</a>
+        <a pButton routerLink="/feed">Voltar para o feed</a>
       } @else {
-        <a severity="secondary" pButton routerLink="/login">Ir para o login</a>
+        <a pButton routerLink="/login">Ir para o login</a>
       }
-      <a severity="secondary" pButton routerLink="/register">Criar uma conta</a>
+      @if (!session.isAuthenticated()) {
+        <a severity="secondary" [text]="true" pButton routerLink="/register">Criar uma conta</a>
+      }
     </div>
   </p-card>
 </main>

@@ -2,7 +2,6 @@ import { TagModule } from 'primeng/tag';
 import { TableModule } from 'primeng/table';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { MessageModule } from 'primeng/message';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmationService } from 'primeng/api';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
@@ -24,7 +23,6 @@ import { AdminService } from '../../services/admin.service';
     TableModule,
     ConfirmDialogModule,
     ProgressSpinnerModule,
-    MessageModule,
     ButtonModule,
     RouterLink,
     Feedback,

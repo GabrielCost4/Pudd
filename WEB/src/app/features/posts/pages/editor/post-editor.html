@@ -8,7 +8,9 @@
       [routerLink]="id ? ['/posts', id] : ['/feed']"
       ><i class="pi pi-arrow-left" aria-hidden="true"></i> Voltar</a
     >
-    <h1>{{ id ? 'Editar publicação' : 'Nova publicação' }}</h1>
+    <header class="editor-heading">
+      <h1>{{ id ? 'Editar publicação' : 'Nova publicação' }}</h1>
+    </header>
   }
   <app-feedback [errors]="errors()" />
   @if (loading()) {

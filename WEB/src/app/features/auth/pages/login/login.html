@@ -1,7 +1,7 @@
 <main class="login-layout">
   <header class="auth-toolbar">
     <a class="product-name" routerLink="/login" aria-label="Pudd: entrar">
-      <app-brand-logo />
+      <app-brand-logo /><span>Pudd</span>
     </a>
     <app-theme-toggle [dark]="theme.mode() === 'dark'" (toggled)="theme.toggle()" />
   </header>
@@ -10,6 +10,9 @@
     <section class="login-panel" aria-labelledby="login-title">
       <p-card class="login-card">
         <div class="auth-heading" [class.login-heading]="!registering">
+          <p class="auth-eyebrow">
+            {{ registering ? 'Faça parte da comunidade' : 'Acesse sua comunidade' }}
+          </p>
           <h1 id="login-title">{{ registering ? 'Criar conta' : 'Entrar' }}</h1>
           <p>
             {{

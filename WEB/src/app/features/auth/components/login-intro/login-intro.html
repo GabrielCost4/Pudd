@@ -1,11 +1,18 @@
 <aside class="intro" aria-label="Apresentação do Pudd">
-  <canvas
-    #ditherCanvas
-    class="dither-effect"
-    [class.ready]="ditherReady()"
-    aria-hidden="true"
-  ></canvas>
-  <app-brand-logo class="image-brand" />
+  <div class="intro-brand"><app-brand-logo class="image-brand" /><span>Pudd</span></div>
+  <div class="intro-story">
+    <p class="intro-label">Uma comunidade para quem cria</p>
+    <h2>Compartilhe o que<br /><span>você está criando.</span></h2>
+    <p>Projetos, aprendizados e conversas entre designers, devs e pessoas de outras áreas.</p>
+  </div>
+  <div class="art-window" aria-hidden="true">
+    <canvas
+      #ditherCanvas
+      class="dither-effect"
+      [class.ready]="ditherReady()"
+      aria-hidden="true"
+    ></canvas>
+  </div>
   <details class="getting-started">
     <summary>
       <i class="pi pi-info-circle" aria-hidden="true"></i>Como começar<i

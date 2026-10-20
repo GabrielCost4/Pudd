@@ -189,6 +189,16 @@ public class ServiceTests
         Assert.Empty(s.Db.comments);
     }
 
+    [Theory]
+    [InlineData(350, true)]
+    [InlineData(351, false)]
+    public void Comments_EnforceCharacterLimit(int length, bool valid)
+    {
+        var validator = new CreateCommentRequestValidator();
+        var result = validator.Validate(new Pudd.Application.Contracts.CreateCommentRequest { Content = new string('a', length) });
+        Assert.Equal(valid, result.IsValid);
+    }
+
     [Fact]
     public async Task ProfileAndAvatar_KeepOptionalFieldsAndQueuePreviousImage()
     {

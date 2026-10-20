@@ -8,10 +8,10 @@
       ><i class="pi pi-shield" aria-hidden="true"></i> Moderar publicações</a
     >
   </header>
-  <p-message severity="info" role="note"
-    >A moderação de publicações está em cada post do feed. Para moderar comentários, abra a
-    publicação.</p-message
-  >
+  <p class="moderation-note" role="note">
+    A moderação de publicações está em cada post do feed. Para moderar comentários, abra a
+    publicação.
+  </p>
   <app-feedback [errors]="errors()" [success]="success()" />
   @if (loading()) {
     <div class="loading" role="status">
@@ -23,7 +23,12 @@
         Tentar novamente
       </button>
     }
-    <p-table [value]="users()" [scrollable]="true" [pt]="{ table: { class: 'member-columns' } }">
+    <p-table
+      class="desktop-members"
+      [value]="users()"
+      [scrollable]="true"
+      [pt]="{ table: { class: 'member-columns' } }"
+    >
       <ng-template #caption>Membros da comunidade · página {{ page() }}</ng-template>
       <ng-template #header
         ><tr>
@@ -73,6 +78,50 @@
         </tr></ng-template
       >
     </p-table>
+    <ul class="mobile-members" aria-label="Membros da comunidade">
+      @for (user of users(); track user.id) {
+        <li class="member">
+          <a class="member-identity" [routerLink]="['/profile', user.id]">
+            <strong>{{ user.name }}</strong
+            ><span>{{ user.email }}</span>
+          </a>
+          <dl>
+            <div>
+              <dt>Permissão</dt>
+              <dd>{{ user.role === 'Admin' ? 'Administrador' : 'Membro' }}</dd>
+            </div>
+            <div>
+              <dt>Situação</dt>
+              <dd>
+                <p-tag
+                  [value]="user.isBlocked ? 'Bloqueado' : 'Ativo'"
+                  [severity]="user.isBlocked ? 'danger' : 'success'"
+                />
+              </dd>
+            </div>
+          </dl>
+          @if (user.id === session.user().id) {
+            <span class="muted">Sua conta</span>
+          } @else {
+            <button
+              pButton
+              [severity]="user.isBlocked ? 'secondary' : 'danger'"
+              [outlined]="true"
+              type="button"
+              [disabled]="!!changing()"
+              [loading]="changing() === user.id"
+              (click)="toggle(user)"
+            >
+              {{
+                changing() === user.id ? 'Aguarde…' : user.isBlocked ? 'Desbloquear' : 'Bloquear'
+              }}
+            </button>
+          }
+        </li>
+      } @empty {
+        <li class="empty">Nenhum membro nesta página.</li>
+      }
+    </ul>
     <app-pagination
       [page]="page()"
       [hasNext]="hasNext()"

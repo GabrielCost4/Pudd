@@ -64,7 +64,12 @@
       </div>
     }
   </header>
-  <p class="content-text" [id]="'post-content-' + post().id">{{ visibleContent() }}</p>
+  <p
+    class="content-text"
+    [class.collapsed]="canExpand() && !expanded()"
+    [id]="'post-content-' + post().id"
+    [textContent]="visibleContent()"
+  ></p>
   @if (canExpand()) {
     <button
       pButton

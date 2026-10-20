@@ -131,16 +131,13 @@ export class Feed {
 
   public saudacao(): string {
     const data = new Date();
-    const horaLogin = data.getHours()
-    if(horaLogin < 12) {
-      return "Bom dia"
-    }
-    else if (horaLogin < 18) {
-      return "Boa tarde"
-    }
-    else {
-      return "Boa noite"
+    const horaLogin = data.getHours();
+    if (horaLogin < 12) {
+      return 'Bom dia';
+    } else if (horaLogin < 18) {
+      return 'Boa tarde';
+    } else {
+      return 'Boa noite';
     }
   }
-
 }

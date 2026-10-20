@@ -63,4 +63,50 @@ describe('AppShell', () => {
     expect(f.nativeElement.querySelector('.account img')).toBeNull();
     expect(f.nativeElement.querySelector('.account p-avatar').textContent).toBe('M');
   });
+  it('collapses and reopens navigation from the accessible desktop control', () => {
+    start('User');
+    const fixture = TestBed.createComponent(AppShell);
+    fixture.detectChanges();
+    const root = fixture.nativeElement as HTMLElement;
+    const toggle = root.querySelector<HTMLButtonElement>('.sidebar-toggle')!;
+    const navigation = root.querySelector<HTMLElement>('aside')!;
+    expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    toggle.click();
+    fixture.detectChanges();
+    expect(toggle.getAttribute('aria-label')).toBe('Expandir menu lateral');
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+    expect(navigation.inert).toBe(true);
+    expect(navigation.getAttribute('aria-hidden')).toBe('true');
+    toggle.click();
+    fixture.detectChanges();
+    expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    expect(navigation.inert).toBe(false);
+    expect(navigation.hasAttribute('aria-hidden')).toBe(false);
+    expect(TestBed.inject(SessionStore).isAuthenticated()).toBe(true);
+  });
+  it('toggles with Ctrl+Shift+S and keeps focus outside the hidden navigation', () => {
+    start('User');
+    const fixture = TestBed.createComponent(AppShell);
+    fixture.detectChanges();
+    const root = fixture.nativeElement as HTMLElement;
+    const toggle = root.querySelector<HTMLButtonElement>('.sidebar-toggle')!;
+    root.querySelector<HTMLAnchorElement>('.navigation-link')!.focus();
+    const event = new KeyboardEvent('keydown', {
+      code: 'KeyS',
+      ctrlKey: true,
+      shiftKey: true,
+      bubbles: true,
+      cancelable: true,
+    });
+    document.dispatchEvent(event);
+    fixture.detectChanges();
+    expect(event.defaultPrevented).toBe(true);
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+    expect(document.activeElement).toBe(toggle);
+    document.dispatchEvent(
+      new KeyboardEvent('keydown', { code: 'KeyS', ctrlKey: true, bubbles: true }),
+    );
+    fixture.detectChanges();
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+  });
 });

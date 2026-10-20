@@ -1,5 +1,39 @@
 import { expect, test } from '@playwright/test';
 
+test('keeps expanded instructions readable and inside the introduction at desktop sizes', async ({
+  page,
+}) => {
+  test.setTimeout(90000);
+  for (const dark of [false, true]) {
+    await page.emulateMedia({ colorScheme: dark ? 'dark' : 'light' });
+    for (const width of [1280, 1440, 1920]) {
+      await page.setViewportSize({ width, height: width === 1280 ? 720 : 900 });
+      await page.goto('/login');
+      await page.getByRole('switch').setChecked(dark);
+      const formBefore = await page.locator('.login-card').boundingBox();
+      await page.locator('summary').click();
+      for (const title of [/Crie sua conta/, /Complete seu perfil/, /Publique e comente/]) {
+        const step = page.getByRole('tab', { name: title });
+        await step.click();
+        await expect(step).toBeInViewport({ ratio: 1 });
+        await expect(page.locator('.step-description:visible')).toBeInViewport({ ratio: 1 });
+        const formAfter = await page.locator('.login-card').boundingBox();
+        expect(Math.abs(formAfter!.y - formBefore!.y)).toBeLessThanOrEqual(1);
+        expect(
+          await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight + 1),
+        ).toBe(true);
+        expect((await page.locator('.art-window').boundingBox())!.height).toBeGreaterThanOrEqual(
+          64,
+        );
+      }
+      await page.screenshot({
+        path: `test-results/summary-open-${dark ? 'dark' : 'light'}-${width}.png`,
+        fullPage: true,
+      });
+    }
+  }
+});
+
 test('animates the login instructions closed and remains usable from the keyboard', async ({
   page,
 }) => {

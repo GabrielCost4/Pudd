@@ -7,10 +7,11 @@ import { ConfirmationService } from 'primeng/api';
 import { DatePipe } from '@angular/common';
 import { Component, DestroyRef, effect, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { finalize, Subscription } from 'rxjs';
 import { SessionStore } from '../../../../../core/auth/session.store';
+import { AvatarStore } from '../../../../../core/account/avatar.store';
 import { Feedback } from '../../../../../shared/components/feedback/feedback';
 import { Pagination } from '../../../../../shared/components/pagination/pagination';
 import { apiErrors } from '../../../../../shared/utils/api-errors';
@@ -40,6 +41,8 @@ export class Comments {
   readonly postId = input.required<string>();
   protected readonly session = inject(SessionStore);
   private readonly api = inject(CommentService);
+  private readonly avatars = inject(AvatarStore);
+  protected readonly authorImages = signal<Record<string, string>>({});
   private readonly destroyRef = inject(DestroyRef);
   private request?: Subscription;
   protected readonly items = signal<PostComment[]>([]);
@@ -49,9 +52,24 @@ export class Comments {
   protected readonly deleting = signal('');
   protected readonly page = signal(1);
   protected readonly hasNext = signal(false);
-  protected readonly content = new FormControl('', { nonNullable: true });
+  protected readonly maxLength = 350;
+  protected readonly content = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.maxLength(this.maxLength)],
+  });
 
   constructor() {
+    effect((cleanup) => {
+      this.avatars.revision();
+      const ids = [...new Set(this.items().map((comment) => comment.userID))];
+      this.authorImages.set({});
+      const requests = ids.map((id) =>
+        this.avatars.image(id).subscribe((url) => {
+          this.authorImages.update((images) => ({ ...images, [id]: url }));
+        }),
+      );
+      cleanup(() => requests.forEach((request) => request.unsubscribe()));
+    });
     effect(() => {
       this.postId();
       this.content.reset();
@@ -77,7 +95,7 @@ export class Comments {
       });
   }
   protected submit(): void {
-    if (this.saving() || !this.content.value.trim()) return;
+    if (this.saving() || this.content.invalid || !this.content.value.trim()) return;
     this.saving.set(true);
     this.errors.set([]);
     this.api
@@ -93,6 +111,9 @@ export class Comments {
         },
         error: (error: unknown) => this.errors.set(apiErrors(error)),
       });
+  }
+  protected avatarFailed(id: string): void {
+    this.authorImages.update((images) => ({ ...images, [id]: '' }));
   }
   protected remove(comment: PostComment): void {
     if (this.deleting()) return;

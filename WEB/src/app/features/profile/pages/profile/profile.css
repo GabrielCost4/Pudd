@@ -1,8 +1,10 @@
 .profile-page {
-  max-width: 44rem;
+  max-width: 56rem;
   margin: auto;
 }
 .profile-card {
+  --p-card-body-padding: 0;
+  --p-card-body-gap: 0;
   overflow: hidden;
   margin-top: 1.5rem;
 }
@@ -11,52 +13,93 @@
   display: grid;
   align-content: center;
   gap: 0.75rem;
-  height: 7rem;
+  height: 5.5rem;
   padding: 1.5rem 2rem;
   overflow: hidden;
-  background-color: var(--accent-soft);
+  background-color: var(--editorial-background);
   border-bottom: 3px solid var(--accent);
-  border-radius: var(--radius-small);
   color: var(--accent);
 }
 .profile-info {
-  padding: 0 1rem 0.5rem;
+  padding: 0 1.5rem 1.5rem;
   position: relative;
 }
 .profile-avatar {
   display: inline-flex;
-  margin-top: -3.5rem;
   border: 5px solid var(--surface);
   border-radius: 50%;
-  background: var(--surface);
+  background: var(--accent-soft);
+}
+.profile-identity {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 1.25rem;
+  margin-top: -3.5rem;
+  margin-bottom: 1.25rem;
+}
+.profile-photo {
+  flex-shrink: 0;
+}
+.identity-copy {
+  min-width: 0;
+  padding-top: 4rem;
 }
 .profile-info h2 {
   font-size: 1.875rem;
   letter-spacing: -0.035em;
   margin-bottom: 0.5rem;
+  margin-top: 0;
 }
 .profile-caption {
   font:
     0.75rem/1.5 Consolas,
     monospace;
   color: var(--accent);
-  margin: 0 0 1.25rem;
+  margin: 0;
 }
 @media (max-width: 420px) {
   .cover {
     padding: 1.25rem;
   }
-  .profile-info {
-    padding-inline: 0;
-  }
 }
 .bio {
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: var(--type-body);
+  line-height: 1.75;
   margin-bottom: 1.25rem;
 }
 .edit-profile {
-  margin-top: 1rem;
+  min-width: 0;
+}
+.profile-edit-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+@media (max-width: 1100px) {
+  .profile-edit-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 420px) {
+  .profile-identity {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .identity-copy {
+    padding-top: 0;
+  }
+  .profile-info {
+    padding-inline: 1rem;
+  }
+  .profile-info h2 {
+    font-size: 1.5rem;
+  }
 }
 .edit-profile h2 {
   margin: 0 0 1.25rem;
@@ -69,6 +112,7 @@
 }
 
 .profile-avatar-trigger {
+  background: var(--surface);
   padding: 0;
   cursor: pointer;
   line-height: 0;

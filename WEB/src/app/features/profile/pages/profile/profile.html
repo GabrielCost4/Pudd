@@ -14,38 +14,57 @@
     <p-card class="profile-card">
       <div class="cover" aria-hidden="true"></div>
       <div class="profile-info">
-        @if (avatarUrl() && !avatarFailed()) {
-          <button
-            type="button"
-            class="profile-avatar profile-avatar-trigger"
-            [attr.aria-label]="'Ver foto de ' + person.name + ' ampliada'"
-            aria-haspopup="dialog"
-            (click)="openAvatar($event)"
-          >
-            <p-avatar
-              shape="circle"
-              size="xlarge"
-              [image]="avatarUrl()"
-              [ariaLabel]="'Foto de ' + person.name"
-              (onImageError)="avatarFailed.set(true); closeAvatar()"
-            />
-          </button>
-        } @else {
-          <p-avatar
-            class="profile-avatar"
-            shape="circle"
-            size="xlarge"
-            [label]="person.name.slice(0, 1).toUpperCase()"
-          />
-        }
-        @if (avatarFailed()) {
-          <button [text]="true" severity="secondary" pButton type="button" (click)="loadAvatar()">
-            Recarregar foto
-          </button>
-        }
-        <h2>{{ person.name }}</h2>
-        <p class="profile-caption">Membro da comunidade Pudd</p>
-        <p class="content-text bio">{{ person.bio || 'Sem bio.' }}</p>
+        <div class="profile-identity">
+          <div class="profile-photo">
+            @if (avatarUrl() && !avatarFailed()) {
+              <button
+                type="button"
+                class="profile-avatar profile-avatar-trigger"
+                [attr.aria-label]="'Ver foto de ' + person.name + ' ampliada'"
+                aria-haspopup="dialog"
+                (click)="openAvatar($event)"
+              >
+                <p-avatar
+                  shape="circle"
+                  size="xlarge"
+                  [image]="avatarUrl()"
+                  [ariaLabel]="'Foto de ' + person.name"
+                  (onImageError)="avatarFailed.set(true); closeAvatar()"
+                />
+              </button>
+            } @else {
+              <p-avatar
+                class="profile-avatar"
+                shape="circle"
+                size="xlarge"
+                [label]="person.name.slice(0, 1).toUpperCase()"
+              />
+            }
+            @if (avatarFailed()) {
+              <button
+                [text]="true"
+                severity="secondary"
+                pButton
+                type="button"
+                (click)="loadAvatar()"
+              >
+                Recarregar foto
+              </button>
+            }
+          </div>
+          <div class="identity-copy">
+            <h2>{{ person.name }}</h2>
+            <p class="profile-caption">Membro da comunidade Pudd</p>
+          </div>
+        </div>
+        <p class="content-text bio">
+          {{
+            person.bio ||
+              (isOwner()
+                ? 'Adicione uma bio para contar o que você cria e aprende.'
+                : 'Esta pessoa ainda não adicionou uma bio.')
+          }}
+        </p>
         <div class="actions">
           <a severity="secondary" pButton routerLink="/feed" [queryParams]="{ authorId: person.id }"
             >Ver publicações <i class="pi pi-arrow-right" aria-hidden="true"></i
@@ -67,74 +86,76 @@
       </div>
     </p-card>
     @if (isOwner() && editing()) {
-      <p-card class="edit-profile" id="profile-edit-fields"
-        ><h2>Editar perfil</h2>
-        <form class="stack" [formGroup]="form" (ngSubmit)="save()" [attr.aria-busy]="busy()">
-          <app-label-input
-            inputId="profile-name"
-            label="Nome"
-            autocomplete="name"
-            [control]="form.controls.name"
-            [required]="true"
-            [stacked]="true"
-            [error]="nameError()"
-            [readOnly]="busy()"
-          />
-          <div class="field">
-            <label for="profile-bio">Bio</label
-            ><textarea
-              pTextarea
-              id="profile-bio"
-              formControlName="bio"
-              placeholder="O que você constrói, aprende ou tem vontade de compartilhar?"
+      <div class="profile-edit-grid">
+        <p-card class="edit-profile" id="profile-edit-fields"
+          ><h2>Editar perfil</h2>
+          <form class="stack" [formGroup]="form" (ngSubmit)="save()" [attr.aria-busy]="busy()">
+            <app-label-input
+              inputId="profile-name"
+              label="Nome"
+              autocomplete="name"
+              [control]="form.controls.name"
+              [required]="true"
+              [stacked]="true"
+              [error]="nameError()"
               [readOnly]="busy()"
-            ></textarea>
-          </div>
-          <div class="actions">
-            <button pButton type="submit" [loading]="busy()" [disabled]="busy()">
-              {{ busy() ? 'Salvando…' : 'Salvar perfil' }}</button
-            ><button
-              severity="secondary"
-              pButton
-              type="button"
-              [disabled]="busy()"
-              (click)="cancelEdit()"
-            >
-              Cancelar
-            </button>
-          </div>
-        </form>
-      </p-card>
-      <p-card class="edit-profile"
-        ><h2>Sua foto de perfil</h2>
-        <p class="muted">Selecione uma imagem para atualizar sua foto.</p>
-        @for (version of [pickerVersion()]; track version) {
-          <app-image-picker [disabled]="busy()" (selected)="selectedImage.set($event)" />
-        }
-        <div class="actions avatar-actions">
-          <button
-            pButton
-            type="button"
-            [loading]="busy()"
-            [disabled]="busy() || !selectedImage()"
-            (click)="uploadAvatar()"
-          >
-            Enviar foto
-          </button>
-          @if (person.hasAvatar) {
-            <button
-              [text]="true"
-              severity="danger"
-              pButton
-              type="button"
-              [disabled]="busy()"
-              (click)="removeAvatar()"
-            >
-              Remover foto atual
-            </button>
+            />
+            <div class="field">
+              <label for="profile-bio">Bio</label
+              ><textarea
+                pTextarea
+                id="profile-bio"
+                formControlName="bio"
+                placeholder="O que você constrói, aprende ou tem vontade de compartilhar?"
+                [readOnly]="busy()"
+              ></textarea>
+            </div>
+            <div class="actions">
+              <button pButton type="submit" [loading]="busy()" [disabled]="busy()">
+                {{ busy() ? 'Salvando…' : 'Salvar perfil' }}</button
+              ><button
+                severity="secondary"
+                pButton
+                type="button"
+                [disabled]="busy()"
+                (click)="cancelEdit()"
+              >
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </p-card>
+        <p-card class="edit-profile"
+          ><h2>Sua foto de perfil</h2>
+          <p class="muted">Selecione uma imagem para atualizar sua foto.</p>
+          @for (version of [pickerVersion()]; track version) {
+            <app-image-picker [disabled]="busy()" (selected)="selectedImage.set($event)" />
           }
-        </div>
-      </p-card>
+          <div class="actions avatar-actions">
+            <button
+              pButton
+              type="button"
+              [loading]="busy()"
+              [disabled]="busy() || !selectedImage()"
+              (click)="uploadAvatar()"
+            >
+              Enviar foto
+            </button>
+            @if (person.hasAvatar) {
+              <button
+                [text]="true"
+                severity="danger"
+                pButton
+                type="button"
+                [disabled]="busy()"
+                (click)="removeAvatar()"
+              >
+                Remover foto atual
+              </button>
+            }
+          </div>
+        </p-card>
+      </div>
     }
   }
 </div>

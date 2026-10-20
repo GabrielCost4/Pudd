@@ -3,15 +3,19 @@ import { ButtonModule } from 'primeng/button';
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { SessionStore } from '../../../../core/auth/session.store';
+import { ThemeStore } from '../../../../core/config/theme.store';
+import { ThemeToggle } from '../../../../shared/components/theme-toggle/theme-toggle';
+import { BrandLogo } from '../../../../shared/components/brand-logo/brand-logo';
 
 @Component({
   selector: 'app-error-page',
-  imports: [CardModule, ButtonModule, RouterLink],
+  imports: [CardModule, ButtonModule, RouterLink, ThemeToggle, BrandLogo],
   templateUrl: './error-page.html',
   styleUrl: './error-page.css',
 })
 export class ErrorPage {
   protected readonly session = inject(SessionStore);
+  protected readonly theme = inject(ThemeStore);
 
   private readonly route = inject(ActivatedRoute);
 

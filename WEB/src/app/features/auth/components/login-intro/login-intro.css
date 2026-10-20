@@ -1,74 +1,133 @@
-:host {
+﻿:host {
   display: block;
   height: 100%;
 }
 .intro {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  gap: clamp(1.5rem, 4vh, 3rem);
+  min-height: 0;
+  height: 100dvh;
+  overflow-y: auto;
+  padding: clamp(1.5rem, 4vw, 4rem);
+  background: var(--nav-background);
+  color: var(--nav-text);
+}
+.intro-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.06em;
+}
+.image-brand {
+  width: 4rem;
+}
+.intro-label {
+  color: var(--nav-muted);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin: 0 0 1.25rem;
+}
+.intro-story h2 {
+  font-size: clamp(2rem, 3.8vw, 3.75rem);
+  line-height: 1.08;
+  font-weight: 800;
+  letter-spacing: -0.055em;
+  margin: 0 0 1.25rem;
+}
+.intro-story h2 span {
+  color: var(--nav-selected);
+}
+.intro-story > p:last-child {
+  max-width: 28rem;
+  margin: 0;
+  color: var(--nav-muted);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+.art-window {
   position: relative;
-  height: 100%;
-  min-height: 100dvh;
-  isolation: isolate;
-  background: #000;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--art-background);
+  border-block: 1px solid var(--nav-border);
 }
 .dither-effect {
-  position: absolute;
-  inset: 0;
+  display: block;
   width: 100%;
   height: 100%;
-  z-index: -1;
+  position: absolute;
+  inset: 0;
   image-rendering: pixelated;
   visibility: hidden;
 }
 .dither-effect.ready {
   visibility: visible;
 }
-.image-brand {
-  position: absolute;
-  top: 2rem;
-  left: 2rem;
-  width: clamp(6rem, 9vw, 9rem);
-}
 .getting-started {
-  position: absolute;
-  bottom: 1.5rem;
-  left: 1.5rem;
-  right: 7rem;
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  background: var(--surface);
-  color: var(--text);
-  box-shadow: 0 4px 20px #0002;
+  --p-stepper-steppanel-background: var(--nav-background);
+  --p-stepper-steppanel-color: var(--nav-text);
+  --p-stepper-step-title-color: var(--nav-muted);
+  --p-stepper-step-title-active-color: var(--nav-text);
+  --p-stepper-step-title-hover-color: var(--nav-text);
+  --p-stepper-step-number-background: var(--nav-background);
+  --p-stepper-step-number-color: var(--nav-text);
+  --p-stepper-step-number-border-color: var(--nav-border);
+  --p-stepper-step-number-active-background: var(--nav-selected);
+  --p-stepper-step-number-active-color: var(--nav-selected-text);
+  --p-stepper-step-number-active-border-color: var(--nav-selected);
+  border-block: 1px solid var(--nav-border);
+  color: var(--nav-text);
 }
 summary {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 1rem;
+  min-height: 3rem;
+  padding: 0.75rem 0;
   cursor: pointer;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   list-style: none;
 }
 summary::-webkit-details-marker {
   display: none;
 }
+summary:focus-visible {
+  outline-color: var(--nav-selected);
+}
 summary .pi-chevron-down {
   margin-left: auto;
-  transition: transform 260ms ease;
+  transition: transform 200ms ease;
 }
 details[open] summary .pi-chevron-down {
   transform: rotate(180deg);
 }
 .steps {
-  padding: 0 1rem 1rem;
+  padding-bottom: 0.75rem;
 }
 .step-description {
   padding: 0.25rem 0 1rem;
-  color: var(--muted);
+  color: var(--nav-muted);
   margin: 0;
   font-size: 0.8125rem;
   line-height: 1.6;
 }
-
+@media (max-height: 800px) {
+  .intro {
+    padding: clamp(1.5rem, 2.5vw, 2rem);
+    gap: 1rem;
+  }
+  .image-brand {
+    width: 3rem;
+  }
+  .intro-story h2 {
+    font-size: clamp(2rem, 3.2vw, 2.75rem);
+  }
+}
 @supports (interpolate-size: allow-keywords) {
   .getting-started {
     interpolate-size: allow-keywords;
@@ -78,9 +137,9 @@ details[open] summary .pi-chevron-down {
     opacity: 0;
     overflow: clip;
     transition:
-      block-size 260ms ease,
-      opacity 180ms ease,
-      content-visibility 260ms allow-discrete;
+      block-size 200ms ease,
+      opacity 160ms ease,
+      content-visibility 200ms allow-discrete;
   }
   .getting-started[open]::details-content {
     block-size: auto;

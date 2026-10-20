@@ -4,7 +4,7 @@ import { mockApi, login } from './api.fixture';
 test('counts post characters and blocks creation and editing above 5000', async ({ page }) => {
   const api = await mockApi(page);
   await login(page);
-  await page.getByRole('link', { name: 'Nova publicação', exact: true }).click();
+  await page.getByRole('link', { name: 'Escrever uma publicação', exact: true }).click();
   const content = page.getByLabel('Sua publicação', { exact: true });
   const counter = page.locator('#post-character-count');
   const publish = page.getByRole('button', { name: 'Publicar', exact: true });
@@ -41,7 +41,7 @@ test('shows API validation and success messages for creating and editing posts a
 }) => {
   const api = await mockApi(page);
   await login(page);
-  await page.getByRole('link', { name: 'Nova publicação', exact: true }).click();
+  await page.getByRole('link', { name: 'Escrever uma publicação', exact: true }).click();
   await page.getByRole('button', { name: 'Publicar', exact: true }).click();
   await expect(page.getByRole('alert')).toContainText('Escreva o conteúdo da publicação.');
   expect(api.calls.filter((call) => call.path === '/posts' && call.method === 'POST')).toHaveLength(

@@ -1,9 +1,10 @@
 .feed-layout {
   display: grid;
-  grid-template-columns: minmax(0, 42rem) 17rem;
+  grid-template-columns: minmax(0, 44rem) 16rem;
   align-items: start;
-  gap: 3rem;
-  max-width: 62rem;
+  column-gap: 3.5rem;
+  row-gap: 2rem;
+  max-width: var(--page-width);
   margin: 0 auto;
 }
 .feed {
@@ -14,7 +15,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1.75rem;
+  margin-bottom: 1.5rem;
 }
 .feed-heading > div {
   min-width: 0;
@@ -29,27 +30,26 @@
   color: var(--accent);
   font-weight: 650;
 }
-.feed-heading .p-button,
 .feed-tabs .p-button {
   font-size: 0.875rem;
   padding: 0.5625rem 1rem;
   gap: 0.5rem;
 }
-.create-post-link {
-  min-height: 2.625rem;
-  flex-shrink: 0;
-}
 h1 {
-  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-size: clamp(2rem, 3vw, 2.75rem);
   margin: 0;
   letter-spacing: -0.045em;
 }
 .feed-composer {
   margin-bottom: 1.5rem;
+  --p-card-background: var(--editorial-background);
+  --p-card-shadow: none;
 }
 .composer-link {
   width: 100%;
   justify-content: flex-start;
+  --p-button-text-secondary-color: var(--editorial-text);
+  --p-button-text-secondary-hover-background: transparent;
 }
 .composer-prompt {
   flex: 1;
@@ -58,6 +58,18 @@ h1 {
   font-weight: 400;
   text-align: left;
   white-space: normal;
+  display: grid;
+  gap: 0.25rem;
+}
+.composer-prompt strong {
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+.composer-prompt small {
+  font-size: 0.75rem;
+}
+.composer-arrow {
+  font-size: 1.25rem;
 }
 .feed-tabs {
   display: grid;
@@ -67,7 +79,7 @@ h1 {
   max-width: 100%;
   padding: 0 0 0.75rem;
   border-bottom: 1px solid var(--border);
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 .feed-tabs a {
   min-height: 2.625rem;
@@ -87,7 +99,7 @@ h1 {
 }
 .post-list {
   display: grid;
-  gap: var(--space-12, 3rem);
+  gap: var(--space-6);
 }
 .feed-update {
   display: flex;
@@ -123,6 +135,24 @@ h1 {
   position: sticky;
   top: 2rem;
 }
+.community-rail .eyebrow {
+  color: var(--accent);
+  margin: 0 0 0.75rem;
+}
+.rail-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  margin-top: 0.5rem;
+  color: var(--accent);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+.rail-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
 .community-rail h2 {
   display: flex;
   align-items: center;
@@ -131,10 +161,6 @@ h1 {
   letter-spacing: -0.02em;
   line-height: 1.3;
   margin: 0 0 1rem;
-}
-.community-rail h2 i {
-  color: var(--accent);
-  font-size: 1rem;
 }
 .rail-description,
 .rail-footer {
@@ -163,7 +189,6 @@ h1 {
   color: var(--muted);
 }
 @media (max-width: 760px) {
-  .feed-heading .p-button,
   .feed-tabs .p-button {
     min-height: 2.75rem;
   }
@@ -172,9 +197,6 @@ h1 {
   }
   .feed-heading > div {
     flex-basis: 100%;
-  }
-  .create-post-link {
-    width: 100%;
   }
 }
 
@@ -192,7 +214,7 @@ h1 {
   background: var(--p-primary-active-color);
 }
 .community-about {
-  border-top: 2px solid var(--accent);
+  border-top: 3px solid var(--accent);
   padding-top: var(--space-5);
 }
 .load-error {

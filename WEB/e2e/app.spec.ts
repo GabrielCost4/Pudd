@@ -77,7 +77,7 @@ test('fits login and registration within desktop and mobile viewport height', as
       await expect(page.locator('#login-title')).toBeVisible();
       if (route === '/login') {
         const title = await page.locator('#login-title').boundingBox();
-        const subtitle = await page.locator('.auth-heading p').boundingBox();
+        const subtitle = await page.locator('.auth-heading > p:last-child').boundingBox();
         const emailLabel = await page.locator('label[for="email"]').boundingBox();
         expect(Math.abs(subtitle!.y - title!.y - title!.height - 12)).toBeLessThanOrEqual(1);
         const expectedGap = viewport.height <= 740 ? 12 : 32;
@@ -169,9 +169,19 @@ test('creates, likes, comments, edits and deletes a post with an image', async (
     'aria-pressed',
     'false',
   );
-  await page.getByLabel('Seu comentário', { exact: true }).fill('Uma nova conversa.');
+  const commentInput = page.getByLabel('Seu comentário', { exact: true });
+  const commentCounter = page.locator('#comment-character-count');
+  await expect(commentCounter).toContainText('0 / 350 caracteres');
+  await commentInput.fill('a'.repeat(350));
+  await commentInput.press('End');
+  await commentInput.press('b');
+  await expect(commentInput).toHaveValue('a'.repeat(350));
+  await expect(commentCounter).toContainText('350 / 350 caracteres');
+  await commentInput.fill('Uma nova conversa.');
+  await expect(commentCounter).toContainText('18 / 350 caracteres');
   await page.getByRole('button', { name: 'Comentar', exact: true }).click();
   await expect(page.locator('app-comments')).toContainText('Uma nova conversa.');
+  await expect(commentCounter).toContainText('0 / 350 caracteres');
   await page.locator('app-comments').getByRole('button', { name: 'Excluir', exact: true }).click();
   await page
     .getByRole('alertdialog', {
@@ -364,8 +374,9 @@ test('keeps the mobile administration table and confirmation within the viewport
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
   ).toBeTruthy();
-  const table = page.locator('.p-datatable-table-container');
-  expect(await table.evaluate((element) => element.scrollWidth > element.clientWidth)).toBeTruthy();
+  await expect(page.getByRole('list', { name: 'Membros da comunidade' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Bloquear', exact: true })).toBeInViewport();
+  await expect(page.getByRole('table')).toHaveCount(0);
   await page.getByRole('button', { name: 'Bloquear', exact: true }).click();
   const dialog = page.getByRole('alertdialog', {
     name: /^(Excluir publicação|Excluir comentário|Remover foto de perfil|Alterar acesso)$/,

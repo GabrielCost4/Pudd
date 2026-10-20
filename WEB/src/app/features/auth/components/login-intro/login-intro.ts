@@ -28,6 +28,14 @@ export class LoginIntro {
       if (!context) return;
       const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
       const bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+      const readPalette = () => {
+        const style = getComputedStyle(canvas);
+        return ['--art-ink', '--art-shadow'].map((token) => {
+          const hex = style.getPropertyValue(token).trim().slice(1);
+          return [0, 2, 4].map((offset) => parseInt(hex.slice(offset, offset + 2), 16));
+        });
+      };
+      let palette = readPalette();
       let pixels: ImageData | undefined;
       let frame = 0;
       let previous = 0;
@@ -45,9 +53,10 @@ export class LoginIntro {
             const level = 0.35 + wave * 0.18;
             const lit = level > (bayer[(y % 4) * 4 + (x % 4)] + 0.5) / 16;
             const offset = (y * canvas.width + x) * 4;
-            pixels.data[offset] = lit ? 92 : 0;
-            pixels.data[offset + 1] = lit ? 122 : 0;
-            pixels.data[offset + 2] = lit ? 102 : 0;
+            const color = palette[lit ? 0 : 1];
+            pixels.data[offset] = color[0];
+            pixels.data[offset + 1] = color[1];
+            pixels.data[offset + 2] = color[2];
             pixels.data[offset + 3] = 255;
           }
         }
@@ -79,6 +88,11 @@ export class LoginIntro {
         visible = entry.isIntersecting;
         sync();
       });
+      const theme = new MutationObserver(() => {
+        palette = readPalette();
+        draw(0);
+      });
+      theme.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
       resize.observe(canvas);
       intersection.observe(canvas);
       motion.addEventListener('change', sync);
@@ -87,6 +101,7 @@ export class LoginIntro {
         cancelAnimationFrame(frame);
         resize.disconnect();
         intersection.disconnect();
+        theme.disconnect();
         motion.removeEventListener('change', sync);
         document.removeEventListener('visibilitychange', sync);
       });

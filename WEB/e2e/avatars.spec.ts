@@ -1,6 +1,33 @@
 import { test, expect } from '@playwright/test';
 import { ME, OTHER, mockApi, login } from './api.fixture';
 
+test('shows comment author photos and falls back to initials when an image fails', async ({
+  page,
+}) => {
+  const api = await mockApi(page);
+  api.avatarUsers.add(OTHER);
+  api.comments.push({ ...api.comments[0], id: crypto.randomUUID(), content: 'Outra conversa.' });
+  api.comments.push({
+    ...api.comments[0],
+    id: crypto.randomUUID(),
+    userID: ME,
+    authorName: 'Gabriel Dev',
+    content: 'Sem foto de perfil.',
+  });
+  await login(page);
+  await page.getByRole('link', { name: 'Comentar', exact: true }).first().click();
+  const comments = page.locator('app-comments');
+  const photos = comments.locator('.avatar img');
+  await expect(photos).toHaveCount(2);
+  await expect(photos.first()).toBeVisible();
+  await expect(
+    comments.locator('.comment').filter({ hasText: 'Sem foto de perfil.' }).locator('p-avatar'),
+  ).toHaveText('G');
+  await photos.first().dispatchEvent('error', { bubbles: false });
+  await expect(photos).toHaveCount(0);
+  await expect(comments.locator('.comment').first().locator('p-avatar')).toHaveText('A');
+});
+
 test('shows current and other author photos and synchronizes avatar changes with the sidebar and feed', async ({
   page,
 }) => {

@@ -1,5 +1,7 @@
 .comments {
   margin-top: var(--space-8);
+  padding-top: var(--space-6);
+  border-top: 2px solid var(--accent-border);
 }
 .comments h2 {
   margin-bottom: var(--space-6);
@@ -10,12 +12,20 @@
 .comment-form {
   display: grid;
   gap: var(--space-4);
+  padding: var(--space-5);
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+  border: 1px solid var(--border);
 }
 .comment-form button {
   justify-self: end;
 }
 .comment-form textarea {
   min-height: 6rem;
+}
+.character-count {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 .comment {
   display: flex;
@@ -35,7 +45,7 @@
 }
 .comment header a {
   font-size: var(--type-small);
-  font-weight: 600;
+  font-weight: 700;
 }
 .comment small {
   color: var(--muted);

@@ -14,23 +14,23 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  width: 40%;
+  width: 48%;
   padding: 1.5rem 3rem;
 }
 .product-name {
   display: none;
   color: var(--text);
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 1.5rem;
+  font-weight: 800;
   text-decoration: none;
 }
 .product-name app-brand-logo {
-  width: 7.5rem;
+  width: 3rem;
 }
 .auth-content {
   min-height: 100dvh;
   display: grid;
-  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
   background: var(--surface);
 }
 .login-panel {
@@ -39,7 +39,7 @@
   align-items: center;
   justify-content: center;
   min-width: 0;
-  padding: 5rem 1.5rem 1rem;
+  padding: 6rem clamp(1.5rem, 4vw, 4rem) 3rem;
   background: var(--surface);
   border-left: 1px solid var(--border);
 }
@@ -55,13 +55,13 @@
   position: relative;
   display: block;
   width: 100%;
-  max-width: 25rem;
+  max-width: 26rem;
 }
 .auth-heading {
   margin-bottom: 1.25rem;
 }
 h1 {
-  font-size: var(--type-h1);
+  font-size: clamp(2rem, 3vw, 2.75rem);
   margin-bottom: 0.75rem;
 }
 .login-heading {
@@ -72,6 +72,14 @@ h1 {
   color: var(--muted);
   font-size: 0.875rem;
   line-height: 1.6;
+}
+.auth-heading .auth-eyebrow {
+  margin-bottom: 0.875rem;
+  color: var(--accent);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 form {
   display: grid;
@@ -129,23 +137,36 @@ app-feedback:empty {
     gap: 0.625rem;
   }
 }
-@media (max-width: 760px) {
+@media (max-width: 1000px) {
   .auth-toolbar {
     width: 100%;
     padding: 1rem;
     justify-content: space-between;
   }
   .product-name {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
   .auth-content {
     display: block;
   }
   .login-panel {
-    padding: 4rem 1rem 0.5rem;
+    padding: 6rem 1.25rem 2rem;
     min-height: 100dvh;
   }
   .intro-panel {
+    display: none;
+  }
+}
+@media (max-width: 1000px) and (max-height: 740px) {
+  .login-panel {
+    padding: 4.5rem 1.25rem 0.5rem;
+  }
+  .login-card {
+    --p-card-body-padding: 0;
+  }
+  .auth-heading .auth-eyebrow {
     display: none;
   }
 }

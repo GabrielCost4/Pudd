@@ -28,6 +28,25 @@ describe('Comments', () => {
     const { f } = setup();
     expect(f.nativeElement.querySelector('button[type="submit"]').disabled).toBe(true);
   });
+  it('counts characters and prevents submission above 350 characters', () => {
+    const { f, http } = setup();
+    const input = f.nativeElement.querySelector('textarea') as HTMLTextAreaElement;
+    const counter = f.nativeElement.querySelector('#comment-character-count');
+    const submit = f.nativeElement.querySelector('button[type="submit"]');
+    expect(counter.textContent).toContain('0 / 350');
+    expect(input.maxLength).toBe(350);
+    input.value = 'a'.repeat(350);
+    input.dispatchEvent(new Event('input'));
+    f.detectChanges();
+    expect(counter.textContent).toContain('350 / 350');
+    expect(submit.disabled).toBe(false);
+    input.value += 'a';
+    input.dispatchEvent(new Event('input'));
+    f.detectChanges();
+    expect(submit.disabled).toBe(true);
+    f.nativeElement.querySelector('form').dispatchEvent(new Event('submit', { cancelable: true }));
+    http.expectNone(API_BASE_URL + '/posts/post/comments');
+  });
   it('submits the entered comment, prevents duplicate requests and reloads the list', () => {
     const { f, http } = setup();
     const input = f.nativeElement.querySelector('textarea') as HTMLTextAreaElement;

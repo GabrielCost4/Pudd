@@ -52,7 +52,7 @@ test('keeps community pages accessible within desktop and mobile viewports in bo
               .boundingBox();
             const feed = await page.locator('section.feed').boundingBox();
             expect(Math.abs(action!.y - aside!.y)).toBeLessThanOrEqual(1);
-            expect(aside!.x - feed!.x - feed!.width).toBeGreaterThanOrEqual(47);
+            expect(aside!.x - feed!.x - feed!.width).toBeGreaterThanOrEqual(31);
           }
           await expect(page.getByRole('complementary', { name: 'Sobre a comunidade' })).toBeVisible(
             {
@@ -63,7 +63,9 @@ test('keeps community pages accessible within desktop and mobile viewports in bo
           const cards = page.locator('app-post-card .post-card');
           const upper = await cards.nth(0).boundingBox();
           const lower = await cards.nth(1).boundingBox();
-          expect(lower!.y - upper!.y - upper!.height).toBeGreaterThanOrEqual(47);
+          const postGap = lower!.y - upper!.y - upper!.height;
+          expect(postGap).toBeGreaterThanOrEqual(23);
+          expect(postGap).toBeLessThanOrEqual(25);
 
           const community = page.getByRole('link', { name: 'Comunidade', exact: true });
           const mine = page.getByRole('link', { name: 'Minhas publicações', exact: true });
