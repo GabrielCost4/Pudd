@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Pudd.Application.Interfaces;
 using Pudd.Domain.Entities;
+using Pudd.Application.Contracts;
 
 namespace Pudd.Infrastructure.Repositories
 {
@@ -14,6 +15,17 @@ namespace Pudd.Infrastructure.Repositories
     {
         public Task<User?> GetByIdAsync(Guid id) =>
             _context.users.FirstOrDefaultAsync(user => user.ID == id);
+
+        public Task<bool> NameExistsAsync(string normalizedName, Guid? exceptId = null) =>
+            _context.users.AnyAsync(user => user.NormalizedName == normalizedName &&
+                (!exceptId.HasValue || user.ID != exceptId.Value));
+
+        public async Task<IReadOnlyList<UserSuggestionResponse>> SearchAsync(string normalizedQuery, bool includeBlocked) =>
+            await _context.users.AsNoTracking()
+                .Where(user => (includeBlocked || !user.IsBlocked) && user.NormalizedName.Contains(normalizedQuery))
+                .OrderBy(user => user.NormalizedName == normalizedQuery ? 0 : user.NormalizedName.StartsWith(normalizedQuery) ? 1 : 2)
+                .ThenBy(user => user.NormalizedName).ThenBy(user => user.ID).Take(3)
+                .Select(user => new UserSuggestionResponse(user.ID, user.Name, user.AvatarImagePath != null)).ToListAsync();
 
         public async Task RecordLoginAsync(Guid id, DateTimeOffset now)
         {

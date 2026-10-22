@@ -5,7 +5,17 @@ namespace Pudd.Domain.Entities
     public class User
     {
         public Guid ID { get; set; }
-        public string Name { get; set; } = string.Empty;
+        private string name = string.Empty;
+        public string Name
+        {
+            get => name;
+            set
+            {
+                name = ProfileNames.Display(value);
+                NormalizedName = ProfileNames.Key(value);
+            }
+        }
+        public string NormalizedName { get; private set; } = string.Empty;
         public string Email { get; set; } = string.Empty;   
         public string PasswordHash { get; set;} = string.Empty;
         public UserRole Role { get; set;} = UserRole.User;

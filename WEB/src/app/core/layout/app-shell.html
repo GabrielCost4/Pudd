@@ -197,22 +197,37 @@
   </button>
 }
 <div class="main-column">
-  <div class="app-controls">
-    @if (mobile()) {
-      <button
-        pButton
-        type="button"
-        [text]="true"
-        severity="secondary"
-        (click)="navigationOpen.set(true)"
-        aria-controls="navigation"
-        [attr.aria-expanded]="navigationOpen()"
-        aria-label="Abrir menu"
-      >
-        <i class="pi pi-bars" aria-hidden="true"></i>
-      </button>
-    }
-    <app-theme-toggle [dark]="theme.mode() === 'dark'" (toggled)="theme.toggle()" />
+  <div
+    class="app-controls"
+    [class.feed-controls]="searchPage() === '/feed'"
+    [class.admin-controls]="searchPage() === '/admin'"
+  >
+    <div class="toolbar-content">
+      @if (mobile()) {
+        <button
+          pButton
+          type="button"
+          [text]="true"
+          severity="secondary"
+          (click)="navigationOpen.set(true)"
+          aria-controls="navigation"
+          [attr.aria-expanded]="navigationOpen()"
+          aria-label="Abrir menu"
+        >
+          <i class="pi pi-bars" aria-hidden="true"></i>
+        </button>
+      }
+      @if (searchPage() === '/feed') {
+        <app-user-search class="toolbar-search" (selected)="selectUser($event)" />
+      } @else if (searchPage() === '/admin') {
+        <app-user-search
+          class="toolbar-search"
+          [administrative]="true"
+          (selected)="selectUser($event)"
+        />
+      }
+      <app-theme-toggle [dark]="theme.mode() === 'dark'" (toggled)="theme.toggle()" />
+    </div>
   </div>
   <main #mainContent id="main-content" tabindex="-1"><router-outlet /></main>
 </div>

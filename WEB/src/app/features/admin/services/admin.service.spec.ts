@@ -5,6 +5,14 @@ import { API_BASE_URL } from '../../../core/config/api';
 import { AdminService } from './admin.service';
 
 describe('AdminService', () => {
+  it('loads the selected member through the protected endpoint', () => {
+    TestBed.inject(AdminService).user('member/id').subscribe();
+    const request = TestBed.inject(HttpTestingController).expectOne(
+      API_BASE_URL + '/admin/users/member%2Fid',
+    );
+    expect(request.request.method).toBe('GET');
+    request.flush({});
+  });
   beforeEach(() =>
     TestBed.configureTestingModule({
       providers: [provideHttpClient(), provideHttpClientTesting()],

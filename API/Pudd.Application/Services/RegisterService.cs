@@ -34,6 +34,9 @@ namespace Pudd.Application.Services
             }
 
 
+            if (await _userRepository.NameExistsAsync(ProfileNames.Key(request.Nome)))
+                throw new AppException(ErrorCode.Conflict, "Este nome de perfil já está em uso.");
+
             var senha = _passwordHasher.GerarHash(request.Senha);
 
             var now = clock.GetUtcNow();

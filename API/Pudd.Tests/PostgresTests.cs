@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql;
 using Pudd.Domain.Entities;
 using Pudd.Infrastructure;
@@ -19,6 +21,37 @@ public sealed class PostgresFactAttribute : FactAttribute
 
 public class PostgresTests
 {
+    [PostgresFact]
+    public async Task DuplicateNamesStopMigrationWithoutRenamingExistingAccounts()
+    {
+        var settings = new NpgsqlConnectionStringBuilder(Environment.GetEnvironmentVariable("PUDD_TEST_POSTGRES")!);
+        Assert.StartsWith("pudd_tests_", settings.Database);
+        settings.Database = "pudd_tests_duplicates_" + Guid.NewGuid().ToString("N");
+        var options = new DbContextOptionsBuilder<PuddDbContext>().UseNpgsql(settings.ConnectionString).Options;
+        await using var db = new PuddDbContext(options);
+        try
+        {
+            await db.GetService<IMigrator>().MigrateAsync("AddAccountActivity");
+            foreach (var name in new[] { "Ana Silva", "  ANA  SILVA  " })
+                await db.Database.ExecuteSqlInterpolatedAsync($"""
+                    INSERT INTO "users" ("ID", "Name", "Email", "PasswordHash", "Role", "IsBlocked")
+                    VALUES ({Guid.NewGuid()}, {name}, {Guid.NewGuid() + "@example.test"}, {"unused"}, {0}, {false})
+                    """);
+            var error = await Assert.ThrowsAsync<PostgresException>(() => db.Database.MigrateAsync());
+            Assert.Contains("Duplicate profile names", error.MessageText);
+            await using var connection = new NpgsqlConnection(settings.ConnectionString);
+            await connection.OpenAsync();
+            await using var command = new NpgsqlCommand("SELECT COUNT(*) FROM \"users\" WHERE \"Name\" IN ('Ana Silva', '  ANA  SILVA  ')", connection);
+            Assert.Equal(2L, await command.ExecuteScalarAsync());
+        }
+        finally
+        {
+            // This database is created by this test and always has the explicit disposable prefix.
+            Assert.StartsWith("pudd_tests_duplicates_", settings.Database);
+            await db.Database.EnsureDeletedAsync();
+        }
+    }
+
     [PostgresFact]
     public async Task MigrationsLikesConcurrencyCascadeAndCleanupWorkInPostgres()
     {

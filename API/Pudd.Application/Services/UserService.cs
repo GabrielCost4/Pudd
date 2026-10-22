@@ -22,7 +22,9 @@ namespace Pudd.Application.Services
         {
             var user = await access.RequireActiveAsync(actorId);
             await RequestValidation.ValidateAsync(validator, request);
-            var name = request.Name.Trim();
+            var name = ProfileNames.Display(request.Name);
+            if (await users.NameExistsAsync(ProfileNames.Key(name), actorId))
+                throw new AppException(ErrorCode.Conflict, "Este nome de perfil já está em uso.");
             user.Name = name;
             user.Bio = string.IsNullOrWhiteSpace(request.Bio) ? null : request.Bio.Trim();
             await users.UpdateAsync(user);
@@ -66,6 +68,25 @@ namespace Pudd.Application.Services
             SocialRules.Page(page, pageSize);
             return SocialRules.Slice((await users.GetPageAsync(page, pageSize))
                 .Select(u => new AdminUserResponse(u.ID, u.Name, u.Email, u.Role.ToString(), u.IsBlocked, u.LastLoginAt, u.LastSeenAt, AccountActivity.IsActive(u.LastSeenAt, clock.GetUtcNow()))), page, pageSize);
+        }
+
+        public async Task<IReadOnlyList<UserSuggestionResponse>> SearchAsync(Guid actorId, string? query, bool administrative = false)
+        {
+            if (administrative) await access.RequireAdminAsync(actorId);
+            else await access.RequireActiveAsync(actorId);
+            var normalized = ProfileNames.Key(query ?? "");
+            if (normalized.Length < 2) return [];
+            if (normalized.Length > 50)
+                throw new AppException(ErrorCode.InvalidInput, "Pesquisa deve ter até 50 caracteres.");
+            return await users.SearchAsync(normalized, administrative);
+        }
+
+        public async Task<AdminUserResponse> GetAdminUserAsync(Guid actorId, Guid userId)
+        {
+            await access.RequireAdminAsync(actorId);
+            var user = await FindAsync(userId);
+            return new(user.ID, user.Name, user.Email, user.Role.ToString(), user.IsBlocked,
+                user.LastLoginAt, user.LastSeenAt, AccountActivity.IsActive(user.LastSeenAt, clock.GetUtcNow()));
         }
 
         public async Task SetBlockedAsync(Guid actorId, Guid userId, bool blocked)

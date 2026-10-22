@@ -1,0 +1,50 @@
+<div class="search-field">
+  <label
+    class="search-label"
+    [for]="administrative() ? 'admin-member-search' : 'feed-profile-search'"
+  >
+    {{ administrative() ? 'Pesquisar membros por nome' : 'Pesquisar perfis por nome' }}
+  </label>
+  <div class="search-input">
+    <i class="pi pi-search search-icon" aria-hidden="true"></i>
+    <p-autocomplete
+      [inputId]="administrative() ? 'admin-member-search' : 'feed-profile-search'"
+      [formControl]="control"
+      [suggestions]="suggestions()"
+      [minQueryLength]="2"
+      [delay]="300"
+      [showClear]="true"
+      [showEmptyMessage]="true"
+      [autoOptionFocus]="false"
+      [fluid]="true"
+      [maxlength]="50"
+      optionLabel="name"
+      [placeholder]="administrative() ? 'Pesquisar membros' : 'Pesquisar perfis'"
+      emptyMessage="Nenhum perfil encontrado"
+      (completeMethod)="search($event.query)"
+      (onSelect)="choose($event.value)"
+    >
+      <ng-template #item let-person>
+        @let avatarUrl =
+          person.hasAvatar && !failedImages().has(person.id)
+            ? (avatars.image(person.id) | async)
+            : null;
+        <span class="suggestion">
+          <p-avatar
+            shape="circle"
+            [image]="avatarUrl || undefined"
+            [label]="avatarUrl ? undefined : person.name.slice(0, 1).toUpperCase()"
+            [ariaLabel]="'Foto de ' + person.name"
+            (onImageError)="imageFailed(person.id)"
+          />
+          <span>{{ person.name }}</span>
+        </span>
+      </ng-template>
+    </p-autocomplete>
+  </div>
+  @if (failed()) {
+    <p-message severity="error"
+      >Não foi possível pesquisar. Digite novamente para tentar.</p-message
+    >
+  }
+</div>

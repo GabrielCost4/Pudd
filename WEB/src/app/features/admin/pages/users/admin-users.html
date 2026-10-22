@@ -12,6 +12,11 @@
     A moderação de publicações está em cada post do feed. Para moderar comentários, abra a
     publicação.
   </p>
+  @if (selectedMember()) {
+    <button type="button" pButton severity="secondary" (click)="showAll()">
+      Mostrar todos os membros
+    </button>
+  }
   <app-feedback [errors]="errors()" [success]="success()" />
   @if (loading()) {
     <div class="loading" role="status">
@@ -29,7 +34,13 @@
       [scrollable]="true"
       [pt]="{ table: { class: 'member-columns' } }"
     >
-      <ng-template #caption>Membros da comunidade · página {{ page() }}</ng-template>
+      <ng-template #caption>
+        @if (selectedMember()) {
+          Membro selecionado
+        } @else {
+          Membros da comunidade · página {{ page() }}
+        }
+      </ng-template>
       <ng-template #header
         ><tr>
           <th scope="col">Pessoa</th>
@@ -53,8 +64,11 @@
             />
           </td>
           <td>
-            <small>Login: {{ (user.lastLoginAt | date: 'dd/MM/yyyy HH:mm') || 'Sem registro' }}</small>
-            <small>Acesso: {{ (user.lastSeenAt | date: 'dd/MM/yyyy HH:mm') || 'Sem registro' }}</small>
+            <small
+              >Login: {{ (user.lastLoginAt | date: 'dd/MM/yyyy HH:mm') || 'Sem registro' }}</small
+            ><small
+              >Acesso: {{ (user.lastSeenAt | date: 'dd/MM/yyyy HH:mm') || 'Sem registro' }}</small
+            >
           </td>
           <td>{{ user.role === 'Admin' ? 'Administrador' : 'Membro' }}</td>
           <td>
@@ -123,7 +137,7 @@
               <dt>Situação</dt>
               <dd>
                 <p-tag
-                  [value]="user.isBlocked ? 'Bloqueado' : 'Ativo'"
+                  [value]="user.isBlocked ? 'Bloqueado' : 'Permitido'"
                   [severity]="user.isBlocked ? 'danger' : 'success'"
                 />
               </dd>
@@ -151,12 +165,14 @@
         <li class="empty">Nenhum membro nesta página.</li>
       }
     </ul>
-    <app-pagination
-      [page]="page()"
-      [hasNext]="hasNext()"
-      [busy]="!!changing()"
-      (changed)="load($event)"
-    />
+    @if (!selectedMember()) {
+      <app-pagination
+        [page]="page()"
+        [hasNext]="hasNext()"
+        [busy]="!!changing()"
+        (changed)="load($event)"
+      />
+    }
   }
 </section>
 

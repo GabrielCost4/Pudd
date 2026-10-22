@@ -1,3 +1,4 @@
+import { UserSearch } from '../search/user-search';
 import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
 import { DrawerModule } from 'primeng/drawer';
@@ -25,6 +26,7 @@ import { BrandLogo } from '../../shared/components/brand-logo/brand-logo';
 @Component({
   selector: 'app-shell',
   imports: [
+    UserSearch,
     AvatarModule,
     ButtonModule,
     DrawerModule,
@@ -51,6 +53,7 @@ export class AppShell {
   private readonly router = inject(Router);
   private readonly document = inject(DOCUMENT);
   private readonly destroyRef = inject(DestroyRef);
+  protected readonly searchPage = signal(this.router.url.split('?')[0]);
   protected readonly mobile = signal(false);
   protected readonly navigationOpen = signal(true);
   protected readonly sidebarCollapsed = signal(false);
@@ -73,6 +76,7 @@ export class AppShell {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(() => {
+        this.searchPage.set(this.router.url.split('?')[0]);
         if (this.mobile()) this.navigationOpen.set(false);
       });
     effect(() => {
@@ -80,6 +84,14 @@ export class AppShell {
         void this.router.navigate(['/unauthorized'], { queryParams: { reason: 'session' } });
       }
     });
+  }
+
+  protected selectUser(id: string): void {
+    if (this.searchPage() === '/admin') {
+      void this.router.navigate(['/admin'], { queryParams: { user: id } });
+    } else {
+      void this.router.navigate(['/profile', id]);
+    }
   }
 
   protected toggleSidebar(): void {

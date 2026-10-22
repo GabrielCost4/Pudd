@@ -30,6 +30,10 @@ namespace Pudd.Infrastructure
             modelBuilder.Entity<Post>().Property(post => post.UpdatedAt).IsConcurrencyToken();
             modelBuilder.Entity<User>().Property(user => user.AvatarImagePath).IsConcurrencyToken();
 
+            modelBuilder.Entity<User>().Property(user => user.NormalizedName)
+                .HasComputedColumnSql("lower(btrim(regexp_replace(normalize(\"Name\", NFC), '[[:space:]]+', ' ', 'g')))", stored: true);
+            modelBuilder.Entity<User>().HasIndex(user => user.NormalizedName).IsUnique();
+
             modelBuilder.Entity<User>()
                 .HasIndex(user => user.Email)
                 .IsUnique();

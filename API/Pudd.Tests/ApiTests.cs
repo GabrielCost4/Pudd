@@ -21,6 +21,34 @@ namespace Pudd.Tests;
 public class ApiTests
 {
     [Fact]
+    public async Task SearchOnlyExposesPublicSuggestionsAndProtectsAdminEndpoints()
+    {
+        await using var factory = new ApiFactory();
+        using var client = await CreateAuthenticatedClient(factory);
+        Guid memberId;
+        using (var scope = factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<PuddDbContext>();
+            var member = new User { ID = Guid.NewGuid(), Name = "Search Person", Email = "private@example.test" };
+            memberId = member.ID;
+            db.users.Add(member);
+            await db.SaveChangesAsync();
+        }
+        var response = await client.GetAsync("/api/users/search?q=search");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var json = await response.Content.ReadAsStringAsync();
+        Assert.DoesNotContain("email", json, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("role", json, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("lastSeenAt", json, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(memberId, Assert.Single((await response.Content.ReadFromJsonAsync<UserSuggestionResponse[]>())!).ID);
+        Assert.Equal(HttpStatusCode.Forbidden, (await client.GetAsync("/api/admin/users/search?q=search")).StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, (await client.GetAsync($"/api/admin/users/{memberId}")).StatusCode);
+        Assert.Equal(HttpStatusCode.Conflict, (await client.PostAsJsonAsync("/api/auth/register",
+            new { Nome = " search  person ", Email = "new@example.test", Senha = "Valid!1234" })).StatusCode);
+    }
+
+
+    [Fact]
     public async Task RegistrationValidationReturnsFieldErrorsAndDoesNotPersistUser()
     {
         await using var factory = new ApiFactory();

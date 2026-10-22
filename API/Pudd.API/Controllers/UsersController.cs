@@ -11,6 +11,9 @@ namespace Pudd.API.Controllers;
 [Route("api/users")]
 public class UsersController(UserService users) : SocialControllerBase
 {
+    [HttpGet("search")]
+    public async Task<IActionResult> Search(string? q) => Ok(await users.SearchAsync(ActorId, q));
+
     [HttpGet("me")]
     public async Task<IActionResult> Me() => Ok(await users.GetProfileAsync(ActorId, ActorId));
 

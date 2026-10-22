@@ -14,6 +14,10 @@ export class AdminService {
     });
   }
 
+  user(id: string) {
+    return this.http.get<AdminUser>(API_BASE_URL + '/admin/users/' + encodeURIComponent(id));
+  }
+
   setBlocked(id: string, isBlocked: boolean) {
     return this.http.put<void>(
       API_BASE_URL + '/admin/users/' + encodeURIComponent(id) + '/blocked',

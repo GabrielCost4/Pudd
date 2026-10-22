@@ -17,6 +17,12 @@ public class AdminController(
     public async Task<IActionResult> ListUsers(int page = 1, int pageSize = 20) =>
         Ok(await users.GetUsersAsync(ActorId, page, pageSize));
 
+    [HttpGet("users/search")]
+    public async Task<IActionResult> Search(string? q) => Ok(await users.SearchAsync(ActorId, q, administrative: true));
+
+    [HttpGet("users/{id:guid}")]
+    public async Task<IActionResult> Member(Guid id) => Ok(await users.GetAdminUserAsync(ActorId, id));
+
     [HttpPut("users/{id:guid}/blocked")]
     [EnableRateLimiting(ApiRateLimiting.Moderation)]
     public async Task<IActionResult> SetBlocked(Guid id, [FromBody] SetBlockedRequest request)

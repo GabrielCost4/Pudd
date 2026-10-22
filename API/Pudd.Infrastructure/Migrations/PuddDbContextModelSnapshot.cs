@@ -162,6 +162,12 @@ namespace Pudd.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("NormalizedName")
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("text")
+                        .HasComputedColumnSql("lower(btrim(regexp_replace(normalize(\"Name\", NFC), '[[:space:]]+', ' ', 'g')))", true);
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
@@ -172,6 +178,9 @@ namespace Pudd.Infrastructure.Migrations
                     b.HasKey("ID");
 
                     b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("NormalizedName")
                         .IsUnique();
 
                     b.ToTable("users");
