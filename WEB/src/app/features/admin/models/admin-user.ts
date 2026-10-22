@@ -4,4 +4,7 @@ export interface AdminUser {
   email: string;
   role: string;
   isBlocked: boolean;
+  lastLoginAt: string | null;
+  lastSeenAt: string | null;
+  isActive: boolean;
 }

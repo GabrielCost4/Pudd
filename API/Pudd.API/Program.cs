@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Pudd.API.Activity;
 using System.Text;
 using Pudd.API.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -90,6 +91,7 @@ app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseRateLimiter();
+app.UseMiddleware<AccountActivityMiddleware>();
 app.MapControllers();
 
 app.Run();

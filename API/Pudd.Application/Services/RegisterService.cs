@@ -16,7 +16,8 @@ namespace Pudd.Application.Services
         IUserRepository _userRepository,
         IPasswordHasher _passwordHasher,
         IJwtService _jwtService,
-        IValidator<RegisterRequest> validator
+        IValidator<RegisterRequest> validator,
+        TimeProvider clock
     )
     {
         public async Task<LoginResult> CadastrarUsuario(RegisterRequest request)
@@ -35,12 +36,15 @@ namespace Pudd.Application.Services
 
             var senha = _passwordHasher.GerarHash(request.Senha);
 
+            var now = clock.GetUtcNow();
             User user = new User
             {
                 Name = request.Nome,
                 Email = request.Email,
                 PasswordHash = senha,
-                Role = UserRole.User
+                Role = UserRole.User,
+                LastLoginAt = now,
+                LastSeenAt = now
             };
 
             await _userRepository.AdicionarUsuario(user);

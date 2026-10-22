@@ -10,7 +10,7 @@ namespace Pudd.Application.Services
         IUserRepository users,
                 AccountAccess access,
                 ImageService images,
-                IValidator<UpdateProfileRequest> validator)
+                IValidator<UpdateProfileRequest> validator, TimeProvider clock)
     {
         public async Task<ProfileResponse> GetProfileAsync(Guid actorId, Guid userId)
         {
@@ -65,7 +65,7 @@ namespace Pudd.Application.Services
             await access.RequireAdminAsync(actorId);
             SocialRules.Page(page, pageSize);
             return SocialRules.Slice((await users.GetPageAsync(page, pageSize))
-                .Select(u => new AdminUserResponse(u.ID, u.Name, u.Email, u.Role.ToString(), u.IsBlocked)), page, pageSize);
+                .Select(u => new AdminUserResponse(u.ID, u.Name, u.Email, u.Role.ToString(), u.IsBlocked, u.LastLoginAt, u.LastSeenAt, AccountActivity.IsActive(u.LastSeenAt, clock.GetUtcNow()))), page, pageSize);
         }
 
         public async Task SetBlockedAsync(Guid actorId, Guid userId, bool blocked)

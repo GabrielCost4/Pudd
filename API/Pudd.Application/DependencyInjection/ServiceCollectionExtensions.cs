@@ -11,6 +11,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddApplication(
         this IServiceCollection services)
     {
+        services.AddSingleton(TimeProvider.System);
         services.AddScoped<AuthService>();
         services.AddScoped<RegisterService>();
         services.AddScoped<AccountAccess>();

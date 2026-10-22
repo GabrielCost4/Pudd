@@ -241,7 +241,7 @@ internal sealed class Scenario : IAsyncDisposable
         Images = new(Storage, Queue, NullLogger<ImageService>.Instance);
         Posts = new(new PostRepository(Db), Users, Access, Images,
             new CreatePostRequestValidator(), new UpdatePostRequestValidator());
-        Profiles = new(Users, Access, Images, new UpdateProfileRequestValidator());
+        Profiles = new(Users, Access, Images, new UpdateProfileRequestValidator(), TimeProvider.System);
     }
     public async Task<Post> AddPost(string? path = null)
     {

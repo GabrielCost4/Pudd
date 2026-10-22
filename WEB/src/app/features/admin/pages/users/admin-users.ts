@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { TagModule } from 'primeng/tag';
 import { TableModule } from 'primeng/table';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -19,6 +20,7 @@ import { AdminService } from '../../services/admin.service';
   providers: [ConfirmationService],
   selector: 'app-admin-users',
   imports: [
+    DatePipe,
     TagModule,
     TableModule,
     ConfirmDialogModule,

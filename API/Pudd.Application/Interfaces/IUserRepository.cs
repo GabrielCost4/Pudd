@@ -12,6 +12,8 @@ namespace Pudd.Application.Interfaces
         Task AdicionarUsuario(User user);
         Task<User?> GetByIdAsync(Guid id);
         Task UpdateAsync(User user);
+        Task RecordAccessAsync(Guid id, DateTimeOffset now);
+        Task RecordLoginAsync(Guid id, DateTimeOffset now);
         // Salva o perfil e agenda a limpeza anterior na mesma transação.
         Task UpdateWithAvatarCleanupAsync(User user, string? previousAvatarPath);
         Task<IReadOnlyList<User>> GetPageAsync(int page, int pageSize);

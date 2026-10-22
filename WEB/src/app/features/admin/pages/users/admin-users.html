@@ -33,6 +33,8 @@
       <ng-template #header
         ><tr>
           <th scope="col">Pessoa</th>
+          <th scope="col">Atividade</th>
+          <th scope="col">Datas de acesso</th>
           <th scope="col">Permissão</th>
           <th scope="col">Situação</th>
           <th scope="col">Ação</th>
@@ -44,10 +46,20 @@
             <a [routerLink]="['/profile', user.id]">{{ user.name }}</a
             ><small>{{ user.email }}</small>
           </td>
+          <td>
+            <p-tag
+              [value]="user.isActive ? 'Ativo' : 'Inativo'"
+              [severity]="user.isActive ? 'success' : 'secondary'"
+            />
+          </td>
+          <td>
+            <small>Login: {{ (user.lastLoginAt | date: 'dd/MM/yyyy HH:mm') || 'Sem registro' }}</small>
+            <small>Acesso: {{ (user.lastSeenAt | date: 'dd/MM/yyyy HH:mm') || 'Sem registro' }}</small>
+          </td>
           <td>{{ user.role === 'Admin' ? 'Administrador' : 'Membro' }}</td>
           <td>
             <p-tag
-              [value]="user.isBlocked ? 'Bloqueado' : 'Ativo'"
+              [value]="user.isBlocked ? 'Bloqueado' : 'Permitido'"
               [severity]="user.isBlocked ? 'danger' : 'success'"
             />
           </td>
@@ -74,7 +86,7 @@
       </ng-template>
       <ng-template #emptymessage
         ><tr>
-          <td colspan="4">Nenhum membro nesta página.</td>
+          <td colspan="6">Nenhum membro nesta página.</td>
         </tr></ng-template
       >
     </p-table>
@@ -86,6 +98,23 @@
             ><span>{{ user.email }}</span>
           </a>
           <dl>
+            <div>
+              <dt>Atividade</dt>
+              <dd>
+                <p-tag
+                  [value]="user.isActive ? 'Ativo' : 'Inativo'"
+                  [severity]="user.isActive ? 'success' : 'secondary'"
+                />
+              </dd>
+            </div>
+            <div>
+              <dt>Login</dt>
+              <dd>{{ (user.lastLoginAt | date: 'dd/MM/yyyy HH:mm') || 'Sem registro' }}</dd>
+            </div>
+            <div>
+              <dt>Acesso</dt>
+              <dd>{{ (user.lastSeenAt | date: 'dd/MM/yyyy HH:mm') || 'Sem registro' }}</dd>
+            </div>
             <div>
               <dt>Permissão</dt>
               <dd>{{ user.role === 'Admin' ? 'Administrador' : 'Membro' }}</dd>

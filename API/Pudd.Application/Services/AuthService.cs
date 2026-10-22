@@ -14,7 +14,8 @@ namespace Pudd.Application.Services
         IUserRepository _userRepository,
         IPasswordHasher _passwordHasher,
         IJwtService _jwtService,
-        IValidator<LoginRequest> validator
+        IValidator<LoginRequest> validator,
+        TimeProvider clock
     )
     {
         public async Task<LoginResult> AutenticarUsuario(LoginRequest request)
@@ -41,9 +42,12 @@ namespace Pudd.Application.Services
             if (resultado.IsBlocked)
                 return new LoginResult { Error = AuthErrors.ContaBloqueada };
 
+            var response = _jwtService.GerarToken(resultado);
+            await _userRepository.RecordLoginAsync(resultado.ID, clock.GetUtcNow());
+
             return new LoginResult
             {
-                Response = _jwtService.GerarToken(resultado)
+                Response = response
             };
         }
     }

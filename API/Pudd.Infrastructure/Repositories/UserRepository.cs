@@ -15,6 +15,41 @@ namespace Pudd.Infrastructure.Repositories
         public Task<User?> GetByIdAsync(Guid id) =>
             _context.users.FirstOrDefaultAsync(user => user.ID == id);
 
+        public async Task RecordLoginAsync(Guid id, DateTimeOffset now)
+        {
+            if (_context.Database.IsRelational())
+            {
+                await _context.users.Where(user => user.ID == id).ExecuteUpdateAsync(setters => setters
+                    .SetProperty(user => user.LastLoginAt, now).SetProperty(user => user.LastSeenAt, now));
+                return;
+            }
+            var user = await GetByIdAsync(id);
+            if (user is null) return;
+            user.LastLoginAt = now;
+            user.LastSeenAt = now;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RecordAccessAsync(Guid id, DateTimeOffset now)
+        {
+            var threshold = now.AddMinutes(-5);
+            // Authentication already loaded this account in the request's DbContext.
+            // Skip the round trip when that observation is recent; SQL still protects concurrent updates.
+            var observed = _context.users.Local.FirstOrDefault(user => user.ID == id)?.LastSeenAt;
+            if (observed > threshold) return;
+            var query = _context.users.Where(user => user.ID == id &&
+                (user.LastSeenAt == null || user.LastSeenAt <= threshold));
+            if (_context.Database.IsRelational())
+            {
+                await query.ExecuteUpdateAsync(setters => setters.SetProperty(user => user.LastSeenAt, now));
+                return;
+            }
+            var user = await query.SingleOrDefaultAsync();
+            if (user is null) return;
+            user.LastSeenAt = now;
+            await _context.SaveChangesAsync();
+        }
+
         public Task UpdateAsync(User user) => _context.SaveChangesAsync();
 
         public async Task UpdateWithAvatarCleanupAsync(User user, string? previousAvatarPath)

@@ -12,6 +12,8 @@ namespace Pudd.Domain.Entities
         public string? Bio { get; set; }
         public string? AvatarImagePath { get; set; }
         public bool IsBlocked { get; set; }
+        public DateTimeOffset? LastLoginAt { get; set; }
+        public DateTimeOffset? LastSeenAt { get; set; }
 
         public ICollection<Post> Posts { get; set; } = [];
         public ICollection<Comment> Comments { get; set; } = [];
