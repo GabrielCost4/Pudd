@@ -58,8 +58,9 @@ export async function mockApi(page:Page) {
     }
     if(path==='/users/me'||path==='/users/'+ME)return send(state.profile);
     if(path==='/users/'+OTHER)return send({id:OTHER,name:'Ana Dev',bio:'Aprendendo em comunidade.',hasAvatar:state.avatarUsers.has(OTHER)});
+    const withAuthorAvatar=<T extends {userID:string}>(item:T)=>({...item,authorHasAvatar:item.userID===ME?state.profile.hasAvatar:state.avatarUsers.has(item.userID)});
     if(path==='/posts'&&method==='GET'){
-      const author=url.searchParams.get('authorId'),hasImage=url.searchParams.get('hasImage');return send(paginated(state.posts.filter(p=>(!author||p.userID===author)&&(hasImage===null||p.hasImage===(hasImage==='true')))));
+      const author=url.searchParams.get('authorId'),hasImage=url.searchParams.get('hasImage');return send(paginated(state.posts.filter(p=>(!author||p.userID===author)&&(hasImage===null||p.hasImage===(hasImage==='true'))).map(withAuthorAvatar)));
     }
     if(path.endsWith('/like')){
       const id=path.split('/')[2];
@@ -71,9 +72,9 @@ export async function mockApi(page:Page) {
       const postID=path.split('/')[2];
       if(method==='POST'){
         const comment={id:crypto.randomUUID(),postID,userID:ME,authorName:state.profile.name,content:req.postDataJSON().content,createdAt:new Date().toISOString()};
-        state.comments.unshift(comment);return send(comment,201);
+        state.comments.unshift(comment);return send(withAuthorAvatar(comment),201);
       }
-      return send(paginated(state.comments.filter(c=>c.postID===postID)));
+      return send(paginated(state.comments.filter(c=>c.postID===postID).map(withAuthorAvatar)));
     }
     if(method==='DELETE'&&path.includes('/comments/')){state.comments=state.comments.filter(c=>!path.endsWith(c.id));return send(null,204);}
     if(method==='DELETE'&&path.includes('/posts/')){state.posts=state.posts.filter(p=>!path.endsWith(p.id));return send(null,204);}
@@ -84,13 +85,13 @@ export async function mockApi(page:Page) {
       const hasNew=body.includes('name="Image"'),remove=body.includes('name="RemoveImage"\r\n\r\ntrue');
       if(method==='POST'){
         const post={id:crypto.randomUUID(),userID:ME,authorName:state.profile.name,content,hasImage:hasNew,createdAt:new Date().toISOString(),updatedAt:null};
-        state.posts.unshift(post);return send(post,201);
+        state.posts.unshift(post);return send(withAuthorAvatar(post),201);
       }
       const post=state.posts.find(p=>path.endsWith(p.id));
-      if(post){post.content=content;post.hasImage=hasNew||(!remove&&post.hasImage);post.updatedAt=new Date().toISOString();return send(post);}
+      if(post){post.content=content;post.hasImage=hasNew||(!remove&&post.hasImage);post.updatedAt=new Date().toISOString();return send(withAuthorAvatar(post));}
     }
     const post=state.posts.find(p=>path==='/posts/'+p.id);
-    if(post)return send(post);
+    if(post)return send(withAuthorAvatar(post));
     return send({title:'Recurso não encontrado.'},404);
   });
   return state;

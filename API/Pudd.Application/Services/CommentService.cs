@@ -73,5 +73,5 @@ public class CommentService(
     }
 
     private static CommentResponse Map(Comment c) =>
-        new(c.ID, c.PostID, c.UserID, c.User.Name, c.Content, c.CreatedAt);
+        new(c.ID, c.PostID, c.UserID, c.User.Name, c.Content, c.CreatedAt, c.User.AvatarImagePath is not null);
 }

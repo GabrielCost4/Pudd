@@ -58,4 +58,68 @@ describe('AvatarStore', () => {
     expect(next).toHaveBeenLastCalledWith('new-photo');
     request.unsubscribe();
   });
+
+  it('does not request an avatar known to be absent', () => {
+    const store = TestBed.inject(AvatarStore);
+    TestBed.tick();
+    const next = vi.fn();
+    store.image('member', false).subscribe(next);
+    expect(next).toHaveBeenCalledWith('');
+    TestBed.inject(HttpTestingController).expectNone(API_BASE_URL + '/users/member/avatar');
+  });
+
+  it('caches missing avatars for 30 seconds and retries after expiration', () => {
+    vi.useFakeTimers();
+    const store = TestBed.inject(AvatarStore);
+    TestBed.tick();
+    const http = TestBed.inject(HttpTestingController);
+    const next = vi.fn();
+    store.image('member').subscribe(next);
+    http
+      .expectOne(API_BASE_URL + '/users/member/avatar')
+      .flush(null, { status: 404, statusText: 'Not Found' });
+    store.image('member').subscribe(next);
+    expect(next).toHaveBeenLastCalledWith('');
+    http.expectNone(API_BASE_URL + '/users/member/avatar');
+    vi.advanceTimersByTime(30_000);
+    const request = store.image('member').subscribe(next);
+    http
+      .expectOne(API_BASE_URL + '/users/member/avatar')
+      .flush({ url: 'new-photo', expiresInSeconds: 3600 });
+    expect(next).toHaveBeenLastCalledWith('new-photo');
+    request.unsubscribe();
+  });
+
+  it('retries transient failures without caching them as a missing avatar', () => {
+    const store = TestBed.inject(AvatarStore);
+    TestBed.tick();
+    const http = TestBed.inject(HttpTestingController);
+    store.image('member').subscribe();
+    http
+      .expectOne(API_BASE_URL + '/users/member/avatar')
+      .flush(null, { status: 503, statusText: 'Unavailable' });
+    const request = store.image('member').subscribe();
+    http
+      .expectOne(API_BASE_URL + '/users/member/avatar')
+      .flush({ url: 'recovered', expiresInSeconds: 3600 });
+    request.unsubscribe();
+  });
+
+  it('uses local upload and removal over stale post metadata', () => {
+    const store = TestBed.inject(AvatarStore);
+    TestBed.tick();
+    const http = TestBed.inject(HttpTestingController);
+    store.invalidate('member', true);
+    const next = vi.fn();
+    const request = store.image('member', false).subscribe(next);
+    http
+      .expectOne(API_BASE_URL + '/users/member/avatar')
+      .flush({ url: 'uploaded-photo', expiresInSeconds: 3600 });
+    expect(next).toHaveBeenLastCalledWith('uploaded-photo');
+    request.unsubscribe();
+    store.invalidate('member', false);
+    store.image('member', true).subscribe(next);
+    expect(next).toHaveBeenLastCalledWith('');
+    http.expectNone(API_BASE_URL + '/users/member/avatar');
+  });
 });

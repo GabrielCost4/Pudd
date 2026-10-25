@@ -61,10 +61,12 @@ export class Comments {
   constructor() {
     effect((cleanup) => {
       this.avatars.revision();
-      const ids = [...new Set(this.items().map((comment) => comment.userID))];
+      const authors = new Map(
+        this.items().map((comment) => [comment.userID, comment.authorHasAvatar]),
+      );
       this.authorImages.set({});
-      const requests = ids.map((id) =>
-        this.avatars.image(id).subscribe((url) => {
+      const requests = [...authors].map(([id, hasAvatar]) =>
+        this.avatars.image(id, hasAvatar).subscribe((url) => {
           this.authorImages.update((images) => ({ ...images, [id]: url }));
         }),
       );

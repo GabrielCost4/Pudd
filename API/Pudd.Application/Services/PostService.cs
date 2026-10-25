@@ -145,6 +145,7 @@ public class PostService(
             post.Content,
             post.ImagePath is not null,
             post.CreatedAt,
-            post.UpdatedAt
+            post.UpdatedAt,
+            post.User.AvatarImagePath is not null
         );
 }

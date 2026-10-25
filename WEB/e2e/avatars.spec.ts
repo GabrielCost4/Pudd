@@ -1,6 +1,21 @@
 import { test, expect } from '@playwright/test';
 import { ME, OTHER, mockApi, login } from './api.fixture';
 
+test('does not request missing avatars when switching between profiles and the feed', async ({ page }) => {
+  const api = await mockApi(page);
+  await login(page);
+  for (let visit = 0; visit < 3; visit++) {
+    await page.locator('app-post-card').filter({ hasText: 'Uma ideia da comunidade.' })
+      .locator('.author').click();
+    await expect(page).toHaveURL(new RegExp('/profile/' + OTHER));
+    await page.getByRole('link', { name: 'Meu perfil', exact: true }).click();
+    await expect(page).toHaveURL(/\/profile\/me$/);
+    await page.getByRole('link', { name: 'Feed', exact: true }).click();
+    await expect(page).toHaveURL(/\/feed$/);
+  }
+  expect(api.calls.filter((call) => call.path.endsWith('/avatar'))).toHaveLength(0);
+});
+
 test('shows comment author photos and falls back to initials when an image fails', async ({
   page,
 }) => {

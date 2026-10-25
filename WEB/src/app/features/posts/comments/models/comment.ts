@@ -3,6 +3,7 @@ export interface PostComment {
   postID: string;
   userID: string;
   authorName: string;
+  authorHasAvatar: boolean;
   content: string;
   createdAt: string;
 }

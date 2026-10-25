@@ -208,7 +208,7 @@ export class ProfilePage {
           this.pickerVersion.update((v) => v + 1);
           this.loadAvatar();
           this.success.set('Foto de perfil atualizada.');
-          this.account.refresh();
+          this.account.refresh(true);
         },
         error: (error: unknown) => this.errors.set(apiErrors(error)),
       });
@@ -242,7 +242,7 @@ export class ProfilePage {
           this.avatarUrl.set('');
           this.profile.update((p) => (p ? { ...p, hasAvatar: false } : p));
           this.success.set('Foto de perfil removida.');
-          this.account.refresh();
+          this.account.refresh(false);
         },
         error: (error: unknown) => this.errors.set(apiErrors(error)),
       });

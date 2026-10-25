@@ -12,12 +12,13 @@ describe('PostCard', () => {
     }),
   );
   afterEach(() => TestBed.inject(HttpTestingController).verify());
-  function setup(hasImage = false, content = 'Hello') {
+  function setup(hasImage = false, content = 'Hello', authorHasAvatar = false) {
     const f = TestBed.createComponent(PostCard);
     f.componentRef.setInput('post', {
       id: 'post',
       userID: 'member',
       authorName: 'Member',
+      authorHasAvatar,
       content,
       hasImage,
       createdAt: '2026-10-11T00:00:00Z',
@@ -26,12 +27,26 @@ describe('PostCard', () => {
     f.detectChanges();
     const http = TestBed.inject(HttpTestingController);
     http.expectOne(API_BASE_URL + '/posts/post/like').flush({ liked: false, count: 0 });
-    http
-      .expectOne(API_BASE_URL + '/users/member/avatar')
-      .flush(null, { status: 404, statusText: 'Not Found' });
+    if (authorHasAvatar)
+      http
+        .expectOne(API_BASE_URL + '/users/member/avatar')
+        .flush({ url: 'https://example.test/avatar.png', expiresInSeconds: 3600 });
+    else http.expectNone(API_BASE_URL + '/users/member/avatar');
     f.detectChanges();
     return { f, http };
   }
+  it('shows the initial without requesting an avatar when the author has no photo', () => {
+    const { f } = setup();
+    expect(f.nativeElement.querySelector('.author p-avatar').textContent).toContain('M');
+    f.destroy();
+  });
+  it('loads the avatar when the author has a photo', () => {
+    const { f } = setup(false, 'Hello', true);
+    expect(f.nativeElement.querySelector('.author img').src).toBe(
+      'https://example.test/avatar.png',
+    );
+    f.destroy();
+  });
   it('expands and collapses a long post without losing its content', () => {
     const content = 'Um projeto com aprendizados. '.repeat(25) + 'Final da publicação.';
     const { f } = setup(false, content);

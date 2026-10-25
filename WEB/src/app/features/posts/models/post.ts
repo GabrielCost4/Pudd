@@ -2,6 +2,7 @@ export interface Post {
   id: string;
   userID: string;
   authorName: string;
+  authorHasAvatar: boolean;
   content: string;
   hasImage: boolean;
   createdAt: string;

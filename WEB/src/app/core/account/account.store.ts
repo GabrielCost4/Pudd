@@ -42,8 +42,8 @@ export class AccountStore {
     });
   }
 
-  refresh(): void {
-    this.avatars.invalidate(this.session.user().id);
+  refresh(hasAvatar?: boolean): void {
+    this.avatars.invalidate(this.session.user().id, hasAvatar);
     this.revision.update((value) => value + 1);
   }
 

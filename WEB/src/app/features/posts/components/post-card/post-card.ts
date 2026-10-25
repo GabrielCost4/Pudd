@@ -104,7 +104,7 @@ export class PostCard {
       this.avatars.revision();
       this.authorAvatar.set('');
       this.authorAvatarFailed.set(false);
-      const request = this.avatars.image(id).subscribe((url) => {
+      const request = this.avatars.image(id, this.post().authorHasAvatar).subscribe((url) => {
         this.authorAvatar.set(url);
         this.authorAvatarFailed.set(false);
       });

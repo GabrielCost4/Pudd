@@ -5,6 +5,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { API_BASE_URL } from '../../../../../core/config/api';
 import { Comments } from './comments';
+import type { PostComment } from '../../models/comment';
 describe('Comments', () => {
   beforeEach(() =>
     TestBed.configureTestingModule({
@@ -13,20 +14,43 @@ describe('Comments', () => {
     }),
   );
   afterEach(() => TestBed.inject(HttpTestingController).verify());
-  function setup() {
+  function setup(items: PostComment[] = []) {
     const f = TestBed.createComponent(Comments);
     f.componentRef.setInput('postId', 'post');
     f.detectChanges();
     const http = TestBed.inject(HttpTestingController);
     http
       .expectOne(API_BASE_URL + '/posts/post/comments?page=1&pageSize=10')
-      .flush({ items: [], page: 1, hasNextPage: false });
+      .flush({ items, page: 1, hasNextPage: false });
     f.detectChanges();
     return { f, http };
   }
   it('does not submit an empty comment', () => {
     const { f } = setup();
     expect(f.nativeElement.querySelector('button[type="submit"]').disabled).toBe(true);
+  });
+  it('requests photos only for comment authors with an avatar', () => {
+    const comment = {
+      id: 'comment',
+      postID: 'post',
+      userID: 'without-photo',
+      authorName: 'Sem Foto',
+      authorHasAvatar: false,
+      content: 'Comentário',
+      createdAt: '2026-10-25T12:00:00Z',
+    };
+    const { f, http } = setup([
+      comment,
+      { ...comment, id: 'with-photo', userID: 'with-photo', authorHasAvatar: true },
+    ]);
+    http.expectNone(API_BASE_URL + '/users/without-photo/avatar');
+    http
+      .expectOne(API_BASE_URL + '/users/with-photo/avatar')
+      .flush({ url: 'https://example.test/avatar.png', expiresInSeconds: 3600 });
+    f.detectChanges();
+    expect(f.nativeElement.querySelectorAll('.avatar img')).toHaveLength(1);
+    expect(f.nativeElement.querySelector('.comment p-avatar').textContent).toContain('S');
+    f.destroy();
   });
   it('counts characters and prevents submission above 350 characters', () => {
     const { f, http } = setup();
