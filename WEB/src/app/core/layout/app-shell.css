@@ -210,14 +210,16 @@ main {
 
 .navigation-panel,
 .mobile-navigation {
+  --sidebar-selected: #d9bd43;
+  --sidebar-selected-text: #153934;
   --p-button-text-secondary-color: var(--nav-muted);
   --p-button-text-secondary-hover-background: var(--nav-border);
   --p-button-text-secondary-active-background: var(--nav-border);
   --p-button-outlined-secondary-color: var(--nav-text);
   --p-button-outlined-secondary-border-color: var(--nav-border);
   --p-button-outlined-secondary-hover-background: var(--nav-border);
-  --p-avatar-background: var(--nav-selected);
-  --p-avatar-color: var(--nav-selected-text);
+  --p-avatar-background: var(--sidebar-selected);
+  --p-avatar-color: var(--sidebar-selected-text);
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -227,7 +229,7 @@ main {
   color: var(--nav-text);
 }
 .navigation-panel :focus-visible {
-  outline-color: var(--nav-selected);
+  outline-color: var(--sidebar-selected);
   outline-offset: 2px;
 }
 .navigation-content ul {
@@ -253,8 +255,13 @@ main {
   color: var(--nav-text);
 }
 .navigation-link.active {
-  background: var(--nav-selected);
-  color: var(--nav-selected-text);
+  background: var(--sidebar-selected);
+  color: var(--sidebar-selected-text);
+}
+:host-context(.pudd-dark) .navigation-panel,
+:host-context(.pudd-dark) .mobile-navigation {
+  --sidebar-selected: var(--nav-selected);
+  --sidebar-selected-text: var(--nav-selected-text);
 }
 @media (max-width: 760px) {
   .main-column {
