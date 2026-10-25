@@ -4,11 +4,25 @@ import { SessionStore } from './session.store';
 function token(exp: number) {
   return (
     'header.' +
-    btoa(JSON.stringify({ sub: 'member-id', email: 'dev@example.test', exp })) +
+    btoa(
+      JSON.stringify({
+        sub: 'member-id',
+        email: 'dev@example.test',
+        permission: ['community.use', 'users.read'],
+        exp,
+      }),
+    ) +
     '.signature'
   );
 }
 describe('SessionStore', () => {
+  it('does not grant administration from the role response without a permission claim', () => {
+    const session = TestBed.inject(SessionStore);
+    const payload = btoa(JSON.stringify({ sub: 'member', exp: Date.now() / 1000 + 3600 }));
+    session.start('header.' + payload + '.signature', 'Admin');
+    expect(session.isAdmin()).toBe(false);
+    expect(session.hasPermission('users.block')).toBe(false);
+  });
   afterEach(() => {
     TestBed.inject(SessionStore).clear();
     vi.useRealTimers();

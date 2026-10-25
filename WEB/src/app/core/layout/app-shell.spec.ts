@@ -25,6 +25,7 @@ describe('AppShell', () => {
         btoa(
           JSON.stringify({
             sub: 'member',
+            permission: role === 'Admin' ? ['community.use', 'users.read'] : ['community.use'],
             email: 'member@example.test',
             exp: Date.now() / 1000 + 3600,
           }),

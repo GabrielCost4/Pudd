@@ -26,7 +26,7 @@
         </small></span
       >
     </a>
-    @if (session.user().id === post().userID || session.isAdmin()) {
+    @if (session.user().id === post().userID || session.hasPermission('posts.moderate')) {
       <div class="post-menu">
         @if (session.user().id === post().userID) {
           @if (editInPlace()) {

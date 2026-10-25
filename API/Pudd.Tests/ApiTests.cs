@@ -18,7 +18,7 @@ using Xunit;
 
 namespace Pudd.Tests;
 
-public class ApiTests
+public partial class ApiTests
 {
     [Fact]
     public async Task SearchOnlyExposesPublicSuggestionsAndProtectsAdminEndpoints()
@@ -47,6 +47,31 @@ public class ApiTests
             new { Nome = " search  person ", Email = "new@example.test", Senha = "Valid!1234" })).StatusCode);
     }
 
+
+    [Fact]
+    public async Task CurrentRoleOverridesPermissionsInAnAlreadyIssuedToken()
+    {
+        await using var factory = new ApiFactory();
+        using var client = await CreateAuthenticatedClient(factory, UserRole.Admin);
+        Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/api/admin/users")).StatusCode);
+        using (var scope = factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<PuddDbContext>();
+            var user = await db.users.SingleAsync();
+            user.Role = UserRole.User;
+            await db.SaveChangesAsync();
+        }
+        Assert.Equal(HttpStatusCode.Forbidden, (await client.GetAsync("/api/admin/users")).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/api/users/me")).StatusCode);
+        using (var scope = factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<PuddDbContext>();
+            var user = await db.users.SingleAsync();
+            user.IsBlocked = true;
+            await db.SaveChangesAsync();
+        }
+        Assert.Equal(HttpStatusCode.Unauthorized, (await client.GetAsync("/api/users/me")).StatusCode);
+    }
 
     [Fact]
     public async Task RegistrationValidationReturnsFieldErrorsAndDoesNotPersistUser()

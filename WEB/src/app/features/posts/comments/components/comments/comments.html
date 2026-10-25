@@ -61,7 +61,7 @@
             ><small>{{ comment.createdAt | date: 'dd/MM/yyyy · HH:mm' }}</small>
           </header>
           <p class="content-text">{{ comment.content }}</p>
-          @if (comment.userID === session.user().id || session.isAdmin()) {
+          @if (comment.userID === session.user().id || session.hasPermission('comments.moderate')) {
             <button
               [text]="true"
               severity="danger"

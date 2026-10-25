@@ -1,4 +1,5 @@
 using Pudd.API.RateLimiting;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Mvc;
 using Pudd.Application.Contracts;
@@ -14,16 +15,20 @@ public class AdminController(
     CommentService comments) : SocialControllerBase
 {
     [HttpGet("users")]
+    [Authorize(Policy = Permissions.UsersRead)]
     public async Task<IActionResult> ListUsers(int page = 1, int pageSize = 20) =>
         Ok(await users.GetUsersAsync(ActorId, page, pageSize));
 
     [HttpGet("users/search")]
+    [Authorize(Policy = Permissions.UsersRead)]
     public async Task<IActionResult> Search(string? q) => Ok(await users.SearchAsync(ActorId, q, administrative: true));
 
     [HttpGet("users/{id:guid}")]
+    [Authorize(Policy = Permissions.UsersRead)]
     public async Task<IActionResult> Member(Guid id) => Ok(await users.GetAdminUserAsync(ActorId, id));
 
     [HttpPut("users/{id:guid}/blocked")]
+    [Authorize(Policy = Permissions.UsersBlock)]
     [EnableRateLimiting(ApiRateLimiting.Moderation)]
     public async Task<IActionResult> SetBlocked(Guid id, [FromBody] SetBlockedRequest request)
     {
@@ -32,6 +37,7 @@ public class AdminController(
     }
 
     [HttpDelete("posts/{id:guid}")]
+    [Authorize(Policy = Permissions.PostsModerate)]
     [EnableRateLimiting(ApiRateLimiting.Moderation)]
     public async Task<IActionResult> DeletePost(Guid id)
     {
@@ -40,6 +46,7 @@ public class AdminController(
     }
 
     [HttpDelete("comments/{id:guid}")]
+    [Authorize(Policy = Permissions.CommentsModerate)]
     [EnableRateLimiting(ApiRateLimiting.Moderation)]
     public async Task<IActionResult> DeleteComment(Guid id)
     {

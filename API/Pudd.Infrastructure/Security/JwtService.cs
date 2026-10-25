@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using Pudd.Application.Services;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
@@ -31,7 +32,7 @@ public class JwtService(IConfiguration configuration) : IJwtService
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
             new Claim(ClaimTypes.Role, user.Role.ToString()),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        };
+        }.Concat(Permissions.ForRole(user.Role).Select(permission => new Claim(Permissions.ClaimType, permission)));
 
         var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
         var expiresAt = DateTime.UtcNow.AddMinutes(expiresIn);

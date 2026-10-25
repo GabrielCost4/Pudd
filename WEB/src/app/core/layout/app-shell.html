@@ -72,7 +72,7 @@
               <i class="pi pi-pencil" aria-hidden="true"></i><span>Criar publicação</span>
             </a>
           </li>
-          @if (session.isAdmin()) {
+          @if (session.hasPermission('users.read')) {
             <li>
               <a
                 class="navigation-link"

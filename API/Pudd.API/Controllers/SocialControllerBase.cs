@@ -1,4 +1,5 @@
 using Pudd.API.RateLimiting;
+using Pudd.Application.Services;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
@@ -8,7 +9,7 @@ using Pudd.Application.Contracts;
 namespace Pudd.API.Controllers;
 
 [ApiController]
-[Authorize]
+[Authorize(Policy = Permissions.Community)]
 [EnableRateLimiting(ApiRateLimiting.Reads)]
 public abstract class SocialControllerBase : ControllerBase
 {

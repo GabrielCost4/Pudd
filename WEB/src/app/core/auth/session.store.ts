@@ -8,7 +8,11 @@ export class SessionStore {
   private expirationTimer?: ReturnType<typeof setTimeout>;
   readonly accessToken = this.token.asReadonly();
   readonly user = this.identity.asReadonly();
-  readonly isAdmin = computed(() => this.identity().role === 'Admin');
+  private readonly permissions = signal<string[]>([]);
+  readonly isAdmin = computed(() => this.hasPermission('users.read'));
+  hasPermission(permission: string): boolean {
+    return this.permissions().includes(permission);
+  }
   readonly isAuthenticated = computed(() => this.token() !== null);
 
   start(accessToken: string, role: string): boolean {
@@ -27,6 +31,14 @@ export class SessionStore {
         email: typeof claims['email'] === 'string' ? claims['email'] : '',
         role,
       });
+      const permissions = claims['permission'];
+      this.permissions.set(
+        typeof permissions === 'string'
+          ? [permissions]
+          : Array.isArray(permissions)
+            ? permissions.filter((value): value is string => typeof value === 'string')
+            : [],
+      );
       this.token.set(accessToken);
       this.expirationTimer = setTimeout(
         () => this.clear(),
@@ -47,6 +59,7 @@ export class SessionStore {
   clear(): void {
     clearTimeout(this.expirationTimer);
     this.token.set(null);
+    this.permissions.set([]);
     this.identity.set({ id: '', email: '', role: '' });
     this.expiresAt = 0;
   }

@@ -33,7 +33,7 @@ export async function mockApi(page:Page) {
       const body=req.postDataJSON();
       state.role=body.email==='admin@example.test'?'Admin':'User';
       if(path.endsWith('register'))state.profile.name=body.nome;
-      const payload=Buffer.from(JSON.stringify({sub:ME,email:body.email,exp:Math.floor(Date.now()/1000)+3600})).toString('base64url');
+      const payload=Buffer.from(JSON.stringify({sub:ME,email:body.email,permission:state.role==='Admin'?['community.use','users.read','users.block','posts.moderate','comments.moderate']:['community.use'],exp:Math.floor(Date.now()/1000)+3600})).toString('base64url');
       return send({accessToken:'header.'+payload+'.signature',role:state.role,expiresIn:60});
     }
     if(state.denied||!req.headers()['authorization'])return send({title:'Sessão indisponível.'},401);
