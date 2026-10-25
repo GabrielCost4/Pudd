@@ -19,6 +19,13 @@ export class PostService {
     return this.http.get<Post>(API_BASE_URL + '/posts/' + encodeURIComponent(id));
   }
 
+  profile(authorId: string, hasImage: boolean, page = 1) {
+    return this.http.get<PageResponse<Post>>(API_BASE_URL + '/posts', {
+      params: { authorId, hasImage, page, pageSize: 12 },
+      timeout: 30000,
+    });
+  }
+
   create(form: FormData) {
     return this.http.post<Post>(API_BASE_URL + '/posts', form, { timeout: 60000 });
   }

@@ -10,7 +10,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, finalize, of, Subscription, switchMap } from 'rxjs';
 import { SessionStore } from '../../../../core/auth/session.store';
 import { AccountStore } from '../../../../core/account/account.store';
@@ -20,11 +20,13 @@ import { ImagePicker } from '../../../../shared/components/image-picker/image-pi
 import { apiErrors } from '../../../../shared/utils/api-errors';
 import type { Profile } from '../../models/profile';
 import { ProfileService } from '../../services/profile.service';
+import { ProfilePosts } from '../../../posts/public';
 
 @Component({
   providers: [ConfirmationService],
   selector: 'app-profile',
   imports: [
+    ProfilePosts,
     ConfirmDialogModule,
     ProgressSpinnerModule,
     AvatarModule,
@@ -32,7 +34,6 @@ import { ProfileService } from '../../services/profile.service';
     CardModule,
     TextareaModule,
     ButtonModule,
-    RouterLink,
     ReactiveFormsModule,
     Feedback,
     LabelInput,

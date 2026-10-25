@@ -1,0 +1,31 @@
+<button
+  pButton
+  type="button"
+  [text]="true"
+  severity="secondary"
+  class="tile"
+  [class.text-tile]="!post().hasImage"
+  aria-haspopup="dialog"
+  [attr.aria-label]="'Abrir publicação de ' + post().authorName"
+  (click)="selected.emit(post())"
+>
+  @if (post().hasImage) {
+    @if (url() && !failed()) {
+      <img
+        [src]="url()"
+        alt="Imagem da publicação"
+        loading="lazy"
+        decoding="async"
+        (error)="failed.set(true)"
+      />
+    } @else {
+      <i [class]="failed() ? 'pi pi-image' : 'pi pi-spin pi-spinner'" aria-hidden="true"></i>
+      <span class="sr-only">{{
+        failed() ? 'Imagem indisponível; abra para tentar novamente' : 'Carregando imagem'
+      }}</span>
+    }
+  } @else {
+    <span class="tile-text">{{ post().content }}</span>
+    <small>{{ post().createdAt | date: 'dd/MM/yyyy' }}</small>
+  }
+</button>

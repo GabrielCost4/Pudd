@@ -1,4 +1,4 @@
-<p-card class="post-card">
+<ng-template #postContent>
   <header>
     <a class="author" [routerLink]="['/profile', post().userID]">
       @if (authorAvatar() && !authorAvatarFailed()) {
@@ -64,25 +64,27 @@
       </div>
     }
   </header>
-  <p
-    class="content-text"
-    [class.collapsed]="canExpand() && !expanded()"
-    [id]="'post-content-' + post().id"
-    [textContent]="visibleContent()"
-  ></p>
-  @if (canExpand()) {
-    <button
-      pButton
-      [text]="true"
-      type="button"
-      class="read-more"
-      [attr.aria-expanded]="expanded()"
-      [attr.aria-controls]="'post-content-' + post().id"
-      (click)="expanded.set(!expanded())"
-    >
-      {{ expanded() ? 'Ler menos' : 'Ler mais' }}
-    </button>
-  }
+  <div class="post-copy">
+    <p
+      class="content-text"
+      [class.collapsed]="canExpand() && !expanded()"
+      [id]="'post-content-' + post().id"
+      [textContent]="visibleContent()"
+    ></p>
+    @if (canExpand()) {
+      <button
+        pButton
+        [text]="true"
+        type="button"
+        class="read-more"
+        [attr.aria-expanded]="expanded()"
+        [attr.aria-controls]="'post-content-' + post().id"
+        (click)="expanded.set(!expanded())"
+      >
+        {{ expanded() ? 'Ler menos' : 'Ler mais' }}
+      </button>
+    }
+  </div>
   @if (post().hasImage) {
     <div class="post-image">
       @if (imageUrl() && !imageFailed()) {
@@ -124,7 +126,6 @@
       }
     </div>
   }
-  <app-feedback [errors]="errors()" />
   <footer>
     @if (likeState(); as likes) {
       <button
@@ -180,8 +181,19 @@
       ><i class="pi pi-comment" aria-hidden="true"></i> Comentar</a
     >
   </footer>
-</p-card>
+</ng-template>
 
+@if (dialogLayout()) {
+  <article class="post-dialog-layout" [class.text-only]="!post().hasImage">
+    <ng-container [ngTemplateOutlet]="postContent" />
+  </article>
+} @else {
+  <p-card class="post-card">
+    <ng-container [ngTemplateOutlet]="postContent" />
+  </p-card>
+}
+
+<app-feedback [errors]="errors()" />
 <p-confirmdialog [closable]="true" />
 <p-galleria
   [value]="galleryImages()"

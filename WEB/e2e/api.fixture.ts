@@ -59,7 +59,7 @@ export async function mockApi(page:Page) {
     if(path==='/users/me'||path==='/users/'+ME)return send(state.profile);
     if(path==='/users/'+OTHER)return send({id:OTHER,name:'Ana Dev',bio:'Aprendendo em comunidade.',hasAvatar:state.avatarUsers.has(OTHER)});
     if(path==='/posts'&&method==='GET'){
-      const author=url.searchParams.get('authorId');return send(paginated(state.posts.filter(p=>!author||p.userID===author)));
+      const author=url.searchParams.get('authorId'),hasImage=url.searchParams.get('hasImage');return send(paginated(state.posts.filter(p=>(!author||p.userID===author)&&(hasImage===null||p.hasImage===(hasImage==='true')))));
     }
     if(path.endsWith('/like')){
       const id=path.split('/')[2];

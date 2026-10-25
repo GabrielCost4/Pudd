@@ -1,0 +1,45 @@
+:host {
+  display: block;
+  margin-top: 2rem;
+}
+h2 {
+  margin: 0 0 1rem;
+}
+.tabs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+.tab-control {
+  --p-button-lg-font-size: 1.25rem;
+  --p-button-lg-padding-x: 0.875rem;
+  --p-button-lg-padding-y: 0.875rem;
+  --p-button-text-primary-color: var(--accent);
+  --p-button-text-secondary-color: var(--muted);
+  --p-button-text-primary-hover-background: transparent;
+  --p-button-text-secondary-hover-background: transparent;
+  --p-button-text-primary-active-background: transparent;
+  --p-button-text-secondary-active-background: transparent;
+  display: inline-flex;
+  border-bottom: 2px solid transparent;
+}
+.tab-control.selected {
+  border-bottom-color: var(--accent);
+}
+.tab-divider {
+  color: var(--muted);
+  font-size: 1.25rem;
+  user-select: none;
+}
+.posts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.375rem;
+}
+@media (max-width: 600px) {
+  .posts-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

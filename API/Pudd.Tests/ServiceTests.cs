@@ -311,5 +311,5 @@ internal class FailingPosts : IPostRepository
     public Task UpdateWithImageCleanupAsync(Post post, string? previousImagePath) => Task.CompletedTask;
     public Task DeleteAsync(Post post) => Task.CompletedTask;
     public Task<IReadOnlyList<Post>> GetFeedAsync(int page, int pageSize) => Task.FromResult<IReadOnlyList<Post>>([]);
-    public Task<IReadOnlyList<Post>> GetByUserAsync(Guid userId, int page, int pageSize) => GetFeedAsync(page, pageSize);
+    public Task<IReadOnlyList<Post>> GetByUserAsync(Guid userId, int page, int pageSize, bool? hasImage = null) => GetFeedAsync(page, pageSize);
 }

@@ -15,6 +15,6 @@ namespace Pudd.Application.Interfaces
         Task UpdateWithImageCleanupAsync(Post post, string? previousImagePath);
         Task DeleteAsync (Post post);
         Task<IReadOnlyList<Post>> GetFeedAsync (int page, int pageSize);
-        Task<IReadOnlyList<Post>> GetByUserAsync(Guid userId, int page, int pageSize);
+        Task<IReadOnlyList<Post>> GetByUserAsync(Guid userId, int page, int pageSize, bool? hasImage = null);
     }
 }

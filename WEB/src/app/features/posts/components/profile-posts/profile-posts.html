@@ -1,0 +1,79 @@
+<section aria-labelledby="profile-posts-title">
+  <h2 id="profile-posts-title">Publicações</h2>
+  <div class="tabs" role="group" aria-label="Tipo de publicação">
+    <p-button
+      class="tab-control"
+      size="large"
+      [class.selected]="images()"
+      title="Imagens"
+      ariaLabel="Imagens"
+      icon="pi pi-images"
+      [text]="true"
+      [severity]="images() ? 'primary' : 'secondary'"
+      [pt]="{ root: { 'aria-pressed': images() }, icon: { 'aria-hidden': true } }"
+      (onClick)="changeTab(true)"
+    />
+    <span class="tab-divider" aria-hidden="true">|</span>
+    <p-button
+      class="tab-control"
+      size="large"
+      [class.selected]="!images()"
+      title="Textos"
+      ariaLabel="Textos"
+      icon="pi pi-align-left"
+      [text]="true"
+      [severity]="images() ? 'secondary' : 'primary'"
+      [pt]="{ root: { 'aria-pressed': !images() }, icon: { 'aria-hidden': true } }"
+      (onClick)="changeTab(false)"
+    />
+  </div>
+  @if (loading()) {
+    <p role="status">Carregando publicações…</p>
+  } @else if (failed()) {
+    <p-message severity="error">Não foi possível carregar as publicações.</p-message>
+    <button pButton type="button" [text]="true" (click)="load()">Tentar novamente</button>
+  } @else if (!posts().length) {
+    <p class="muted" role="status">
+      {{
+        images()
+          ? 'Nenhuma publicação com imagem por aqui.'
+          : 'Nenhuma publicação só de texto por aqui.'
+      }}
+    </p>
+  } @else {
+    <div class="posts-grid">
+      @for (post of posts(); track post.id) {
+        <app-post-tile [post]="post" (selected)="open($event)" />
+      }
+    </div>
+  }
+  @if (page() > 1 || hasNext()) {
+    <app-pagination
+      [page]="page()"
+      [hasNext]="hasNext()"
+      [busy]="loading()"
+      (changed)="load($event)"
+    />
+  }
+</section>
+<p-dialog
+  header="Publicação"
+  [(visible)]="opened"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [blockScroll]="true"
+  appendTo="body"
+  [pt]="{ root: { class: 'publication-dialog' }, content: { class: 'publication-dialog-content' } }"
+  (onHide)="selected.set(null)"
+>
+  @if (selected(); as post) {
+    <app-post-card
+      [post]="post"
+      [collapseText]="false"
+      [dialogLayout]="true"
+      (deleted)="removed()"
+    />
+  }
+</p-dialog>

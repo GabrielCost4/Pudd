@@ -306,6 +306,23 @@ p-avatar {
   width: min(44rem, calc(100vw - 2rem));
   max-height: 90dvh;
 }
+.publication-dialog {
+  width: min(960px, 92vw);
+  height: min(720px, 84dvh);
+  overflow: hidden;
+}
+.publication-dialog .publication-dialog-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+}
+.publication-dialog-content > app-post-card {
+  flex: 1;
+  min-height: 0;
+}
 .member-columns {
   min-width: 38rem;
 }

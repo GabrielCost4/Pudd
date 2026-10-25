@@ -54,10 +54,11 @@ namespace Pudd.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IReadOnlyList<Post>> GetByUserAsync(Guid userId, int page, int pageSize)
+        public async Task<IReadOnlyList<Post>> GetByUserAsync(Guid userId, int page, int pageSize, bool? hasImage = null)
         {
             return await _context.posts.AsNoTracking().Include(post => post.User)
                 .Where(post => post.UserID == userId)
+                .Where(post => !hasImage.HasValue || (post.ImagePath != null) == hasImage.Value)
                 .OrderByDescending(post => post.CreatedAt).ThenByDescending(post => post.ID)
                 .Skip((page - 1) * pageSize).Take(pageSize + 1).ToListAsync();
         }

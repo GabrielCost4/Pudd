@@ -1,8 +1,4 @@
 <div class="profile-page">
-  <a [text]="true" severity="secondary" pButton class="back-link" routerLink="/feed"
-    ><i class="pi pi-arrow-left" aria-hidden="true"></i> Voltar para o feed</a
-  >
-
   <h1>{{ isOwner() ? 'Meu perfil' : 'Perfil' }}</h1>
   <app-feedback [errors]="errors()" [success]="success()" />
   @if (loading()) {
@@ -66,9 +62,6 @@
           }}
         </p>
         <div class="actions">
-          <a severity="secondary" pButton routerLink="/feed" [queryParams]="{ authorId: person.id }"
-            >Ver publicações <i class="pi pi-arrow-right" aria-hidden="true"></i
-          ></a>
           @if (isOwner()) {
             <button
               pButton
@@ -157,6 +150,7 @@
         </p-card>
       </div>
     }
+    <app-profile-posts [authorId]="person.id" />
   }
 </div>
 

@@ -12,8 +12,8 @@ public class PostsController(
     PostService posts) : SocialControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> Feed(int page = 1, int pageSize = 20, Guid? authorId = null) =>
-        Ok(await posts.GetFeedAsync(ActorId, page, pageSize, authorId));
+    public async Task<IActionResult> Feed(int page = 1, int pageSize = 20, Guid? authorId = null, bool? hasImage = null) =>
+        Ok(await posts.GetFeedAsync(ActorId, page, pageSize, authorId, hasImage));
 
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> Get(Guid id) => Ok(await posts.GetAsync(ActorId, id));

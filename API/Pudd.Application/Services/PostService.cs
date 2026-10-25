@@ -57,15 +57,18 @@ public class PostService(
         Guid actorId,
         int page,
         int pageSize,
-        Guid? authorId = null
+        Guid? authorId = null,
+        bool? hasImage = null
     )
     {
         await access.RequireActiveAsync(actorId);
         SocialRules.Page(page, pageSize);
+        if (hasImage.HasValue && !authorId.HasValue)
+            throw new AppException(ErrorCode.InvalidInput, "Informe o autor para filtrar por imagem.");
         if (authorId.HasValue && await users.GetByIdAsync(authorId.Value) is null)
             throw new AppException(ErrorCode.NotFound, "Autor não encontrado.");
         var result = authorId.HasValue
-            ? await posts.GetByUserAsync(authorId.Value, page, pageSize)
+            ? await posts.GetByUserAsync(authorId.Value, page, pageSize, hasImage)
             : await posts.GetFeedAsync(page, pageSize);
         return SocialRules.Slice(result.Select(Map), page, pageSize);
     }

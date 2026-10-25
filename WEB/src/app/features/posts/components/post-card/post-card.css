@@ -1,6 +1,94 @@
 :host {
   display: block;
 }
+:host(.in-dialog) {
+  height: 100%;
+  min-height: 0;
+}
+.post-dialog-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(18rem, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--surface);
+}
+.post-dialog-layout > header {
+  grid-column: 2;
+  grid-row: 1;
+  padding: 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+.post-dialog-layout > .post-copy {
+  grid-column: 2;
+  grid-row: 2;
+  min-width: 0;
+  min-height: 0;
+  padding: 1.25rem;
+  overflow-y: auto;
+}
+.post-dialog-layout .content-text {
+  margin: 0;
+}
+.post-dialog-layout > .post-image {
+  grid-column: 1;
+  grid-row: 1 / -1;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  aspect-ratio: auto;
+  border-radius: 0;
+  border-right: 1px solid var(--border);
+  background: var(--background);
+}
+.post-dialog-layout .post-image img {
+  max-height: none;
+}
+.post-dialog-layout > footer {
+  grid-column: 2;
+  grid-row: 3;
+  margin: 0;
+  padding: 0.75rem 1rem;
+}
+.post-dialog-layout.text-only {
+  display: flex;
+  flex-direction: column;
+}
+.post-dialog-layout.text-only > .post-copy {
+  flex: 1;
+}
+.post-dialog-layout.text-only > header,
+.post-dialog-layout.text-only > footer {
+  flex-shrink: 0;
+}
+@media (max-width: 700px) {
+  .post-dialog-layout {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .post-dialog-layout > .post-image {
+    order: -1;
+    height: clamp(12rem, 40dvh, 24rem);
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .post-dialog-layout > header,
+  .post-dialog-layout > .post-copy,
+  .post-dialog-layout > footer {
+    flex-shrink: 0;
+  }
+  .post-dialog-layout > .post-copy {
+    overflow-y: visible;
+  }
+  .post-dialog-layout.text-only > .post-copy {
+    flex: 1 0 auto;
+  }
+}
 header,
 footer {
   display: flex;

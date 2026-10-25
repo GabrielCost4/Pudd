@@ -7,11 +7,21 @@ import { API_BASE_URL } from '../../../../core/config/api';
 import { ProfilePage } from './profile';
 import { AccountStore } from '../../../../core/account/account.store';
 import { SessionStore } from '../../../../core/auth/session.store';
+import { Component, input } from '@angular/core';
+import { ProfilePosts } from '../../../posts/public';
+
+@Component({ selector: 'app-profile-posts', template: '' })
+class ProfilePostsStub {
+  readonly authorId = input.required<string>();
+}
 describe('ProfilePage', () => {
   beforeEach(() =>
     TestBed.configureTestingModule({
       imports: [ProfilePage],
       providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
+    }).overrideComponent(ProfilePage, {
+      remove: { imports: [ProfilePosts] },
+      add: { imports: [ProfilePostsStub] },
     }),
   );
   afterEach(() => {

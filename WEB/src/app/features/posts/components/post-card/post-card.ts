@@ -5,7 +5,7 @@ import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { GalleriaModule } from 'primeng/galleria';
 import { ConfirmationService } from 'primeng/api';
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import {
   Component,
   computed,
@@ -39,11 +39,13 @@ import { LikeService } from '../../likes/services/like.service';
     ButtonModule,
     GalleriaModule,
     DatePipe,
+    NgTemplateOutlet,
     RouterLink,
     Feedback,
   ],
   templateUrl: './post-card.html',
   styleUrl: './post-card.css',
+  host: { '[class.in-dialog]': 'dialogLayout()' },
 })
 export class PostCard {
   private readonly confirmation = inject(ConfirmationService);
@@ -52,6 +54,7 @@ export class PostCard {
   readonly editInPlace = input(false);
   readonly editRequested = output<Post>();
   readonly collapseText = input(true);
+  readonly dialogLayout = input(false);
   protected readonly expanded = signal(false);
   protected readonly canExpand = computed(() => {
     const content = this.post().content;
