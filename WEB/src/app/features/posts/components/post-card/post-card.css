@@ -123,10 +123,18 @@ footer {
 }
 .post-menu {
   display: flex;
-  gap: 0.25rem;
+  align-items: center;
+  justify-content: flex-end;
   margin-inline-start: auto;
-  --p-button-padding-x: 0.625rem;
-  font-size: 0.8125rem;
+}
+.post-actions-trigger {
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  color: var(--muted);
+}
+.post-actions-trigger:hover {
+  color: var(--text);
 }
 .content-text {
   white-space: pre-wrap;
@@ -198,8 +206,7 @@ footer {
     gap: 0.5rem;
   }
   .post-menu {
-    gap: 0;
-    --p-button-padding-x: 0.5rem;
+    flex: 0 0 auto;
   }
   .author strong {
     font-size: 0.8125rem;

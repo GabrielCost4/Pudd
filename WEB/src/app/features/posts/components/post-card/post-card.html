@@ -28,39 +28,27 @@
     </a>
     @if (session.user().id === post().userID || session.hasPermission('posts.moderate')) {
       <div class="post-menu">
-        @if (session.user().id === post().userID) {
-          @if (editInPlace()) {
-            <button
-              [text]="true"
-              severity="secondary"
-              pButton
-              type="button"
-              (click)="editRequested.emit(post())"
-            >
-              Editar
-            </button>
-          } @else {
-            <a
-              [text]="true"
-              severity="secondary"
-              pButton
-              [routerLink]="['/posts', post().id, 'edit']"
-              >Editar</a
-            >
-          }
-        }
         <button
           [text]="true"
-          severity="danger"
+          severity="secondary"
+          [rounded]="true"
           pButton
-          class="delete"
+          class="post-actions-trigger"
           type="button"
           [disabled]="busy()"
-          [loading]="busy()"
-          (click)="remove()"
+          aria-haspopup="menu"
+          aria-label="A&#231;&#245;es da publica&#231;&#227;o"
+          (click)="postActionsMenu.toggle($event)"
         >
-          {{ busy() ? 'Excluindo…' : session.user().id === post().userID ? 'Excluir' : 'Moderar' }}
+          <i class="pi pi-ellipsis-v" aria-hidden="true"></i>
         </button>
+        <p-menu
+          #postActionsMenu
+          [model]="postActions()"
+          [popup]="true"
+          appendTo="body"
+          styleClass="post-actions-menu"
+        />
       </div>
     }
   </header>

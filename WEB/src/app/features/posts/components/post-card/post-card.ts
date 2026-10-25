@@ -4,20 +4,23 @@ import { AvatarModule } from 'primeng/avatar';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { GalleriaModule } from 'primeng/galleria';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, type MenuItem } from 'primeng/api';
+import { Menu, MenuModule } from 'primeng/menu';
 import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import {
   Component,
   computed,
+  HostListener,
   DestroyRef,
   effect,
   inject,
   input,
   output,
   signal,
+  ViewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { finalize, Subscription } from 'rxjs';
 import { SessionStore } from '../../../../core/auth/session.store';
 import { AvatarStore } from '../../../../core/account/avatar.store';
@@ -38,6 +41,7 @@ import { LikeService } from '../../likes/services/like.service';
     CardModule,
     ButtonModule,
     GalleriaModule,
+    MenuModule,
     DatePipe,
     NgTemplateOutlet,
     RouterLink,
@@ -48,6 +52,7 @@ import { LikeService } from '../../likes/services/like.service';
   host: { '[class.in-dialog]': 'dialogLayout()' },
 })
 export class PostCard {
+  @ViewChild('postActionsMenu') private postActionsMenu?: Menu;
   private readonly confirmation = inject(ConfirmationService);
   readonly post = input.required<Post>();
   readonly deleted = output<string>();
@@ -73,6 +78,7 @@ export class PostCard {
   });
   protected readonly session = inject(SessionStore);
   private readonly posts = inject(PostService);
+  private readonly router = inject(Router);
   private readonly avatars = inject(AvatarStore);
   protected readonly authorAvatar = signal('');
   protected readonly authorAvatarFailed = signal(false);
@@ -94,6 +100,34 @@ export class PostCard {
   protected readonly likeErrors = signal<string[]>([]);
   protected readonly errors = signal<string[]>([]);
   protected readonly busy = signal(false);
+  protected readonly postActions = computed<MenuItem[]>(() => {
+    const actions: MenuItem[] = [];
+    if (this.post().userID === this.session.user().id) {
+      actions.push({
+        label: 'Editar',
+        icon: 'pi pi-pencil',
+        iconClass: 'post-action-edit-icon',
+        linkClass: 'post-action-edit',
+        command: () =>
+          this.editInPlace()
+            ? this.editRequested.emit(this.post())
+            : void this.router.navigate(['/posts', this.post().id, 'edit']),
+      });
+    }
+    actions.push({
+      label: 'Excluir',
+      icon: 'pi pi-trash',
+      iconClass: 'post-action-delete-icon',
+      linkClass: 'post-action-delete',
+      command: () => this.remove(),
+    });
+    return actions;
+  });
+
+  @HostListener('window:scroll')
+  protected closePostActionsOnScroll(): void {
+    this.postActionsMenu?.hide();
+  }
   protected readonly liking = signal(false);
   protected readonly imageVersion = signal(0);
   protected readonly likesVersion = signal(0);

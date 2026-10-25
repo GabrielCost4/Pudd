@@ -327,6 +327,45 @@ p-avatar {
   min-width: 38rem;
 }
 
+.post-actions-menu .post-action-edit,
+.post-actions-menu .post-action-delete {
+  display: flex;
+  width: 100%;
+  border-radius: 0.375rem;
+  transition:
+    color var(--motion-fast) ease,
+    background-color var(--motion-fast) ease;
+}
+.post-actions-menu .post-action-edit:hover,
+.post-actions-menu .post-action-edit:focus-visible {
+  background-color: color-mix(in srgb, var(--success) 12%, var(--surface));
+  color: var(--success);
+}
+.post-actions-menu .post-action-edit:hover .p-menu-item-icon,
+.post-actions-menu .post-action-edit:hover .post-action-edit-icon,
+.post-actions-menu .post-action-edit:hover .p-menu-item-label,
+.post-actions-menu .post-action-edit:focus-visible .p-menu-item-icon,
+.post-actions-menu .post-action-edit:focus-visible .post-action-edit-icon,
+.post-actions-menu .post-action-edit:focus-visible .p-menu-item-label {
+  color: var(--success) !important;
+}
+.post-actions-menu .p-menu-item-content:hover {
+  background-color: transparent;
+}
+.post-actions-menu .post-action-delete:hover,
+.post-actions-menu .post-action-delete:focus-visible {
+  background-color: color-mix(in srgb, var(--danger) 12%, var(--surface));
+  color: var(--danger);
+}
+.post-actions-menu .post-action-delete:hover .p-menu-item-icon,
+.post-actions-menu .post-action-delete:hover .post-action-delete-icon,
+.post-actions-menu .post-action-delete:hover .p-menu-item-label,
+.post-actions-menu .post-action-delete:focus-visible .p-menu-item-icon,
+.post-actions-menu .post-action-delete:focus-visible .post-action-delete-icon,
+.post-actions-menu .post-action-delete:focus-visible .p-menu-item-label {
+  color: var(--danger) !important;
+}
+
 a,
 button {
   transition:
