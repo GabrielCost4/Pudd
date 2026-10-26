@@ -1,0 +1,157 @@
+<button
+  pButton
+  type="button"
+  [text]="true"
+  severity="secondary"
+  icon="pi pi-bell"
+  class="bell"
+  title="Notificações"
+  aria-haspopup="dialog"
+  [attr.aria-expanded]="opened()"
+  [attr.aria-label]="'Notificações, ' + inbox.count() + ' não lidas'"
+  (click)="open()"
+>
+  @if (inbox.count()) {
+    <span class="count" aria-hidden="true">{{ inbox.count() > 99 ? '99+' : inbox.count() }}</span>
+  }
+</button>
+<p-drawer
+  appendTo="body"
+  [(visible)]="opened"
+  position="right"
+  [blockScroll]="true"
+  ariaCloseLabel="Fechar notificações"
+  [pt]="{ root: { role: 'dialog', 'aria-label': 'Notificações', 'aria-modal': true } }"
+  [style]="{ width: '23rem', maxWidth: '100vw' }"
+>
+  <ng-template #header>
+    <div class="inbox-heading">
+      <span class="heading-icon"><i class="pi pi-bell" aria-hidden="true"></i></span>
+      <div>
+        <h2>Notificações</h2>
+      </div>
+      @if (inbox.count()) {
+        <span class="heading-count">{{ inbox.count() }}</span>
+      }
+    </div>
+  </ng-template>
+  <div class="inbox-intro">
+    <span>{{
+      inbox.count()
+        ? inbox.count() + ' notificações aguardando sua leitura'
+        : 'Todas as novidades em um só lugar'
+    }}</span>
+  </div>
+  @if (inbox.items().length) {
+    <div class="inbox-actions">
+      <div class="selection-actions">
+        <div class="select-all">
+          <p-checkbox
+            inputId="select-all-notifications"
+            [ariaLabel]="'Selecionar todas as notificações'"
+            [binary]="true"
+            [ngModel]="allSelected()"
+            [indeterminate]="someSelected() && !allSelected()"
+            (ngModelChange)="toggleAll($event)"
+            [disabled]="!unreadItems().length || inbox.busy()"
+          />
+          <label for="select-all-notifications">Selecionar todas</label>
+        </div>
+        @if (someSelected()) {
+          <button
+            pButton
+            type="button"
+            [text]="true"
+            severity="primary"
+            [rounded]="true"
+            icon="pi pi-check-circle"
+            class="mark-all-read"
+            label="Marcar lidas"
+            [title]="
+              allSelected()
+                ? 'Marcar todas como lidas'
+                : 'Marcar notificações selecionadas como lidas'
+            "
+            [attr.aria-label]="
+              allSelected()
+                ? 'Marcar todas como lidas'
+                : 'Marcar notificações selecionadas como lidas'
+            "
+            [disabled]="inbox.busy()"
+            [loading]="inbox.busy()"
+            (click)="markSelectedAsRead()"
+          ></button>
+        }
+      </div>
+      <button
+        pButton
+        type="button"
+        [text]="true"
+        severity="secondary"
+        aria-label="Atualizar notificações"
+        [disabled]="inbox.loading()"
+        (click)="inbox.refresh()"
+      >
+        <i class="pi pi-refresh" aria-hidden="true"></i>
+      </button>
+    </div>
+  }
+  @if (!inbox.online()) {
+    <p class="muted connection-status">Reconectando às atualizações…</p>
+  }
+  @if (inbox.error()) {
+    <p-message severity="error">{{ inbox.error() }}</p-message>
+  }
+  @if (inbox.loading() && !inbox.items().length) {
+    <p role="status">Carregando notificações…</p>
+  } @else if (!inbox.items().length) {
+    <div class="empty" role="status">
+      <span class="empty-icon"><i class="pi pi-check" aria-hidden="true"></i></span>
+      <h3>Tudo em dia por aqui.</h3>
+      <span class="muted">Novas curtidas e comentários aparecem aqui.</span>
+    </div>
+  }
+  <ul
+    class="notifications"
+    aria-label="Notificações recebidas"
+    aria-live="polite"
+    aria-relevant="additions"
+  >
+    @for (item of inbox.items(); track item.id) {
+      <li
+        [class.seen]="inbox.seen().has(item.id)"
+        [class.selected]="selectedIds().has(item.id)"
+        [class.like]="item.kind === 'like'"
+      >
+        @if (!inbox.seen().has(item.id)) {
+          <p-checkbox
+            [inputId]="'select-notification-' + item.id"
+            [ariaLabel]="'Selecionar notificação de ' + item.actorName"
+            [binary]="true"
+            [ngModel]="selectedIds().has(item.id)"
+            [disabled]="inbox.busy()"
+            (ngModelChange)="toggleItem(item.id, $event)"
+          />
+        } @else {
+          <span class="checkbox-spacer" aria-hidden="true"></span>
+        }
+        <span class="activity-icon"
+          ><i
+            [class]="item.kind === 'like' ? 'pi pi-heart' : 'pi pi-comment'"
+            aria-hidden="true"
+          ></i
+        ></span>
+        <div class="notification-copy">
+          <a [routerLink]="['/posts', item.postID]" (click)="opened.set(false)"
+            ><strong>{{ item.actorName }}</strong>
+            {{ item.kind === 'like' ? 'curtiu sua publicação.' : 'comentou na sua publicação.' }}</a
+          >
+          <small>{{ item.createdAt | date: 'dd/MM/yyyy · HH:mm' }}</small>
+          @if (inbox.seen().has(item.id)) {
+            <span class="seen-label"><i class="pi pi-check" aria-hidden="true"></i> Visto</span>
+          }
+        </div>
+      </li>
+    }
+  </ul>
+</p-drawer>
