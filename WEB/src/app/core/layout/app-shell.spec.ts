@@ -79,7 +79,7 @@ describe('AppShell', () => {
     expect(f.nativeElement.querySelector('.account img')).toBeNull();
     expect(f.nativeElement.querySelector('.account p-avatar').textContent).toBe('M');
   });
-  it('collapses and reopens navigation from the accessible desktop control', () => {
+  it('collapses the desktop sidebar while keeping icon navigation available', () => {
     start('User');
     const fixture = TestBed.createComponent(AppShell);
     fixture.detectChanges();
@@ -91,12 +91,15 @@ describe('AppShell', () => {
     fixture.detectChanges();
     expect(toggle.getAttribute('aria-label')).toBe('Expandir menu lateral');
     expect(toggle.getAttribute('aria-expanded')).toBe('false');
-    expect(navigation.inert).toBe(true);
-    expect(navigation.getAttribute('aria-hidden')).toBe('true');
+    expect(root.classList.contains('sidebar-collapsed')).toBe(true);
+    expect(navigation.hasAttribute('aria-hidden')).toBe(false);
+    expect(
+      root.querySelector<HTMLAnchorElement>('.navigation-link')?.getAttribute('aria-label'),
+    ).toBe('Feed');
     toggle.click();
     fixture.detectChanges();
     expect(toggle.getAttribute('aria-expanded')).toBe('true');
-    expect(navigation.inert).toBe(false);
+    expect(root.classList.contains('sidebar-collapsed')).toBe(false);
     expect(navigation.hasAttribute('aria-hidden')).toBe(false);
     expect(TestBed.inject(SessionStore).isAuthenticated()).toBe(true);
   });
