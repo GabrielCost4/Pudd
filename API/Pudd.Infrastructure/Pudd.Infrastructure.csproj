@@ -3,6 +3,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <!-- Rejeita interpolacao insegura detectada pelo analisador de SQL bruto do EF Core. -->
+    <WarningsAsErrors>$(WarningsAsErrors);EF1002</WarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Pudd.Domain\Pudd.Domain.csproj" />
