@@ -226,6 +226,7 @@
           (selected)="selectUser($event)"
         />
       }
+      <app-notification-bell />
       <app-theme-toggle [dark]="theme.mode() === 'dark'" (toggled)="theme.toggle()" />
     </div>
   </div>

@@ -10,7 +10,8 @@ namespace Pudd.Application.Services
         IUserRepository users,
                 AccountAccess access,
                 ImageService images,
-                IValidator<UpdateProfileRequest> validator, TimeProvider clock)
+                IValidator<UpdateProfileRequest> validator, TimeProvider clock,
+                IUserPresenceReader presence)
     {
         public async Task<ProfileResponse> GetProfileAsync(Guid actorId, Guid userId)
         {
@@ -103,6 +104,10 @@ namespace Pudd.Application.Services
             ?? throw new AppException(ErrorCode.NotFound, "Usuário não encontrado.");
 
         // O perfil público da comunidade não expõe e-mail, hash, role ou estado de bloqueio.
-        private static ProfileResponse Map(User u) => new(u.ID, u.Name, u.Bio, u.AvatarImagePath is not null);
+        private ProfileResponse Map(User u)
+        {
+            var state = presence.Get(u.ID);
+            return new(u.ID, u.Name, u.Bio, u.AvatarImagePath is not null, state.Presence, state.Revision);
+        }
     }
 }

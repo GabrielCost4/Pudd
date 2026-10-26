@@ -20,6 +20,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<PostService>();
         services.AddScoped<CommentService>();
         services.AddScoped<PostLikeService>();
+        services.AddScoped<NotificationService>();
         services.AddScoped<UserService>();
         services.AddTransient<IValidator<LoginRequest>, LoginRequestValidator>();
         services.AddTransient<IValidator<RegisterRequest>, RegisterRequestValidator>();

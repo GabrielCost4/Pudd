@@ -6,6 +6,6 @@ public interface ICommentRepository
 {
     Task<Comment?> GetByIdAsync(Guid id);
     Task<IReadOnlyList<Comment>> GetPageAsync(Guid postId, int page, int pageSize);
-    Task AddAsync(Comment comment);
+    Task AddAsync(Comment comment, Notification? notification = null);
     Task DeleteAsync(Comment comment);
 }

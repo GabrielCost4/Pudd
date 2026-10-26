@@ -1,9 +1,14 @@
 using Pudd.Application.Contracts;
 using Pudd.Application.Interfaces;
+using Pudd.Domain.Entities;
 
 namespace Pudd.Application.Services;
 
-public class PostLikeService(IPostLikeRepository likes, IPostRepository posts, AccountAccess access)
+public class PostLikeService(
+       IPostLikeRepository likes,
+       IPostRepository posts,
+       AccountAccess access,
+       NotificationService? notifications = null)
 {
     public async Task<LikeResponse> GetAsync(Guid actorId, Guid postId)
     {
@@ -16,10 +21,21 @@ public class PostLikeService(IPostLikeRepository likes, IPostRepository posts, A
     public async Task<LikeResponse> SetLikedAsync(Guid actorId, Guid postId, bool liked)
     {
         await access.RequireActiveAsync(actorId);
-        if (await posts.GetByIdAsync(postId) is null)
-            throw new AppException(ErrorCode.NotFound, "Postagem não encontrada.");
-        // PUT define curtida e DELETE remove; repetir a requisição não inverte o estado.
-        await likes.SetLikedAsync(actorId, postId, liked);
+        var post = await posts.GetByIdAsync(postId)
+            ?? throw new AppException(ErrorCode.NotFound, "Postagem não encontrada.");
+        var notification = !liked || post.UserID == actorId ? null : new Notification
+        {
+            RecipientID = post.UserID,
+            ActorID = actorId,
+            PostID = postId,
+            Kind = "like",
+        };
+
+        await likes.SetLikedAsync(actorId, postId, liked, notification);
+
+        if (notifications is not null)
+        await notifications.PublishForPostAsync(postId);
+
         return new(liked, await likes.CountAsync(postId));
     }
 }

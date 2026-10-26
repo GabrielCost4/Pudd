@@ -21,6 +21,7 @@ export async function mockApi(page:Page) {
     avatarUsers:new Set<string>(),avatarVersion:0,
     postValidation:null as Record<string,string[]>|null,
     profileValidation:null as Record<string,string[]>|null,
+    notifications:[] as {id:string;actorID:string;actorName:string;postID:string;kind:string;createdAt:string}[],
   };
   await page.route('https://images.unsplash.com/**',route=>route.abort());
   await page.route('**/api/**',async route=>{
@@ -43,6 +44,11 @@ export async function mockApi(page:Page) {
       return {items:items.slice(start,start+size),page:current,pageSize:size,hasNextPage:start+size<items.length};
     };
     if(path==='/admin/users')return send(paginated(state.users));
+    if(path==='/notifications'&&method==='GET')return send(state.notifications);
+    if(path==='/notifications/read'&&method==='POST'){
+      const ids=req.postDataJSON().ids as string[];
+      state.notifications=state.notifications.filter(item=>!ids.includes(item.id));return send(null,204);
+    }
     if(path.endsWith('/blocked')&&method==='PUT'){
       const user=state.users.find(item=>path.includes(item.id));if(user)user.isBlocked=req.postDataJSON().isBlocked;return send(null,204);
     }

@@ -10,7 +10,8 @@ public class CommentService(
     ICommentRepository comments,
     IPostRepository posts,
     AccountAccess access,
-    IValidator<CreateCommentRequest> validator
+    IValidator<CreateCommentRequest> validator,
+    NotificationService? notifications = null
 )
 {
     public async Task<CommentResponse> CreateAsync(
@@ -22,7 +23,7 @@ public class CommentService(
         var actor = await access.RequireActiveAsync(actorId);
         await RequestValidation.ValidateAsync(validator, request);
         var content = request.Content.Trim();
-        await RequirePostAsync(postId);
+        var post = await RequirePostAsync(postId);
         var comment = new Comment
         {
             ID = Guid.NewGuid(),
@@ -31,7 +32,13 @@ public class CommentService(
             User = actor,
             Content = content,
         };
-        await comments.AddAsync(comment);
+        var notification = post.UserID == actorId ? null : new Notification
+        {
+            RecipientID = post.UserID, ActorID = actorId, PostID = postId,
+            CommentID = comment.ID, Kind = "comment",
+        };
+        await comments.AddAsync(comment, notification);
+        if (notifications is not null) await notifications.PublishForPostAsync(postId);
         return Map(comment);
     }
 
@@ -64,13 +71,12 @@ public class CommentService(
         if (!moderation)
             SocialRules.Owner(comment.UserID, actorId);
         await comments.DeleteAsync(comment);
+        if (notifications is not null) await notifications.PublishForPostAsync(comment.PostID);
     }
 
-    private async Task RequirePostAsync(Guid id)
-    {
-        if (await posts.GetByIdAsync(id) is null)
-            throw new AppException(ErrorCode.NotFound, "Postagem não encontrada.");
-    }
+    private async Task<Post> RequirePostAsync(Guid id) =>
+        await posts.GetByIdAsync(id)
+        ?? throw new AppException(ErrorCode.NotFound, "Postagem não encontrada.");
 
     private static CommentResponse Map(Comment c) =>
         new(c.ID, c.PostID, c.UserID, c.User.Name, c.Content, c.CreatedAt, c.User.AvatarImagePath is not null);

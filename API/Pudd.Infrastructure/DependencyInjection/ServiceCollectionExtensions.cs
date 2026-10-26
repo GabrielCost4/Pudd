@@ -29,6 +29,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPostRepository, PostRepository>();
         services.AddScoped<ICommentRepository, CommentRepository>();
         services.AddScoped<IPostLikeRepository, PostLikeRepository>();
+        services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<IImageDeletionQueue, ImageDeletionQueue>();
 
         services

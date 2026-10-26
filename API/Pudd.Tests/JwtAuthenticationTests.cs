@@ -10,6 +10,22 @@ namespace Pudd.Tests;
 public partial class ApiTests
 {
     [Fact]
+    public async Task QueryStringTokenIsAcceptedOnlyForTheNotificationsHub()
+    {
+        await using var factory = new ApiFactory();
+        using var authenticated = await CreateAuthenticatedClient(factory);
+        var token = Uri.EscapeDataString(authenticated.DefaultRequestHeaders.Authorization!.Parameter!);
+        using var client = factory.CreateClient(new() { BaseAddress = new Uri("https://localhost") });
+
+        using var hub = await client.PostAsync(
+            $"/api/hubs/notifications/negotiate?negotiateVersion=1&access_token={token}", null);
+        Assert.Equal(HttpStatusCode.OK, hub.StatusCode);
+
+        using var profile = await client.GetAsync($"/api/users/me?access_token={token}");
+        Assert.Equal(HttpStatusCode.Unauthorized, profile.StatusCode);
+    }
+
+    [Fact]
     public async Task TokenForAMissingAccountIsRejected()
     {
         await using var factory = new ApiFactory();

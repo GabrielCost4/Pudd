@@ -1,4 +1,5 @@
 import { UserSearch } from '../search/user-search';
+import { NotificationBell } from '../notifications/notification-bell';
 import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
 import { DrawerModule } from 'primeng/drawer';
@@ -26,6 +27,7 @@ import { BrandLogo } from '../../shared/components/brand-logo/brand-logo';
 @Component({
   selector: 'app-shell',
   imports: [
+    NotificationBell,
     UserSearch,
     AvatarModule,
     ButtonModule,

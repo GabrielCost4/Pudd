@@ -241,7 +241,7 @@ internal sealed class Scenario : IAsyncDisposable
         Images = new(Storage, Queue, NullLogger<ImageService>.Instance);
         Posts = new(new PostRepository(Db), Users, Access, Images,
             new CreatePostRequestValidator(), new UpdatePostRequestValidator());
-        Profiles = new(Users, Access, Images, new UpdateProfileRequestValidator(), TimeProvider.System);
+        Profiles = new(Users, Access, Images, new UpdateProfileRequestValidator(), TimeProvider.System, new OfflinePresence());
     }
     public async Task<Post> AddPost(string? path = null)
     {
@@ -251,6 +251,11 @@ internal sealed class Scenario : IAsyncDisposable
         return post;
     }
     public ValueTask DisposeAsync() => Db.DisposeAsync();
+}
+
+internal class OfflinePresence : IUserPresenceReader
+{
+    public PresenceResponse Get(Guid userId) => new(userId, UserPresence.Offline, 0);
 }
 
 internal class FakeStorage : IImageStorage

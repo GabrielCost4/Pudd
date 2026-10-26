@@ -17,11 +17,24 @@ namespace Pudd.Infrastructure
         public DbSet<Comment> comments => Set<Comment>();
         public DbSet<PostLike> postLikes => Set<PostLike>();
         public DbSet<PendingImageDeletion> pendingImageDeletions => Set<PendingImageDeletion>();
+        public DbSet<Notification> notifications => Set<Notification>();
 
         // Define as relações entre as entidades e as regras aplicadas pelo banco nas exclusões.
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            var notification = modelBuilder.Entity<Notification>();
+            notification.Property(n => n.Kind).HasMaxLength(16);
+            notification.HasIndex(n => new { n.RecipientID, n.CreatedAt, n.ID });
+            notification.HasIndex(n => n.CommentID).IsUnique();
+            notification.HasIndex(n => n.PostLikeID).IsUnique();
+            notification.HasOne(n => n.Recipient).WithMany().HasForeignKey(n => n.RecipientID).OnDelete(DeleteBehavior.Restrict);
+            notification.HasOne(n => n.Actor).WithMany().HasForeignKey(n => n.ActorID).OnDelete(DeleteBehavior.Restrict);
+            notification.HasOne(n => n.Post).WithMany().HasForeignKey(n => n.PostID).OnDelete(DeleteBehavior.Cascade);
+            notification.HasOne(n => n.Comment).WithMany().HasForeignKey(n => n.CommentID).OnDelete(DeleteBehavior.Cascade);
+            notification.HasOne(n => n.PostLike).WithMany().HasForeignKey(n => n.PostLikeID).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Post>().HasIndex(p => new { p.UserID, p.CreatedAt, p.ID });
 
             modelBuilder.Entity<PendingImageDeletion>()
                 .HasIndex(item => item.NextAttemptAt);

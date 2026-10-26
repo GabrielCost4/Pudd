@@ -50,6 +50,52 @@ namespace Pudd.Infrastructure.Migrations
                     b.ToTable("comments");
                 });
 
+            modelBuilder.Entity("Pudd.Domain.Entities.Notification", b =>
+                {
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ActorID")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CommentID")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.Property<Guid>("PostID")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("PostLikeID")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("RecipientID")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ActorID");
+
+                    b.HasIndex("CommentID")
+                        .IsUnique();
+
+                    b.HasIndex("PostID");
+
+                    b.HasIndex("PostLikeID")
+                        .IsUnique();
+
+                    b.HasIndex("RecipientID", "CreatedAt", "ID");
+
+                    b.ToTable("notifications");
+                });
+
             modelBuilder.Entity("Pudd.Domain.Entities.PendingImageDeletion", b =>
                 {
                     b.Property<Guid>("ID")
@@ -102,7 +148,7 @@ namespace Pudd.Infrastructure.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("UserID");
+                    b.HasIndex("UserID", "CreatedAt", "ID");
 
                     b.ToTable("posts");
                 });
@@ -203,6 +249,47 @@ namespace Pudd.Infrastructure.Migrations
                     b.Navigation("Post");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Pudd.Domain.Entities.Notification", b =>
+                {
+                    b.HasOne("Pudd.Domain.Entities.User", "Actor")
+                        .WithMany()
+                        .HasForeignKey("ActorID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Pudd.Domain.Entities.Comment", "Comment")
+                        .WithMany()
+                        .HasForeignKey("CommentID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Pudd.Domain.Entities.Post", "Post")
+                        .WithMany()
+                        .HasForeignKey("PostID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Pudd.Domain.Entities.PostLike", "PostLike")
+                        .WithMany()
+                        .HasForeignKey("PostLikeID")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Pudd.Domain.Entities.User", "Recipient")
+                        .WithMany()
+                        .HasForeignKey("RecipientID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Actor");
+
+                    b.Navigation("Comment");
+
+                    b.Navigation("Post");
+
+                    b.Navigation("PostLike");
+
+                    b.Navigation("Recipient");
                 });
 
             modelBuilder.Entity("Pudd.Domain.Entities.Post", b =>

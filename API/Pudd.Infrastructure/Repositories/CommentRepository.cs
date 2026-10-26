@@ -22,9 +22,10 @@ public class CommentRepository(PuddDbContext context) : ICommentRepository
             .Take(pageSize + 1)
             .ToListAsync();
 
-    public async Task AddAsync(Comment comment)
+    public async Task AddAsync(Comment comment, Pudd.Domain.Entities.Notification? notification = null)
     {
         context.comments.Add(comment);
+        if (notification is not null) context.notifications.Add(notification);
         await context.SaveChangesAsync();
     }
 
