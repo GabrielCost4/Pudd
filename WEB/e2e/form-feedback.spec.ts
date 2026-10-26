@@ -84,7 +84,7 @@ test('shows API validation and success messages for creating and editing posts a
   await expect(page.locator('#profile-name-error')).toHaveText('Informe seu nome.');
   await expect(page.getByLabel('Nome', { exact: true })).toHaveAttribute(
     'aria-describedby',
-    'profile-name-error',
+    /(?:^|\s)profile-name-error(?:\s|$)/,
   );
   await page.getByLabel('Nome', { exact: true }).fill('Gabriel Atualizado');
   api.profileValidation = {

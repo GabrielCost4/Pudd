@@ -11,15 +11,17 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ButtonModule } from 'primeng/button';
 import { FileUpload, FileUploadModule } from 'primeng/fileupload';
 import { MessageModule } from 'primeng/message';
+import { ImageViewer } from '../image-viewer/image-viewer';
 import type { FileSelectEvent } from 'primeng/types/fileupload';
 
 @Component({
   selector: 'app-image-picker',
-  imports: [ButtonModule, FileUploadModule, MessageModule],
+  imports: [ButtonModule, FileUploadModule, MessageModule, ImageViewer],
   templateUrl: './image-picker.html',
   styleUrl: './image-picker.css',
 })
 export class ImagePicker {
+  protected readonly previewVisible = signal(false);
   private readonly sanitizer = inject(DomSanitizer);
   readonly disabled = input(false);
   readonly selected = output<File | null>();
@@ -32,6 +34,7 @@ export class ImagePicker {
   }
 
   private release(): void {
+    this.previewVisible.set(false);
     if (this.preview()) URL.revokeObjectURL(this.preview());
   }
 

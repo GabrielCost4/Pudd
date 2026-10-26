@@ -1,13 +1,13 @@
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { AvatarModule } from 'primeng/avatar';
-import { GalleriaModule } from 'primeng/galleria';
+import { ImageViewer } from '../../../../shared/components/image-viewer/image-viewer';
 import { CardModule } from 'primeng/card';
 import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmationService } from 'primeng/api';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -21,16 +21,20 @@ import { apiErrors } from '../../../../shared/utils/api-errors';
 import type { Profile } from '../../models/profile';
 import { ProfileService } from '../../services/profile.service';
 import { ProfilePosts } from '../../../posts/public';
+import { InboxRealtime } from '../../../../core/notifications/inbox-realtime';
+import type { UserPresence } from '../../../../core/notifications/user-presence';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   providers: [ConfirmationService],
   selector: 'app-profile',
   imports: [
+    TooltipModule,
     ProfilePosts,
     ConfirmDialogModule,
     ProgressSpinnerModule,
     AvatarModule,
-    GalleriaModule,
+    ImageViewer,
     CardModule,
     TextareaModule,
     ButtonModule,
@@ -50,9 +54,13 @@ export class ProfilePage {
   private readonly session = inject(SessionStore);
   private readonly account = inject(AccountStore);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly realtime = inject(InboxRealtime);
   private avatarRequest?: Subscription;
   private avatarTimer?: ReturnType<typeof setTimeout>;
   protected readonly profile = signal<Profile | null>(null);
+  private readonly profileId = computed(() => this.profile()?.id);
+  protected readonly presence = signal<UserPresence | null>(null);
+  protected readonly presenceLabel = computed(() => this.presence() ?? 'Status indisponível');
   protected readonly isOwner = computed(() => this.profile()?.id === this.session.user().id);
   protected readonly loading = signal(true);
   protected readonly busy = signal(false);
@@ -61,15 +69,7 @@ export class ProfilePage {
   protected readonly success = signal('');
   protected readonly avatarUrl = signal('');
   protected readonly avatarFailed = signal(false);
-  protected readonly avatarGalleryVisible = signal(false);
-  protected readonly avatarGalleryImages = computed(() =>
-    this.avatarUrl() ? [this.avatarUrl()] : [],
-  );
-  protected readonly avatarGalleryPt = {
-    mask: { 'aria-label': 'Foto de perfil ampliada' },
-    closeButton: { 'aria-label': 'Fechar foto' },
-  };
-  private avatarTrigger: HTMLElement | null = null;
+  protected readonly avatarPreviewVisible = signal(false);
   protected readonly selectedImage = signal<File | null>(null);
   protected readonly pickerVersion = signal(0);
   protected readonly form = new FormGroup({
@@ -77,6 +77,19 @@ export class ProfilePage {
     bio: new FormControl('', { nonNullable: true }),
   });
   constructor() {
+    effect((cleanup) => {
+      const id = this.profileId();
+      const token = this.session.accessToken();
+      if (!id || !token) {
+        this.presence.set(null);
+        return;
+      }
+      cleanup(
+        this.realtime.watchPresence(id, token, (state) =>
+          this.presence.set(state?.presence ?? null),
+        ),
+      );
+    });
     this.route.paramMap
       .pipe(
         switchMap((params) => {
@@ -88,7 +101,6 @@ export class ProfilePage {
           this.editing.set(false);
           this.selectedImage.set(null);
           this.pickerVersion.update((value) => value + 1);
-          this.closeAvatar();
           this.stopAvatar();
           this.avatarUrl.set('');
           this.avatarFailed.set(false);
@@ -113,6 +125,7 @@ export class ProfilePage {
     this.destroyRef.onDestroy(() => this.stopAvatar());
   }
   private setProfile(profile: Profile): void {
+    if (this.profile()?.id !== profile.id) this.presence.set(profile.presence ?? null);
     this.profile.set(profile);
     this.form.setValue({ name: profile.name, bio: profile.bio || '' });
   }
@@ -138,17 +151,6 @@ export class ProfilePage {
       },
       error: () => this.avatarFailed.set(true),
     });
-  }
-  protected openAvatar(event: Event): void {
-    if (!this.avatarUrl() || this.avatarFailed()) return;
-    this.avatarTrigger = event.currentTarget as HTMLElement;
-    this.avatarGalleryVisible.set(true);
-  }
-  protected closeAvatar(event?: Event): void {
-    event?.stopPropagation();
-    this.avatarGalleryVisible.set(false);
-    if (this.avatarTrigger?.isConnected) this.avatarTrigger.focus({ preventScroll: true });
-    this.avatarTrigger = null;
   }
   protected cancelEdit(): void {
     const profile = this.profile();

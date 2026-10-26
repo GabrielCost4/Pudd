@@ -63,10 +63,43 @@ public class PostgresTests
         await db.Database.MigrateAsync();
         Assert.Empty(await db.Database.GetPendingMigrationsAsync());
         Assert.False(db.Database.HasPendingModelChanges());
-        var user = new User { ID = Guid.NewGuid(), Name = "Teste", Email = Guid.NewGuid() + "@example.test" };
+        var user = new User { ID = Guid.NewGuid(), Name = "Teste " + Guid.NewGuid().ToString("N"), Email = Guid.NewGuid() + "@example.test" };
         var post = new Post { ID = Guid.NewGuid(), User = user, UserID = user.ID, Content = "teste", ImagePath = "test/image.png" };
         db.posts.Add(post);
         await db.SaveChangesAsync();
+
+        var uniqueName = "Race " + Guid.NewGuid().ToString("N");
+        var inserted = await Task.WhenAll(Enumerable.Range(0, 2).Select(async index =>
+        {
+            await using var concurrent = new PuddDbContext(options);
+            concurrent.users.Add(new User { ID = Guid.NewGuid(),
+                Name = index == 0 ? uniqueName : "  " + uniqueName.ToUpperInvariant() + "  ",
+                Email = Guid.NewGuid() + "@example.test" });
+            try { await concurrent.SaveChangesAsync(); return true; }
+            catch (DbUpdateException error) when (error.InnerException is PostgresException
+                { SqlState: "23505", ConstraintName: "IX_users_NormalizedName" }) { return false; }
+        }));
+        Assert.Single(inserted, success => success);
+
+        var searchUsers = new UserRepository(db);
+        var term = "Busca" + Guid.NewGuid().ToString("N")[..8];
+        db.users.AddRange(new[] { term, term + " B", term + " C", "X " + term }.Select(name =>
+            new User { ID = Guid.NewGuid(), Name = name, Email = Guid.NewGuid() + "@example.test" }));
+        await db.SaveChangesAsync();
+        Assert.Equal(new[] { term, term + " B", term + " C" },
+            (await searchUsers.SearchAsync(term.ToLowerInvariant(), false)).Select(result => result.Name));
+
+        var accessTime = DateTimeOffset.Parse("2026-10-20T12:00:00Z");
+        var users = new UserRepository(db);
+        await users.RecordLoginAsync(user.ID, accessTime);
+        await Task.WhenAll(Enumerable.Range(0, 8).Select(async _ =>
+        {
+            await using var concurrent = new PuddDbContext(options);
+            await new UserRepository(concurrent).RecordAccessAsync(user.ID, accessTime.AddMinutes(5));
+        }));
+        await db.Entry(user).ReloadAsync();
+        Assert.Equal(accessTime.AddMinutes(5), user.LastSeenAt);
+        Assert.Equal(accessTime, user.LastLoginAt);
 
         await Task.WhenAll(Enumerable.Range(0, 8).Select(async _ =>
         {

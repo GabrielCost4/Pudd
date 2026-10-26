@@ -124,7 +124,7 @@ test('registers a user and opens a paginated feed with author filtering', async 
   await page.getByLabel('E-mail', { exact: true }).fill('nova@example.test');
   await page.getByLabel('Senha', { exact: true }).fill('test-password');
   await page.getByRole('button', { name: 'Criar minha conta' }).click();
-  await expect(page.getByRole('heading', { name: 'Feed' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Nova Pessoa', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Próxima' }).click();
   await expect(page.getByLabel('Paginação')).toContainText('Página 2');
   await page.getByRole('link', { name: 'Minhas publicações', exact: true }).click();
@@ -226,6 +226,58 @@ test('updates profile and uploads/removes avatar, then opens another profile', a
   await login(page);
   await page.getByRole('link', { name: 'Meu perfil', exact: true }).click();
   await page.getByRole('button', { name: 'Editar perfil' }).click();
+  const cards = page.locator('.profile-edit-grid > p-card');
+  const formBefore = (await cards.first().boundingBox())!;
+  const avatarBefore = (await cards.last().boundingBox())!;
+  expect(Math.abs(formBefore.width - avatarBefore.width)).toBeLessThan(1);
+  expect(Math.abs(formBefore.height - avatarBefore.height)).toBeLessThan(1);
+  const tallImage = await page.evaluate(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 300;
+    canvas.height = 1800;
+    canvas.getContext('2d')!.fillRect(0, 0, 300, 1800);
+    return canvas.toDataURL('image/png').split(',')[1];
+  });
+  await page.locator('input[type=file]').setInputFiles({
+    name: 'foto-vertical.png',
+    mimeType: 'image/png',
+    buffer: Buffer.from(tallImage, 'base64'),
+  });
+  await expect(page.getByRole('img', { name: 'Prévia da imagem selecionada' })).toBeVisible();
+  expect(Math.abs((await cards.last().boundingBox())!.height - formBefore.height)).toBeLessThan(1);
+  expect(
+    (await page.getByRole('img', { name: 'Prévia da imagem selecionada' }).boundingBox())!.height,
+  ).toBeLessThanOrEqual(128);
+  await page.screenshot({ path: 'test-results/profile-equal-cards.png', fullPage: true });
+  const previewTrigger = page
+    .locator('.avatar-selection')
+    .getByRole('button', { name: 'Abrir imagem ampliada' });
+  await previewTrigger.click();
+  const imageDialog = page.getByRole('dialog', { name: 'Imagem ampliada' });
+  await expect(imageDialog).toBeVisible();
+  const enlargedImage = imageDialog.locator('img');
+  const initialWidth = (await enlargedImage.boundingBox())!.width;
+  await imageDialog.getByRole('button', { name: 'Ampliar imagem', exact: true }).click();
+  await expect
+    .poll(async () => (await enlargedImage.boundingBox())!.width)
+    .toBeGreaterThan(initialWidth);
+  const imageArea = imageDialog.getByRole('region');
+  const area = (await imageArea.boundingBox())!;
+  await page.mouse.move(area.x + area.width / 2, area.y + area.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(area.x + area.width / 2 + 50, area.y + area.height / 2 + 20, { steps: 4 });
+  await page.mouse.up();
+  expect(
+    await enlargedImage.evaluate((image) => parseFloat(image.style.getPropertyValue('--pan-x'))),
+  ).toBeGreaterThan(0);
+  await imageDialog.getByRole('button', { name: 'Reduzir imagem', exact: true }).click();
+  await expect
+    .poll(async () => Math.abs((await enlargedImage.boundingBox())!.width - initialWidth))
+    .toBeLessThan(1);
+  await imageDialog.getByRole('button', { name: 'Fechar imagem' }).click();
+  await expect(imageDialog).toHaveCount(0);
+  await expect(previewTrigger).toBeFocused();
+  await page.getByRole('button', { name: 'Descartar seleção', exact: true }).click();
   await page.getByLabel('Nome', { exact: true }).fill('Gabriel Atualizado');
   await page.getByLabel('Bio', { exact: true }).fill('Aprendendo Angular e .NET.');
   await page.getByRole('button', { name: 'Salvar perfil' }).click();
@@ -241,6 +293,14 @@ test('updates profile and uploads/removes avatar, then opens another profile', a
     'Foto de perfil atualizada.',
   );
   expect(api.profile.hasAvatar).toBeTruthy();
+  await page
+    .locator('.profile-photo')
+    .getByRole('button', { name: 'Abrir imagem ampliada' })
+    .click();
+  await expect(page.getByRole('dialog', { name: 'Imagem ampliada' })).toBeVisible();
+  await page.getByRole('button', { name: 'Ampliar imagem', exact: true }).click();
+  await page.getByRole('button', { name: 'Reduzir imagem', exact: true }).click();
+  await page.getByRole('button', { name: 'Fechar imagem' }).click();
   await page.getByRole('button', { name: 'Remover foto atual' }).click();
   await page
     .getByRole('alertdialog', {
@@ -252,14 +312,15 @@ test('updates profile and uploads/removes avatar, then opens another profile', a
     'Foto de perfil removida.',
   );
   expect(api.profile.hasAvatar).toBeFalsy();
-  await page.getByRole('link', { name: 'Ver publicações' }).click();
+  await expect(page.getByRole('link', { name: 'Ver publicações' })).toHaveCount(0);
+  await page.getByRole('link', { name: 'Feed', exact: true }).click();
   await page
     .locator('app-post-card')
     .first()
     .getByRole('link', { name: /Gabriel/ })
     .click();
   await expect(page).toHaveURL(new RegExp('/profile/' + ME));
-  await page.getByRole('link', { name: 'Voltar para o feed' }).click();
+  await page.getByRole('link', { name: 'Feed', exact: true }).click();
   await page
     .locator('app-post-card')
     .filter({ hasText: 'Uma ideia da comunidade.' })
@@ -375,6 +436,7 @@ test('keeps the mobile administration table and confirmation within the viewport
     await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
   ).toBeTruthy();
   await expect(page.getByRole('list', { name: 'Membros da comunidade' })).toBeVisible();
+  await page.getByRole('button', { name: 'Bloquear', exact: true }).scrollIntoViewIfNeeded();
   await expect(page.getByRole('button', { name: 'Bloquear', exact: true })).toBeInViewport();
   await expect(page.getByRole('table')).toHaveCount(0);
   await page.getByRole('button', { name: 'Bloquear', exact: true }).click();

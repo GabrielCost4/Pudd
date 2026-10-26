@@ -4,12 +4,27 @@ import { SessionStore } from '../auth/session.store';
 import { AppShell } from './app-shell';
 import { signal } from '@angular/core';
 import { AccountStore } from '../account/account.store';
+import { InboxStore } from '../notifications/inbox.store';
 
 describe('AppShell', () => {
   beforeEach(() =>
     TestBed.configureTestingModule({
       imports: [AppShell],
       providers: [
+        {
+          provide: InboxStore,
+          useValue: {
+            count: signal(0),
+            items: signal([]),
+            online: signal(true),
+            loading: signal(false),
+            busy: signal(false),
+            error: signal(''),
+            seen: signal(new Set()),
+            refresh: vi.fn(),
+            markRead: vi.fn(),
+          },
+        },
         provideRouter([]),
         {
           provide: AccountStore,

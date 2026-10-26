@@ -185,12 +185,6 @@ footer {
 .image-trigger:focus-visible {
   outline-offset: -3px;
 }
-.gallery-image {
-  display: block;
-  max-width: calc(100vw - 2rem);
-  max-height: calc(100dvh - 6rem);
-  object-fit: contain;
-}
 .image-fallback {
   display: grid;
   gap: 1rem;
@@ -220,8 +214,19 @@ footer {
 }
 .like-button {
   --heart-color: var(--danger);
+  --p-button-text-secondary-color: var(--muted);
+  --p-button-text-secondary-hover-background: transparent;
+  --p-button-text-secondary-active-background: transparent;
+  min-width: 44px;
   min-height: 44px;
+  padding: 0.5rem;
   gap: 0.5rem;
+  overflow: visible;
+  font-variant-numeric: tabular-nums;
+}
+.like-button:hover,
+.like-button.liked {
+  --p-button-text-secondary-color: var(--heart-color);
 }
 .liked {
   color: var(--heart-color);

@@ -1,0 +1,97 @@
+<p-dialog
+  [(visible)]="visible"
+  [modal]="true"
+  [closable]="true"
+  [closeOnEscape]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [blockScroll]="true"
+  [pt]="{ root: { 'aria-label': 'Imagem ampliada' } }"
+  (onHide)="restoreFocus()"
+>
+  <ng-template #headless>
+    <section class="viewer" [style.width.px]="frame().width" [style.height.px]="frame().height">
+      <header class="viewer-header">
+        <h2>{{ alt() }}</h2>
+        <button
+          pButton
+          type="button"
+          [text]="true"
+          [rounded]="true"
+          severity="secondary"
+          aria-label="Fechar imagem"
+          (click)="visible.set(false)"
+        >
+          <i class="pi pi-times" aria-hidden="true"></i>
+        </button>
+      </header>
+      <div
+        #viewport
+        class="viewport"
+        [class.can-pan]="canPan()"
+        [class.dragging]="dragging()"
+        tabindex="0"
+        role="region"
+        aria-label="Imagem. Use as setas para mover após ampliar."
+        (pointerdown)="startDrag($event)"
+        (pointermove)="moveDrag($event)"
+        (pointerup)="endDrag($event)"
+        (pointercancel)="endDrag($event)"
+        (lostpointercapture)="endDrag($event)"
+        (keydown)="keyPan($event)"
+      >
+        @if (failed()) {
+          <p role="alert">Não foi possível carregar a imagem.</p>
+        } @else {
+          <img
+            [src]="src()"
+            [alt]="alt()"
+            [draggable]="false"
+            [style.width.px]="size().width"
+            [style.height.px]="size().height"
+            [style.--pan-x]="pan().x + 'px'"
+            [style.--pan-y]="pan().y + 'px'"
+            (load)="loaded($event)"
+            (error)="failed.set(true)"
+          />
+        }
+      </div>
+      <footer class="viewer-footer">
+        <div class="zoom-controls" role="group" aria-label="Controles de zoom">
+          <button
+            pButton
+            type="button"
+            [text]="true"
+            [rounded]="true"
+            severity="secondary"
+            aria-label="Reduzir imagem"
+            title="Reduzir"
+            [disabled]="zoom() <= 25 || failed()"
+            (click)="zoomBy(-25)"
+          >
+            <i class="pi pi-search-minus" aria-hidden="true"></i>
+          </button>
+          <output aria-live="polite">{{ zoom() }}%</output>
+          <button
+            pButton
+            type="button"
+            [text]="true"
+            [rounded]="true"
+            severity="secondary"
+            aria-label="Ampliar imagem"
+            title="Ampliar"
+            [disabled]="zoom() >= 400 || failed()"
+            (click)="zoomBy(25)"
+          >
+            <i class="pi pi-search-plus" aria-hidden="true"></i>
+          </button>
+          <span class="control-divider" aria-hidden="true"></span>
+          <button pButton type="button" [text]="true" severity="secondary" (click)="reset()">
+            Ajustar
+          </button>
+        </div>
+      </footer>
+    </section>
+  </ng-template>
+</p-dialog>

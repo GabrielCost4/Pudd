@@ -49,6 +49,7 @@ h1 {
 .content-field textarea {
   min-height: 12rem;
   line-height: 1.7;
+  resize: vertical;
 }
 .character-count {
   text-align: right;

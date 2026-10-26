@@ -28,7 +28,9 @@ async function checkLayout(page: Page, feature: string) {
     await page.setViewportSize({ width, height: 900 });
     for (const mode of ['light', 'dark']) {
       await page.getByRole('switch').setChecked(mode === 'dark');
-      await expect(page.getByAltText('Prévia da imagem selecionada')).toBeVisible();
+      await expect(
+        page.getByRole('img', { name: 'Prévia da imagem selecionada', exact: true }),
+      ).toBeVisible();
       expect(
         await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
       ).toBe(true);
@@ -74,7 +76,9 @@ test('selects post and avatar images by dropping them, then sends through the pa
   await dropImage(page, 'avatar.png');
   await expect(page.locator('.filename')).toHaveText('avatar.png');
   await page.getByRole('button', { name: 'Descartar seleção', exact: true }).click();
-  await expect(page.getByAltText('Prévia da imagem selecionada')).toHaveCount(0);
+  await expect(
+    page.getByRole('img', { name: 'Prévia da imagem selecionada', exact: true }),
+  ).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Enviar foto', exact: true })).toBeDisabled();
   await page.screenshot({ path: 'test-results/dropzone-avatar-empty.png', fullPage: true });
   await dropImage(page, 'avatar-final.png');

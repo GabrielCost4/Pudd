@@ -58,12 +58,12 @@
               [rows]="embedded() ? 5 : 7"
             ></textarea>
             <small
-              id="post-character-count"
-              class="character-count"
-              [class.over-limit]="overLimit()"
-              [attr.aria-label]="contentLength() + ' de ' + maxContentLength + ' caracteres'"
-            >
-              {{ contentLength() }} / {{ maxContentLength }}
+                id="post-character-count"
+                class="character-count"
+                [class.over-limit]="overLimit()"
+                [attr.aria-label]="contentLength() + ' de ' + maxContentLength + ' caracteres'"
+              >
+                {{ contentLength() }} / {{ maxContentLength }}
             </small>
           </div>
           <div class="attachment">

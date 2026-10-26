@@ -11,7 +11,7 @@ export async function mockApi(page:Page) {
     calls:[] as {method:string;path:string;body:string;authorization:string|undefined}[],
     denied:false,failLogin:false,role:'User',
     profile:{id:ME,name:'Gabriel Dev',bio:'Construindo boas ideias.',hasAvatar:false},
-    users:[{id:ME,name:'Gabriel Dev',email:'dev@example.test',role:'Admin',isBlocked:false},{id:OTHER,name:'Ana Dev',email:'ana@example.test',role:'User',isBlocked:false}],
+    users:[{id:ME,name:'Gabriel Dev',email:'dev@example.test',role:'Admin',isBlocked:false,isActive:true,lastLoginAt:'2026-10-20T12:00:00Z',lastSeenAt:'2026-10-20T13:00:00Z'},{id:OTHER,name:'Ana Dev',email:'ana@example.test',role:'User',isBlocked:false,isActive:false,lastLoginAt:null,lastSeenAt:null}],
     posts:[
       {id:FIRST,userID:ME,authorName:'Gabriel Dev',content:'Meu primeiro projeto no Pudd.',hasImage:false,createdAt:'2026-10-06T12:00:00Z',updatedAt:null as string|null},
       {id:SECOND,userID:OTHER,authorName:'Ana Dev',content:'Uma ideia da comunidade.',hasImage:false,createdAt:'2026-10-06T11:00:00Z',updatedAt:null as string|null},
@@ -43,6 +43,18 @@ export async function mockApi(page:Page) {
       const current=Number(url.searchParams.get('page')||1),size=Number(url.searchParams.get('pageSize')||20),start=(current-1)*size;
       return {items:items.slice(start,start+size),page:current,pageSize:size,hasNextPage:start+size<items.length};
     };
+    if(path==='/users/search'||path==='/admin/users/search'){
+      const query=(url.searchParams.get('q')||'').trim().replace(/\s+/g,' ').toLowerCase();
+      if(query.length<2)return send([]);
+      return send(state.users.filter(user=>(path.startsWith('/admin/')||!user.isBlocked)&&user.name.toLowerCase().includes(query))
+        .sort((a,b)=>{
+          const rank=(name:string)=>name.toLowerCase()===query?0:name.toLowerCase().startsWith(query)?1:2;
+          return rank(a.name)-rank(b.name)||a.name.localeCompare(b.name);
+        }).slice(0,3).map(user=>({id:user.id,name:user.name,hasAvatar:user.id===ME?state.profile.hasAvatar:state.avatarUsers.has(user.id)})));
+    }
+    if(method==='GET'&&path.match(/^\/admin\/users\/[^/]+$/)){
+      const user=state.users.find(user=>path.endsWith(user.id));return send(user||{},user?200:404);
+    }
     if(path==='/admin/users')return send(paginated(state.users));
     if(path==='/notifications'&&method==='GET')return send(state.notifications);
     if(path==='/notifications/read'&&method==='POST'){

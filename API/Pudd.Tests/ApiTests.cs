@@ -21,6 +21,21 @@ namespace Pudd.Tests;
 public partial class ApiTests
 {
     [Fact]
+    public async Task RegistrationNormalizesNameAndRecordsTheInitialSession()
+    {
+        await using var factory = new ApiFactory();
+        using var client = factory.CreateClient(new() { BaseAddress = new Uri("https://localhost") });
+        var response = await client.PostAsJsonAsync("/api/auth/register",
+            new { Nome = "  Nova   Pessoa  ", Email = "new@example.test", Senha = "Valid!1234" });
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        using var scope = factory.Services.CreateScope();
+        var user = await scope.ServiceProvider.GetRequiredService<PuddDbContext>().users.SingleAsync();
+        Assert.Equal("Nova Pessoa", user.Name);
+        Assert.NotNull(user.LastLoginAt);
+        Assert.Equal(user.LastLoginAt, user.LastSeenAt);
+    }
+
+    [Fact]
     public async Task SearchOnlyExposesPublicSuggestionsAndProtectsAdminEndpoints()
     {
         await using var factory = new ApiFactory();
@@ -47,6 +62,34 @@ public partial class ApiTests
             new { Nome = " search  person ", Email = "new@example.test", Senha = "Valid!1234" })).StatusCode);
     }
 
+    [Fact]
+    public async Task SuccessfulLoginRecordsDatesAndFailedLoginDoesNotChangeThem()
+    {
+        await using var factory = new ApiFactory();
+        using var client = factory.CreateClient(new() { BaseAddress = new Uri("https://localhost") });
+        Guid id;
+        using (var scope = factory.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<PuddDbContext>();
+            var user = new User { ID = Guid.NewGuid(), Name = "Login test", Email = "login@example.test",
+                PasswordHash = scope.ServiceProvider.GetRequiredService<IPasswordHasher>().GerarHash("Valid!1234") };
+            id = user.ID;
+            db.users.Add(user);
+            await db.SaveChangesAsync();
+        }
+        Assert.Equal(HttpStatusCode.Unauthorized, (await client.PostAsJsonAsync("/api/auth/login",
+            new { Email = "login@example.test", Senha = "Wrong!1234" })).StatusCode);
+        using (var scope = factory.Services.CreateScope())
+            Assert.Null((await scope.ServiceProvider.GetRequiredService<PuddDbContext>().users.FindAsync(id))!.LastLoginAt);
+        Assert.Equal(HttpStatusCode.OK, (await client.PostAsJsonAsync("/api/auth/login",
+            new { Email = "login@example.test", Senha = "Valid!1234" })).StatusCode);
+        using (var scope = factory.Services.CreateScope())
+        {
+            var user = (await scope.ServiceProvider.GetRequiredService<PuddDbContext>().users.FindAsync(id))!;
+            Assert.NotNull(user.LastLoginAt);
+            Assert.Equal(user.LastLoginAt, user.LastSeenAt);
+        }
+    }
 
     [Fact]
     public async Task CurrentRoleOverridesPermissionsInAnAlreadyIssuedToken()

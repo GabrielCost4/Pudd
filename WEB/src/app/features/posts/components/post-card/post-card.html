@@ -37,7 +37,7 @@
           type="button"
           [disabled]="busy()"
           aria-haspopup="menu"
-          aria-label="A&#231;&#245;es da publica&#231;&#227;o"
+          aria-label="Ações da publicação"
           (click)="postActionsMenu.toggle($event)"
         >
           <i class="pi pi-ellipsis-v" aria-hidden="true"></i>
@@ -122,6 +122,7 @@
         pButton
         type="button"
         class="like-button"
+        [title]="likes.liked ? 'Descurtir' : 'Curtir'"
         [class.liked]="likes.liked"
         [attr.aria-pressed]="likes.liked"
         [attr.aria-label]="
@@ -183,24 +184,9 @@
 
 <app-feedback [errors]="errors()" />
 <p-confirmdialog [closable]="true" />
-<p-galleria
-  [value]="galleryImages()"
+<app-image-viewer
+  [src]="imageUrl()"
+  alt="Imagem da publicação"
   [visible]="galleryVisible()"
   (visibleChange)="!$event && closeGallery()"
-  [fullScreen]="true"
-  [showThumbnails]="false"
-  [showItemNavigators]="false"
-  [showIndicators]="false"
-  [baseZIndex]="1100"
-  [pt]="galleryPt"
-  (keydown.escape)="closeGallery($event)"
->
-  <ng-template #item let-image>
-    <img
-      class="gallery-image"
-      [src]="image"
-      alt="Imagem ampliada da publicação"
-      (error)="imageFailed.set(true); closeGallery()"
-    />
-  </ng-template>
-</p-galleria>
+/>

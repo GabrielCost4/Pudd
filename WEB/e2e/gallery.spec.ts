@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { FIRST, OTHER, login, mockApi } from './api.fixture';
 
-test('opens post images in Galleria and restores focus after keyboard, close button and backdrop dismissal', async ({
+test('opens post images with zoom and pan and restores focus after keyboard, close button and backdrop dismissal', async ({
   page,
 }) => {
   const api = await mockApi(page);
@@ -30,16 +30,44 @@ test('opens post images in Galleria and restores focus after keyboard, close but
     const url = page.url();
     await trigger.focus();
     await page.keyboard.press('Enter');
-    const gallery = page.getByRole('dialog', { name: 'Imagem da publicação', exact: true });
+    const gallery = page.getByRole('dialog', { name: 'Imagem ampliada', exact: true });
     await expect(gallery).toBeVisible();
-    await expect(gallery.getByAltText('Imagem ampliada da publicação')).toHaveAttribute(
-      'src',
-      photo,
-    );
+    const frame = await gallery.locator('.viewer').boundingBox();
+    expect(Math.abs(frame!.width - Math.min(width * 0.92, 960))).toBeLessThanOrEqual(1);
+    expect(Math.abs(frame!.height - 720)).toBeLessThanOrEqual(1);
+    await expect(gallery.getByAltText('Imagem da publicação')).toHaveAttribute('src', photo);
     const image = await gallery.locator('img').boundingBox();
     expect(image!.width).toBeLessThanOrEqual(width);
     expect(image!.height).toBeLessThanOrEqual(900);
+    await expect(gallery.getByRole('button', { name: /Girar/ })).toHaveCount(0);
+    const fittedTransform = await gallery
+      .locator('img')
+      .evaluate((img) => getComputedStyle(img).transform);
+    await gallery.getByRole('button', { name: 'Ampliar imagem', exact: true }).click();
+    await expect(gallery.locator('output')).toHaveText('125%');
+    const viewport = gallery.getByRole('region');
+    await expect(viewport).toHaveCSS('cursor', 'grab');
+    const initialTransform = await gallery
+      .locator('img')
+      .evaluate((img) => getComputedStyle(img).transform);
+    const area = (await viewport.boundingBox())!;
+    await page.mouse.move(area.x + area.width / 2, area.y + area.height / 2);
+    await page.mouse.down();
+    await expect(viewport).toHaveCSS('cursor', 'grabbing');
+    await page.mouse.move(area.x + area.width / 2 + 60, area.y + area.height / 2 + 60, {
+      steps: 5,
+    });
+    await page.mouse.up();
+    await expect(gallery.locator('img')).not.toHaveCSS('transform', initialTransform);
+    expect(
+      await gallery
+        .locator('img')
+        .evaluate((img) => Math.abs(parseFloat(img.style.getPropertyValue('--pan-x')))),
+    ).toBeGreaterThan(0);
     await page.screenshot({ path: `test-results/gallery-${width}.png` });
+    await gallery.getByRole('button', { name: 'Ajustar', exact: true }).click();
+    await expect(gallery.locator('output')).toHaveText('100%');
+    await expect(gallery.locator('img')).toHaveCSS('transform', fittedTransform);
     await page.keyboard.press('Escape');
     await expect(gallery).toBeHidden();
     await expect(trigger).toBeFocused();
@@ -49,7 +77,7 @@ test('opens post images in Galleria and restores focus after keyboard, close but
     await expect(gallery).toBeHidden();
     await expect(trigger).toBeFocused();
     await trigger.click();
-    await gallery.click({ position: { x: 8, y: 8 } });
+    await page.mouse.click(2, 2);
     await expect(gallery).toBeHidden();
     await expect(trigger).toBeFocused();
   }
@@ -60,9 +88,7 @@ test('opens post images in Galleria and restores focus after keyboard, close but
     .click();
   await expect(page).toHaveURL(new RegExp('/posts/' + FIRST));
   await page.getByRole('button', { name: 'Ampliar imagem da publicação', exact: true }).click();
-  await expect(
-    page.getByRole('dialog', { name: 'Imagem da publicação', exact: true }),
-  ).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Imagem ampliada', exact: true })).toBeVisible();
   await page.keyboard.press('Escape');
 });
 
@@ -74,21 +100,21 @@ test('opens a member profile photo with a pointer cursor and restores focus afte
   await login(page);
   await page.locator('app-post-card').filter({ hasText: 'Ana Dev' }).locator('a.author').click();
   await expect(page).toHaveURL(new RegExp('/profile/' + OTHER));
-  const trigger = page.getByRole('button', { name: 'Ver foto de Ana Dev ampliada', exact: true });
+  const trigger = page.getByRole('button', { name: 'Abrir imagem ampliada', exact: true });
   for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: 844 });
     await expect(trigger).toBeVisible();
-    await expect(trigger).toHaveCSS('cursor', 'pointer');
+    await expect(trigger).toHaveCSS('cursor', 'zoom-in');
     await trigger.focus();
     await page.keyboard.press('Enter');
-    const gallery = page.getByRole('dialog', { name: 'Foto de perfil ampliada', exact: true });
+    const gallery = page.getByRole('dialog', { name: 'Imagem ampliada', exact: true });
     await expect(gallery).toBeVisible();
     await expect(gallery.getByAltText('Foto de Ana Dev', { exact: true })).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(gallery).toBeHidden();
     await expect(trigger).toBeFocused();
     await trigger.click();
-    await gallery.getByRole('button', { name: 'Fechar foto', exact: true }).click();
+    await gallery.getByRole('button', { name: 'Fechar imagem', exact: true }).click();
     await expect(gallery).toBeHidden();
     await expect(trigger).toBeFocused();
   }

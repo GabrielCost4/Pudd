@@ -36,6 +36,15 @@ import { PostEditor } from '../editor/post-editor';
   styleUrl: './feed.css',
 })
 export class Feed {
+  protected readonly aboutOpen = signal(false);
+  protected readonly aboutCardTokens = {
+    root: {
+      background: '{primary.950}',
+      borderRadius: '0.75rem',
+      shadow: 'inset 0 0 0 1px {primary.800}',
+    },
+    body: { padding: '1.25rem', gap: '0' },
+  };
   protected readonly account = inject(AccountStore);
   protected readonly composerCardTokens = { body: { padding: '1rem', gap: '0' } };
   protected readonly composerButtonTokens = {

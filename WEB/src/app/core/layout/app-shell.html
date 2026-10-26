@@ -35,6 +35,9 @@
               class="navigation-link"
               routerLink="/feed"
               aria-label="Feed"
+              pTooltip="Feed"
+              tooltipPosition="right"
+              [tooltipDisabled]="!sidebarCollapsed() || mobile()"
               routerLinkActive
               #feed="routerLinkActive"
               [class.active]="feed.isActive"
@@ -49,6 +52,9 @@
               class="navigation-link"
               routerLink="/profile/me"
               aria-label="Meu perfil"
+              pTooltip="Meu perfil"
+              tooltipPosition="right"
+              [tooltipDisabled]="!sidebarCollapsed() || mobile()"
               routerLinkActive
               #profile="routerLinkActive"
               [class.active]="profile.isActive"
@@ -63,6 +69,9 @@
               class="navigation-link"
               routerLink="/posts/new"
               aria-label="Criar publicação"
+              pTooltip="Criar publicação"
+              tooltipPosition="right"
+              [tooltipDisabled]="!sidebarCollapsed() || mobile()"
               routerLinkActive
               #editor="routerLinkActive"
               [class.active]="editor.isActive"
@@ -78,6 +87,9 @@
                 class="navigation-link"
                 routerLink="/admin"
                 aria-label="Administração"
+                pTooltip="Administração"
+                tooltipPosition="right"
+                [tooltipDisabled]="!sidebarCollapsed() || mobile()"
                 routerLinkActive
                 #admin="routerLinkActive"
                 [class.active]="admin.isActive"
@@ -99,6 +111,9 @@
         [outlined]="true"
         routerLink="/profile/me"
         aria-label="Abrir meu perfil"
+        pTooltip="Meu perfil"
+        tooltipPosition="right"
+        [tooltipDisabled]="!sidebarCollapsed() || mobile()"
         (click)="closeNavigation()"
       >
         @if (account.avatarUrl()) {
@@ -128,6 +143,10 @@
         type="button"
         [text]="true"
         severity="secondary"
+        aria-label="Sair da conta"
+        pTooltip="Sair da conta"
+        tooltipPosition="right"
+        [tooltipDisabled]="!sidebarCollapsed() || mobile()"
         (click)="logout()"
       >
         <i class="pi pi-sign-out" aria-hidden="true"></i><span>Sair da conta</span>
@@ -155,13 +174,7 @@
     </ng-template>
   </p-drawer>
 } @else {
-  <aside
-    id="navigation"
-    class="navigation-aside"
-    aria-label="Navegação principal"
-    [inert]="sidebarCollapsed()"
-    [attr.aria-hidden]="sidebarCollapsed() ? 'true' : null"
-  >
+  <aside id="navigation" class="navigation-aside" aria-label="Navegação principal">
     <ng-container [ngTemplateOutlet]="navigation" />
   </aside>
   <button

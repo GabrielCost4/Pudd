@@ -1,8 +1,8 @@
 .feed-layout {
   display: grid;
-  grid-template-columns: minmax(0, 44rem) 16rem;
+  grid-template-columns: minmax(0, 44rem) 22.5rem;
   align-items: start;
-  column-gap: 3.5rem;
+  column-gap: clamp(4rem, 5vw, 5rem);
   row-gap: 2rem;
   max-width: var(--page-width);
   margin: 0 auto;
@@ -21,18 +21,29 @@
   min-width: 0;
 }
 .feed-greeting {
-  margin: 0.5rem 0 0;
+  margin: 0.375rem 0 0;
   color: var(--muted);
-  font-size: clamp(0.875rem, 1.5vw, 1rem);
+  font-size: 0.875rem;
+  font-weight: 500;
   line-height: 1.5;
 }
-.feed-greeting strong {
-  color: var(--accent);
-  font-weight: 650;
+.feed-name {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  line-height: 1.15;
+  min-height: 1.15em;
+  font-weight: 750;
+}
+.feed-name > span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.feed-name.filtered > span:first-child {
+  font-size: 0.8em;
 }
 .feed-tabs .p-button {
   font-size: 0.875rem;
-  padding: 0.5625rem 1rem;
   gap: 0.5rem;
 }
 h1 {
@@ -72,34 +83,87 @@ h1 {
   font-size: 1.25rem;
 }
 .feed-tabs {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.375rem;
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
   width: fit-content;
   max-width: 100%;
-  padding: 0 0 0.75rem;
+  padding: 0;
   border-bottom: 1px solid var(--border);
   margin-bottom: 0.75rem;
 }
 .feed-tabs a {
-  min-height: 2.625rem;
+  flex: 1 1 0;
+  justify-content: center;
+  min-width: 0;
+  min-height: 2.75rem;
+  padding: 0.625rem 0.625rem 0.75rem;
+  border-radius: 0;
+  --p-button-text-secondary-color: var(--muted);
+  --p-button-text-secondary-hover-background: transparent;
+  --p-button-text-secondary-active-background: transparent;
   white-space: nowrap;
+}
+.feed-tabs a:hover,
+.feed-tabs a:active {
+  background: transparent;
+}
+.feed-tabs a[aria-current='page'] {
+  color: var(--text);
+  --p-button-text-secondary-color: var(--text);
+  --p-button-text-secondary-hover-background: transparent;
+  --p-button-text-secondary-active-background: transparent;
+}
+.feed-tab-indicator {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  z-index: 1;
+  width: 50%;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: var(--p-primary-400);
+  pointer-events: none;
+  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.feed-tabs.own-active .feed-tab-indicator {
+  transform: translateX(100%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .feed-tab-indicator {
+    transition: none;
+  }
+}
+.feed-tabs a[aria-current='page'] i {
+  color: var(--p-primary-400);
 }
 @media (max-width: 420px) {
   .feed-tabs {
-    width: 100%;
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-    gap: 0.125rem;
-    padding: 0 0 0.75rem;
+    gap: 0.25rem;
   }
   .feed-tabs a {
-    gap: 0.375rem;
+    gap: 0.4rem;
+    padding-inline: 0.375rem;
     font-size: 0.75rem;
   }
 }
 .post-list {
   display: grid;
-  gap: var(--space-6);
+  gap: 1.25rem;
+}
+.feed .post-image {
+  aspect-ratio: 3.4 / 1;
+  max-height: none;
+}
+.feed .post-image img {
+  max-height: none;
+  object-fit: cover;
+}
+@media (max-width: 500px) {
+  .feed .post-image {
+    aspect-ratio: 16 / 9;
+  }
 }
 .feed-update {
   display: flex;
@@ -135,44 +199,27 @@ h1 {
   position: sticky;
   top: 2rem;
 }
-.community-rail .eyebrow {
-  color: var(--accent);
-  margin: 0 0 0.75rem;
-}
 .rail-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  min-height: 2.75rem;
+  --p-button-outlined-secondary-color: var(--p-primary-50);
+  --p-button-outlined-secondary-border-color: var(--p-primary-500);
+  --p-button-outlined-secondary-hover-background: var(--p-primary-900);
   margin-top: 0.5rem;
-  color: var(--accent);
-  font-size: 0.8125rem;
-  font-weight: 700;
-}
-.rail-link:hover {
-  text-decoration: underline;
-  text-underline-offset: 4px;
 }
 .community-rail h2 {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
   font-size: 1.125rem;
   letter-spacing: -0.02em;
   line-height: 1.3;
-  margin: 0 0 1rem;
+  margin: 0 0 0.75rem;
+  color: inherit;
 }
-.rail-description,
+.rail-description {
+  color: var(--p-primary-100);
+  font-size: 0.75rem;
+  line-height: 1.65;
+}
 .rail-footer {
   color: var(--muted);
-  font-size: 0.8125rem;
-}
-.rail-description:last-child {
-  margin-bottom: 0;
-}
-.rail-footer {
   padding: 1rem 0;
-  border-top: 1px solid var(--border);
   font-size: 0.7rem;
 }
 @media (max-width: 1250px) {
@@ -189,9 +236,6 @@ h1 {
   color: var(--muted);
 }
 @media (max-width: 760px) {
-  .feed-tabs .p-button {
-    min-height: 2.75rem;
-  }
   .feed-heading {
     flex-wrap: wrap;
   }
@@ -199,23 +243,69 @@ h1 {
     flex-basis: 100%;
   }
 }
+@media (max-width: 600px) {
+  .feed-name {
+    gap: 0.625rem;
+  }
+}
 
-.feed-tabs a[aria-current='page'] {
-  --p-button-text-secondary-color: var(--p-primary-contrast-color);
-  --p-button-text-secondary-hover-background: var(--p-primary-hover-color);
-  --p-button-text-secondary-active-background: var(--p-primary-active-color);
-  color: var(--p-primary-contrast-color);
-  background: var(--p-primary-color);
-}
-.feed-tabs a[aria-current='page']:hover {
-  background: var(--p-primary-hover-color);
-}
-.feed-tabs a[aria-current='page']:active {
-  background: var(--p-primary-active-color);
-}
 .community-about {
-  border-top: 3px solid var(--accent);
-  padding-top: var(--space-5);
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  isolation: isolate;
+}
+.community-art {
+  position: absolute;
+  inset: 1px;
+  z-index: 0;
+  pointer-events: none;
+}
+.community-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: right center;
+}
+.community-art::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    var(--p-primary-950),
+    color-mix(in srgb, var(--p-primary-950) 78%, transparent) 38%,
+    transparent 58%
+  );
+}
+.community-copy {
+  position: relative;
+  z-index: 1;
+  width: 80%;
+  color: var(--p-primary-50);
+}
+.about-accent {
+  display: block;
+  width: 1.25rem;
+  height: 0.25rem;
+  margin-bottom: 0.75rem;
+  background: var(--p-primary-300);
+}
+.about-details ul {
+  display: grid;
+  gap: 1rem;
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+}
+.about-details li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+.about-details li i {
+  color: var(--accent);
+  margin-top: 0.25rem;
 }
 .load-error {
   display: grid;

@@ -22,7 +22,21 @@
       >
         @if (preview()) {
           <div class="preview">
-            <img [src]="preview()" alt="Prévia da imagem selecionada" />
+            <button
+              pButton
+              type="button"
+              class="preview-trigger"
+              severity="secondary"
+              [text]="true"
+              [disabled]="disabled()"
+              aria-label="Abrir imagem ampliada"
+              (click)="previewVisible.set(true)"
+            >
+              <img [src]="preview()" alt="Prévia da imagem selecionada" />
+              <span class="preview-zoom-hint" aria-hidden="true"
+                ><i class="pi pi-search-plus"></i
+              ></span>
+            </button>
             <strong class="filename">{{ filename() }}</strong>
             <small>Arraste outra imagem para substituir ou use o botão abaixo.</small>
             <div class="actions">
@@ -74,3 +88,9 @@
     <p-message severity="error" role="alert">{{ error() }}</p-message>
   }
 </div>
+
+<app-image-viewer
+  [src]="preview()"
+  alt="Prévia da imagem selecionada"
+  [(visible)]="previewVisible"
+/>

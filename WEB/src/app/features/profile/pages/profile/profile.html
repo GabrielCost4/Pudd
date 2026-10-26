@@ -12,30 +12,46 @@
       <div class="profile-info">
         <div class="profile-identity">
           <div class="profile-photo">
-            @if (avatarUrl() && !avatarFailed()) {
-              <button
-                type="button"
-                class="profile-avatar profile-avatar-trigger"
-                [attr.aria-label]="'Ver foto de ' + person.name + ' ampliada'"
-                aria-haspopup="dialog"
-                (click)="openAvatar($event)"
-              >
+            <span class="profile-avatar-wrap">
+              @if (avatarUrl() && !avatarFailed()) {
+                <button
+                  type="button"
+                  class="profile-avatar profile-avatar-trigger"
+                  aria-label="Abrir imagem ampliada"
+                  (click)="avatarPreviewVisible.set(true)"
+                >
+                  <p-avatar
+                    shape="circle"
+                    size="xlarge"
+                    [image]="avatarUrl()"
+                    [ariaLabel]="'Foto de ' + person.name"
+                    (onImageError)="avatarFailed.set(true); avatarPreviewVisible.set(false)"
+                  />
+                </button>
+              } @else {
                 <p-avatar
+                  class="profile-avatar"
                   shape="circle"
                   size="xlarge"
-                  [image]="avatarUrl()"
-                  [ariaLabel]="'Foto de ' + person.name"
-                  (onImageError)="avatarFailed.set(true); closeAvatar()"
+                  [label]="person.name.slice(0, 1).toUpperCase()"
                 />
-              </button>
-            } @else {
-              <p-avatar
-                class="profile-avatar"
-                shape="circle"
-                size="xlarge"
-                [label]="person.name.slice(0, 1).toUpperCase()"
-              />
-            }
+              }
+              <span
+                class="presence-indicator"
+                [class.online]="presence() === 'Online'"
+                [class.offline]="presence() === 'Offline'"
+                role="img"
+                [attr.aria-label]="presenceLabel()"
+                [pTooltip]="presenceLabel()"
+                tooltipPosition="bottom"
+              >
+                @if (presence() === 'Offline') {
+                  <i class="pi pi-minus" aria-hidden="true"></i>
+                } @else if (!presence()) {
+                  <span aria-hidden="true">?</span>
+                }
+              </span>
+            </span>
             @if (avatarFailed()) {
               <button
                 [text]="true"
@@ -91,8 +107,10 @@
               [required]="true"
               [stacked]="true"
               [error]="nameError()"
+              describedBy="profile-name-hint"
               [readOnly]="busy()"
             />
+            <small class="muted" id="profile-name-hint">Seu nome de perfil deve ser único.</small>
             <div class="field">
               <label for="profile-bio">Bio</label
               ><textarea
@@ -118,34 +136,38 @@
             </div>
           </form>
         </p-card>
-        <p-card class="edit-profile"
-          ><h2>Sua foto de perfil</h2>
-          <p class="muted">Selecione uma imagem para atualizar sua foto.</p>
-          @for (version of [pickerVersion()]; track version) {
-            <app-image-picker [disabled]="busy()" (selected)="selectedImage.set($event)" />
-          }
-          <div class="actions avatar-actions">
-            <button
-              pButton
-              type="button"
-              [loading]="busy()"
-              [disabled]="busy() || !selectedImage()"
-              (click)="uploadAvatar()"
-            >
-              Enviar foto
-            </button>
-            @if (person.hasAvatar) {
+        <p-card class="edit-profile avatar-editor">
+          <div class="avatar-editor-layout">
+            <h2>Sua foto de perfil</h2>
+            <p class="muted">Selecione uma imagem para atualizar sua foto.</p>
+            <div class="avatar-selection">
+              @for (version of [pickerVersion()]; track version) {
+                <app-image-picker [disabled]="busy()" (selected)="selectedImage.set($event)" />
+              }
+            </div>
+            <div class="actions avatar-actions">
               <button
-                [text]="true"
-                severity="danger"
                 pButton
                 type="button"
-                [disabled]="busy()"
-                (click)="removeAvatar()"
+                [loading]="busy()"
+                [disabled]="busy() || !selectedImage()"
+                (click)="uploadAvatar()"
               >
-                Remover foto atual
+                Enviar foto
               </button>
-            }
+              @if (person.hasAvatar) {
+                <button
+                  [text]="true"
+                  severity="danger"
+                  pButton
+                  type="button"
+                  [disabled]="busy()"
+                  (click)="removeAvatar()"
+                >
+                  Remover foto atual
+                </button>
+              }
+            </div>
           </div>
         </p-card>
       </div>
@@ -156,24 +178,8 @@
 
 <p-confirmdialog [closable]="true" />
 
-<p-galleria
-  [value]="avatarGalleryImages()"
-  [visible]="avatarGalleryVisible()"
-  (visibleChange)="!$event && closeAvatar()"
-  [fullScreen]="true"
-  [showThumbnails]="false"
-  [showItemNavigators]="false"
-  [showIndicators]="false"
-  [baseZIndex]="1100"
-  [pt]="avatarGalleryPt"
-  (keydown.escape)="closeAvatar($event)"
->
-  <ng-template #item let-image>
-    <img
-      class="avatar-gallery-image"
-      [src]="image"
-      [alt]="'Foto de ' + (profile()?.name || 'perfil')"
-      (error)="avatarFailed.set(true); closeAvatar()"
-    />
-  </ng-template>
-</p-galleria>
+<app-image-viewer
+  [src]="avatarUrl()"
+  [alt]="'Foto de ' + (profile()?.name || 'perfil')"
+  [(visible)]="avatarPreviewVisible"
+/>

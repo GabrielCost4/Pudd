@@ -38,6 +38,15 @@ small {
 .preview .actions {
   justify-content: center;
 }
+.preview-trigger {
+  --p-button-padding-x: 0;
+  --p-button-padding-y: 0;
+  position: relative;
+  min-width: 0;
+  line-height: 0;
+  max-width: 100%;
+  cursor: zoom-in;
+}
 .filename {
   max-width: 100%;
   overflow-wrap: anywhere;
@@ -45,7 +54,21 @@ small {
 }
 .preview img {
   max-width: 100%;
-  max-height: 240px;
+  max-height: var(--image-picker-preview-max-height, 240px);
   border-radius: var(--p-border-radius-lg);
   object-fit: contain;
+}
+
+.preview-zoom-hint {
+  position: absolute;
+  inset-inline-end: 0.375rem;
+  bottom: 0.375rem;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 4px #0002;
 }

@@ -2,21 +2,18 @@
   <section class="feed" aria-labelledby="feed-title">
     <header class="feed-heading">
       <div>
-        <h1 id="feed-title">
-          {{
-            authorId()
-              ? authorId() === session.user().id
-                ? 'Minhas publicações'
-                : 'Publicações do perfil'
-              : 'Feed'
-          }}
+        <h1 id="feed-title" class="feed-name" [class.filtered]="!!authorId()">
+          <span>
+            {{
+              authorId()
+                ? authorId() === session.user().id
+                  ? 'Minhas publicações'
+                  : 'Publicações do perfil'
+                : 'Feed'
+            }}
+          </span>
         </h1>
-
-        <p
-          class="feed-greeting"
-          [textContent]="saudacao() + (account.name() ? ', ' + account.name() : '') + '!'"
-        ></p>
-
+        <p class="feed-greeting">{{ saudacao() }}, {{ account.name() || session.user().email }}!</p>
         @if (authorId() && authorId() !== session.user().id) {
           <a pButton [text]="true" severity="secondary" [routerLink]="['/profile', authorId()]"
             >Ver perfil</a
@@ -58,7 +55,11 @@
         </a>
       </p-card>
     }
-    <nav class="feed-tabs" aria-label="Filtrar publicações">
+    <nav
+      class="feed-tabs"
+      [class.own-active]="authorId() === session.user().id"
+      aria-label="Filtrar publicações"
+    >
       <a
         pButton
         severity="secondary"
@@ -76,6 +77,7 @@
         [attr.aria-current]="authorId() === session.user().id ? 'page' : null"
         ><i class="pi pi-user" aria-hidden="true"></i><span>Minhas publicações</span></a
       >
+      <span class="feed-tab-indicator" aria-hidden="true"></span>
     </nav>
     <app-feedback [errors]="errors()" [success]="success()" />
     <div class="feed-update" role="status" aria-live="polite">
@@ -150,22 +152,79 @@
     }
   </section>
   <aside class="community-rail" aria-label="Sobre a comunidade">
-    <div class="community-about">
-      <h2>Sobre o Pudd</h2>
-      <p class="rail-description">
-        Um lugar para compartilhar o que você faz, mesmo quando ainda está começando.
-      </p>
-      <p class="rail-description">
-        Designers, devs e pessoas de outras áreas. Projetos prontos, trabalhos em andamento e
-        aprendizados pelo caminho.
-      </p>
-      <a class="rail-link" routerLink="/profile/me"
-        >Apresente-se no seu perfil <i class="pi pi-arrow-up-right" aria-hidden="true"></i
-      ></a>
-    </div>
+    <p-card class="community-about" [dt]="aboutCardTokens">
+      <div class="community-art" aria-hidden="true">
+        <img
+          src="/images/brand/pudd-about.png"
+          alt=""
+          width="1448"
+          height="1086"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      <div class="community-copy">
+        <span class="about-accent" aria-hidden="true"></span>
+        <h2>Sobre o Pudd</h2>
+        <p class="rail-description">
+          Um lugar para compartilhar o que você faz, mesmo quando ainda está começando.
+        </p>
+        <p class="rail-description">
+          Designers, devs e pessoas de outras áreas. Projetos prontos, trabalhos em andamento e
+          aprendizados pelo caminho.
+        </p>
+        <button
+          pButton
+          type="button"
+          class="rail-link"
+          [outlined]="true"
+          [rounded]="true"
+          severity="secondary"
+          size="small"
+          aria-label="Saiba mais sobre o Pudd"
+          (click)="aboutOpen.set(true)"
+        >
+          Saiba mais <i class="pi pi-arrow-right" aria-hidden="true"></i>
+        </button>
+      </div>
+    </p-card>
     <p class="rail-footer">&copy; Pudd 2026 - Todos os direitos reservados</p>
   </aside>
 </div>
+<p-dialog
+  header="Sobre o Pudd"
+  [(visible)]="aboutOpen"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  appendTo="body"
+  [pt]="{ root: { class: 'community-about-dialog' } }"
+>
+  <div class="about-details">
+    <p>
+      O Pudd é uma comunidade para compartilhar projetos, ideias e aprendizados, em qualquer etapa
+      da sua jornada.
+    </p>
+    <ul>
+      <li>
+        <i class="pi pi-pencil" aria-hidden="true"></i
+        ><span>Publique seus trabalhos e mostre o que está construindo.</span>
+      </li>
+      <li>
+        <i class="pi pi-comments" aria-hidden="true"></i
+        ><span>Troque ideias com a comunidade por comentários e curtidas.</span>
+      </li>
+      <li>
+        <i class="pi pi-user" aria-hidden="true"></i
+        ><span>Apresente-se no perfil e reúna suas publicações em um só lugar.</span>
+      </li>
+    </ul>
+    <a pButton routerLink="/profile/me" (click)="aboutOpen.set(false)"
+      >Meu perfil <i class="pi pi-arrow-right" aria-hidden="true"></i
+    ></a>
+  </div>
+</p-dialog>
 <p-dialog
   header="Editar publicação"
   (onHide)="restoreEditFocus()"

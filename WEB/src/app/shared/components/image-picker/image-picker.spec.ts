@@ -74,7 +74,7 @@ describe('ImagePicker', () => {
     f.detectChanges();
     expect(selected).toHaveBeenCalledWith(file);
     expect(f.nativeElement.querySelector('img').getAttribute('src')).toBe('blob:preview');
-    f.nativeElement.querySelector('.preview button:last-child').click();
+    f.nativeElement.querySelector('.preview .actions button:last-child').click();
     f.detectChanges();
     expect(selected).toHaveBeenLastCalledWith(null);
     expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:preview');

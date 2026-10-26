@@ -71,6 +71,10 @@ test('slides desktop navigation away and restores it from the keyboard in both t
       .toBe('0px');
     await expect(expand).toBeFocused();
     await page.keyboard.press('Tab');
+    await expect(page.getByRole('combobox', { name: 'Pesquisar perfis por nome' })).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(page.getByRole('button', { name: 'Notificações, 0 não lidas' })).toBeFocused();
+    await page.keyboard.press('Tab');
     await expect(page.getByRole('switch')).toBeFocused();
     await page.screenshot({
       path: `test-results/sidebar-collapsed-${dark ? 'dark' : 'light'}.png`,

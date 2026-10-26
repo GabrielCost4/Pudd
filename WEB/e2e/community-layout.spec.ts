@@ -22,6 +22,7 @@ async function expectReadableSelection(link: Locator) {
 test('keeps community pages accessible within desktop and mobile viewports in both themes', async ({
   page,
 }) => {
+  test.setTimeout(60000);
   await mockApi(page);
   await login(page);
   for (const width of [1440, 820, 390, 320]) {
@@ -46,13 +47,29 @@ test('keeps community pages accessible within desktop and mobile viewports in bo
           .toBe(true);
         if (route === '/feed') {
           if (width === 1440) {
+            await expect(page.locator('.community-art img')).toHaveJSProperty('complete', true);
+            await page
+              .locator('.community-about')
+              .screenshot({ path: `test-results/about-pudd-${mode}.png` });
+            const learnMore = page.getByRole('button', { name: 'Saiba mais sobre o Pudd' });
+            await learnMore.click();
+            const about = page.getByRole('dialog', { name: 'Sobre o Pudd', exact: true });
+            await expect(about).toContainText('O Pudd é uma comunidade');
+            await expect(about.getByRole('link', { name: 'Meu perfil' })).toHaveAttribute(
+              'href',
+              '/profile/me',
+            );
+            await page.keyboard.press('Escape');
+            await expect(about).toBeHidden();
             const action = await page.locator('.feed-heading').boundingBox();
             const aside = await page
               .getByRole('complementary', { name: 'Sobre a comunidade' })
               .boundingBox();
             const feed = await page.locator('section.feed').boundingBox();
             expect(Math.abs(action!.y - aside!.y)).toBeLessThanOrEqual(1);
-            expect(aside!.x - feed!.x - feed!.width).toBeGreaterThanOrEqual(31);
+            expect(aside!.x - feed!.x - feed!.width).toBeGreaterThanOrEqual(64);
+            expect(width - aside!.x - aside!.width).toBeGreaterThanOrEqual(40);
+            expect(aside!.width).toBeCloseTo(360, 0);
           }
           await expect(page.getByRole('complementary', { name: 'Sobre a comunidade' })).toBeVisible(
             {
@@ -92,7 +109,9 @@ test('keeps community pages accessible within desktop and mobile viewports in bo
           });
           await community.focus();
           await page.keyboard.press('Enter');
-          await expect(page.getByRole('heading', { name: 'Feed', exact: true })).toBeVisible();
+          await expect(
+            page.getByRole('heading', { name: 'Gabriel Dev', exact: true }),
+          ).toBeVisible();
           await expect(community).toHaveAttribute('aria-current', 'page');
           await expectReadableSelection(community);
           await expect(page.locator('app-post-card')).toHaveCount(2);

@@ -3,16 +3,16 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { AvatarModule } from 'primeng/avatar';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
-import { GalleriaModule } from 'primeng/galleria';
+import { ImageViewer } from '../../../../shared/components/image-viewer/image-viewer';
 import { ConfirmationService, type MenuItem } from 'primeng/api';
 import { Menu, MenuModule } from 'primeng/menu';
 import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import {
   Component,
   computed,
-  HostListener,
   DestroyRef,
   effect,
+  HostListener,
   inject,
   input,
   output,
@@ -40,8 +40,8 @@ import { LikeService } from '../../likes/services/like.service';
     AvatarModule,
     CardModule,
     ButtonModule,
-    GalleriaModule,
     MenuModule,
+    ImageViewer,
     DatePipe,
     NgTemplateOutlet,
     RouterLink,
@@ -87,11 +87,6 @@ export class PostCard {
   protected readonly likeState = signal<LikeResponse | null>(null);
   protected readonly imageUrl = signal('');
   protected readonly galleryVisible = signal(false);
-  protected readonly galleryImages = computed(() => (this.imageUrl() ? [this.imageUrl()] : []));
-  protected readonly galleryPt = {
-    mask: { 'aria-label': 'Imagem da publicação' },
-    closeButton: { 'aria-label': 'Fechar imagem' },
-  };
   protected readonly imageButtonTokens = {
     root: { paddingX: '0', paddingY: '0', borderRadius: '0' },
   };

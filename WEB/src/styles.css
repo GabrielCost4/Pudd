@@ -306,6 +306,10 @@ p-avatar {
   width: min(44rem, calc(100vw - 2rem));
   max-height: 90dvh;
 }
+.community-about-dialog {
+  width: min(30rem, 92vw);
+  max-height: 84dvh;
+}
 .publication-dialog {
   width: min(960px, 92vw);
   height: min(720px, 84dvh);

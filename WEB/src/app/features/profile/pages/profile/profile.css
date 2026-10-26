@@ -41,6 +41,36 @@
 .profile-photo {
   flex-shrink: 0;
 }
+.profile-avatar-wrap {
+  position: relative;
+  display: inline-flex;
+}
+.presence-indicator {
+  position: absolute;
+  right: 0.375rem;
+  bottom: 0.375rem;
+  display: grid;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 3px solid var(--surface);
+  border-radius: 50%;
+  background: var(--surface-raised);
+  color: var(--muted);
+  font-size: 0.625rem;
+  line-height: 1;
+}
+.presence-indicator.online {
+  background: var(--success);
+}
+.presence-indicator.offline {
+  background: var(--muted);
+  color: var(--surface);
+}
+.presence-indicator i {
+  font-size: 0.5rem;
+  font-weight: 700;
+}
 .identity-copy {
   min-width: 0;
   padding-top: 4rem;
@@ -74,14 +104,42 @@
 }
 .profile-edit-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-  align-items: start;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
   gap: 1.25rem;
   margin-top: 1.5rem;
+}
+.avatar-editor {
+  position: relative;
+}
+.avatar-editor-layout {
+  position: absolute;
+  inset: var(--p-card-body-padding, 1.25rem);
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  gap: 1rem;
+  min-width: 0;
+  min-height: 0;
+}
+.avatar-editor .avatar-editor-layout h2,
+.avatar-editor-layout p,
+.avatar-editor-layout .avatar-actions {
+  margin: 0;
+}
+.avatar-selection {
+  --image-picker-preview-max-height: 8rem;
+  min-height: 0;
+  overflow: auto;
 }
 @media (max-width: 1100px) {
   .profile-edit-grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+  .avatar-editor-layout {
+    position: static;
+  }
+  .avatar-selection {
+    max-height: 20rem;
   }
 }
 @media (max-width: 420px) {
@@ -114,12 +172,7 @@
 .profile-avatar-trigger {
   background: var(--surface);
   padding: 0;
-  cursor: pointer;
+  cursor: zoom-in;
+  overflow: hidden;
   line-height: 0;
-}
-.avatar-gallery-image {
-  display: block;
-  max-width: calc(100vw - 2rem);
-  max-height: calc(100dvh - 6rem);
-  object-fit: contain;
 }

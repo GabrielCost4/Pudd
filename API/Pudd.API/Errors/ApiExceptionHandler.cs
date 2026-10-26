@@ -45,6 +45,10 @@ public class ApiExceptionHandler(ILogger<ApiExceptionHandler> logger) : IExcepti
                 409,
                 "O registro foi alterado ou removido. Atualize a página."
             ),
+            DbUpdateException { InnerException: PostgresException { SqlState: "23505", ConstraintName: "IX_users_NormalizedName" } } => (
+                409,
+                "Este nome de perfil já está em uso."
+            ),
             DbUpdateException { InnerException: PostgresException { SqlState: "23505" } } => (
                 409,
                 "Este registro já existe."
