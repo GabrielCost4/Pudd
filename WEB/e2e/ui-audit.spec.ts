@@ -22,7 +22,7 @@ for (const dark of [false, true]) {
     };
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto('/login');
-    await expect(page.locator('.dither-effect')).toHaveClass(/ready/);
+    await expect(page.locator('.landscape-motion')).toBeAttached();
     await capture('login');
     await page.getByRole('link', { name: 'Criar conta', exact: true }).click();
     await capture('register');

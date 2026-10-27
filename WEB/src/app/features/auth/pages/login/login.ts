@@ -1,4 +1,3 @@
-import { DividerModule } from 'primeng/divider';
 import { ThemeStore } from '../../../../core/config/theme.store';
 import { ThemeToggle } from '../../../../shared/components/theme-toggle/theme-toggle';
 import { CardModule } from 'primeng/card';
@@ -19,7 +18,6 @@ import { BrandLogo } from '../../../../shared/components/brand-logo/brand-logo';
 @Component({
   selector: 'app-login',
   imports: [
-    DividerModule,
     ThemeToggle,
     CardModule,
     ButtonModule,

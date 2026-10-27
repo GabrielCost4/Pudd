@@ -1,5 +1,22 @@
 @import 'primeicons/primeicons.css';
 
+@media (prefers-reduced-motion: no-preference) {
+  .login-layout,
+  .login-layout .auth-content,
+  .login-layout .auth-heading p,
+  .login-layout .switch-account,
+  .login-layout .switch-account a,
+  .login-layout .field-label,
+  .login-layout .p-inputtext,
+  .login-layout .p-button,
+  .login-layout .p-card {
+    transition:
+      background-color 250ms ease-out,
+      color 250ms ease-out,
+      border-color 250ms ease-out;
+  }
+}
+
 @font-face {
   font-family: Manrope;
   src: url('/fonts/Manrope-variable.ttf') format('truetype');

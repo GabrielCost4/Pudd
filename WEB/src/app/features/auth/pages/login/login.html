@@ -1,11 +1,11 @@
 <main class="login-layout">
-  <header class="auth-toolbar">
-    <a class="product-name" routerLink="/login" aria-label="Pudd: entrar">
-      <app-brand-logo /><span>Pudd</span>
-    </a>
-    <app-theme-toggle [dark]="theme.mode() === 'dark'" (toggled)="theme.toggle()" />
-  </header>
   <div class="auth-content">
+    <header class="auth-toolbar">
+      <a class="product-name" routerLink="/login" aria-label="Pudd: entrar">
+        <app-brand-logo />
+      </a>
+      <app-theme-toggle [dark]="theme.mode() === 'dark'" (toggled)="theme.toggle()" />
+    </header>
     <app-login-intro class="intro-panel" />
     <section class="login-panel" aria-labelledby="login-title">
       <p-card class="login-card">
@@ -13,7 +13,9 @@
           <p class="auth-eyebrow">
             {{ registering ? 'Faça parte da comunidade' : 'Acesse sua comunidade' }}
           </p>
-          <h1 id="login-title">{{ registering ? 'Criar conta' : 'Entrar' }}</h1>
+          <h1 id="login-title">
+            {{ registering ? 'Crie sua conta' : 'Que bom ter você de volta.' }}
+          </h1>
           <p>
             {{
               registering
@@ -104,20 +106,12 @@
             }
           </button>
         </form>
-        <p-divider><span class="divider-label">ou</span></p-divider>
         <p class="switch-account">
           {{ registering ? 'Já tem uma conta?' : 'Ainda não tem uma conta?' }}
+          <a class="account-button" [routerLink]="registering ? '/login' : '/register'">
+            {{ registering ? 'Entrar' : 'Criar conta' }}
+          </a>
         </p>
-        <a
-          class="account-button"
-          pButton
-          [outlined]="true"
-          severity="secondary"
-          [routerLink]="registering ? '/login' : '/register'"
-        >
-          <i [class]="registering ? 'pi pi-sign-in' : 'pi pi-user-plus'" aria-hidden="true"></i>
-          <span>{{ registering ? 'Entrar' : 'Criar conta' }}</span>
-        </a>
       </p-card>
     </section>
   </div>

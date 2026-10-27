@@ -2,171 +2,199 @@
   display: block;
 }
 .login-layout {
+  display: grid;
+  place-items: center;
   min-height: 100dvh;
+  padding: clamp(1.25rem, 4vw, 4rem);
+  background: var(--nav-background);
+}
+.auth-content {
   position: relative;
-  background: var(--background);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  width: min(100%, 82rem);
+  min-height: min(48rem, calc(100dvh - 6rem));
+  padding: 1rem;
+  border-radius: 2.75rem;
+  background: var(--surface);
+  border: 1px solid transparent;
+}
+:host-context(.pudd-dark) .login-layout {
+  background: var(--p-surface-950);
+}
+:host-context(.pudd-dark) .auth-content {
+  background: var(--p-surface-900);
+  border-color: var(--p-surface-700);
+  box-shadow: 0 1.5rem 5rem #00000040;
 }
 .auth-toolbar {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 1.25rem;
+  right: 2rem;
   z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  width: 48%;
-  padding: 1.5rem 3rem;
 }
 .product-name {
   display: none;
+  align-items: center;
+  gap: 0.5rem;
   color: var(--text);
   font-size: 1.5rem;
   font-weight: 800;
   text-decoration: none;
 }
 .product-name app-brand-logo {
-  width: 3rem;
+  width: 2.75rem;
 }
-.auth-content {
-  min-height: 100dvh;
-  display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
-  background: var(--surface);
+.intro-panel {
+  min-width: 0;
+  border-radius: 2rem;
+  overflow: hidden;
 }
 .login-panel {
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   min-width: 0;
-  padding: 6rem clamp(1.5rem, 4vw, 4rem) 3rem;
-  background: var(--surface);
-  border-left: 1px solid var(--border);
+  padding: 4rem clamp(1.5rem, 4vw, 4.5rem);
 }
 .login-card {
-  --p-inputtext-border-radius: var(--radius-small);
-  --p-inputtext-lg-padding-y: 0.7rem;
+  --p-inputtext-border-radius: 2rem;
+  --p-inputtext-lg-padding-y: 0.8rem;
   --p-inputtext-lg-font-size: 0.875rem;
-  --p-button-border-radius: var(--radius-small);
+  --p-button-border-radius: 2rem;
   --p-card-shadow: none;
   --p-card-background: transparent;
-  --p-card-body-padding: 0.75rem;
-  --p-card-body-gap: 0.75rem;
-  position: relative;
+  --p-card-body-padding: 0;
+  --p-card-body-gap: 0;
   display: block;
   width: 100%;
-  max-width: 26rem;
+  max-width: 25rem;
 }
 .auth-heading {
-  margin-bottom: 1.25rem;
+  margin-bottom: 2.5rem;
 }
 h1 {
-  font-size: clamp(2rem, 3vw, 2.75rem);
-  margin-bottom: 0.75rem;
-}
-.login-heading {
-  padding-bottom: var(--space-3);
+  margin: 0 0 1rem;
+  font-size: clamp(1.75rem, 2.8vw, 2.5rem);
+  line-height: 1.2;
+  letter-spacing: -0.055em;
 }
 .auth-heading p {
   margin: 0;
   color: var(--muted);
-  font-size: 0.875rem;
-  line-height: 1.6;
+  font-size: 0.8125rem;
+  line-height: 1.7;
 }
 .auth-heading .auth-eyebrow {
-  margin-bottom: 0.875rem;
+  margin-bottom: 1rem;
   color: var(--accent);
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 form {
   display: grid;
-  gap: 1rem;
-}
-.submit-button,
-.account-button {
-  width: 100%;
-  justify-content: center;
-  min-height: 2.75rem;
-  margin-top: 0.25rem;
+  gap: 1.25rem;
 }
 .submit-button {
+  width: 100%;
+  justify-content: center;
+  min-height: 3rem;
+  margin-top: 0.75rem;
   font-weight: 600;
 }
-.account-button {
-  display: flex;
-  margin-top: 0.5rem;
-}
-.divider-label {
-  color: var(--muted);
-  font-size: 0.75rem;
-}
 .field-hint {
+  margin-top: -0.5rem;
   color: var(--muted);
   font-size: 0.75rem;
-  margin-top: 0;
+  line-height: 1.6;
 }
 app-feedback:empty {
   display: none;
 }
 .switch-account {
-  font-size: 0.8125rem;
-  text-align: center;
-  margin: 0;
+  margin: 1.5rem 0 0;
   color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.8;
+  text-align: center;
 }
-@media (max-height: 740px) {
-  .login-card {
-    --p-divider-horizontal-margin: 0.5rem 0;
-  }
-  .login-panel {
-    padding: 4rem 1rem 0.5rem;
-  }
-  .auth-heading {
-    margin-bottom: 0;
-  }
-  h1 {
-    font-size: 1.5rem;
-  }
-  .auth-heading p {
-    font-size: 0.8125rem;
-  }
-  form {
-    gap: 0.625rem;
-  }
+.switch-account a {
+  margin-left: 0.25rem;
+  color: var(--text);
+  font-weight: 700;
+  text-underline-offset: 0.2em;
 }
-@media (max-width: 1000px) {
-  .auth-toolbar {
-    width: 100%;
+@media (max-width: 800px) {
+  .login-layout {
     padding: 1rem;
+  }
+  .auth-content {
+    position: relative;
+    display: block;
+    min-height: calc(100dvh - 2rem);
+    border-radius: 2rem;
+  }
+  .auth-toolbar {
+    top: 1.5rem;
+    right: 1.5rem;
+    left: 1.5rem;
+    display: flex;
+    align-items: center;
     justify-content: space-between;
   }
   .product-name {
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  .auth-content {
-    display: block;
-  }
-  .login-panel {
-    padding: 6rem 1.25rem 2rem;
-    min-height: 100dvh;
   }
   .intro-panel {
     display: none;
   }
-}
-@media (max-width: 1000px) and (max-height: 740px) {
   .login-panel {
-    padding: 4.5rem 1.25rem 0.5rem;
+    min-height: calc(100dvh - 4rem - 2px);
+    padding: 7rem 1rem 3rem;
+  }
+}
+@media (min-width: 801px) and (max-height: 760px) {
+  .login-layout {
+    padding: 1.5rem;
+  }
+  .auth-content {
+    min-height: calc(100dvh - 3rem);
+  }
+  .login-panel {
+    padding-block: 2.75rem 1.5rem;
+  }
+  .auth-heading {
+    margin-bottom: 1.5rem;
+  }
+  form {
+    gap: 0.875rem;
+  }
+}
+@media (max-width: 800px) and (max-height: 740px) {
+  .login-panel {
+    padding-block: 5rem 0.75rem;
   }
   .login-card {
-    --p-card-body-padding: 0;
+    --p-inputtext-lg-padding-y: 0.65rem;
+  }
+  .auth-heading {
+    margin-bottom: 1rem;
   }
   .auth-heading .auth-eyebrow {
     display: none;
+  }
+  h1 {
+    font-size: 1.75rem;
+  }
+  form {
+    gap: 0.625rem;
+  }
+  .submit-button {
+    margin-top: 0.25rem;
+  }
+  .switch-account {
+    margin-top: 0.75rem;
   }
 }

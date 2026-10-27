@@ -22,9 +22,9 @@ test('keeps expanded instructions readable and inside the introduction at deskto
         expect(
           await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight + 1),
         ).toBe(true);
-        expect((await page.locator('.art-window').boundingBox())!.height).toBeGreaterThanOrEqual(
-          64,
-        );
+        expect(
+          (await page.locator('.landscape-motion').boundingBox())!.height,
+        ).toBeGreaterThanOrEqual(64);
       }
       await page.screenshot({
         path: `test-results/summary-open-${dark ? 'dark' : 'light'}-${width}.png`,
