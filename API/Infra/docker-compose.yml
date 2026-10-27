@@ -1,4 +1,4 @@
-# Sobe o PostgreSQL 18 do Pudd em um container, com credenciais locais e dados persistentes.
+
 services:
     postgres:
       image: postgres:18

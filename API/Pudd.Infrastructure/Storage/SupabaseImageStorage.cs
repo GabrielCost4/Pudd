@@ -8,9 +8,8 @@ using Pudd.Application.Interfaces;
 
 namespace Pudd.Infrastructure.Storage;
 
-// Usa a API HTTP do Storage; nenhuma entidade depende do SDK ou banco do Supabase.
 public class SupabaseImageStorage(
-    HttpClient client, 
+    HttpClient client,
     IConfiguration configuration
 ) : IImageStorage
 {
@@ -34,7 +33,6 @@ public class SupabaseImageStorage(
     public async Task DeleteAsync(string bucket, string path, CancellationToken ct = default)
     {
         _ = ObjectKey(bucket, path);
-        // A remoção em lote aceita uma lista com um arquivo e é segura para novas tentativas.
         using var request = Create(HttpMethod.Delete, $"object/{bucket}");
         request.Content = JsonContent.Create(new { prefixes = new[] { path } });
         using var response = await SendAsync(request, ct);
@@ -88,7 +86,7 @@ public class SupabaseImageStorage(
             method,
             new Uri(ProjectUri(), "storage/v1/" + relative)
         );
-        // sb_secret usa apikey. Apenas a chave legada service_role também é um JWT Bearer.
+
         request.Headers.Add("apikey", key);
         if (!key.StartsWith("sb_secret_", StringComparison.Ordinal))
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", key);
@@ -143,7 +141,6 @@ public class SupabaseImageStorage(
 
     private static void EnsureSuccess(HttpResponseMessage response)
     {
-        // Não repassa corpo/headers do fornecedor: podem conter detalhes internos.
         if (!response.IsSuccessStatusCode)
             throw Unavailable();
     }
