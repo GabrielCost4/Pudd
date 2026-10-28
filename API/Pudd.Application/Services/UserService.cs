@@ -11,12 +11,12 @@ namespace Pudd.Application.Services
                 AccountAccess access,
                 ImageService images,
                 IValidator<UpdateProfileRequest> validator, TimeProvider clock,
-                IUserPresenceReader presence)
+                IUserPresenceReader presence, IPostRepository posts)
     {
         public async Task<ProfileResponse> GetProfileAsync(Guid actorId, Guid userId)
         {
             await access.RequireActiveAsync(actorId);
-            return Map(await FindAsync(userId));
+            return await MapAsync(await FindAsync(userId));
         }
 
         public async Task<ProfileResponse> UpdateProfileAsync(Guid actorId, UpdateProfileRequest request)
@@ -29,7 +29,7 @@ namespace Pudd.Application.Services
             user.Name = name;
             user.Bio = string.IsNullOrWhiteSpace(request.Bio) ? null : request.Bio.Trim();
             await users.UpdateAsync(user);
-            return Map(user);
+            return await MapAsync(user);
         }
 
         public async Task SetAvatarAsync(Guid actorId, ImageUpload image, CancellationToken ct = default)
@@ -104,10 +104,10 @@ namespace Pudd.Application.Services
             ?? throw new AppException(ErrorCode.NotFound, "Usuário não encontrado.");
 
         // O perfil público da comunidade não expõe e-mail, hash, role ou estado de bloqueio.
-        private ProfileResponse Map(User u)
+        private async Task<ProfileResponse> MapAsync(User u)
         {
             var state = presence.Get(u.ID);
-            return new(u.ID, u.Name, u.Bio, u.AvatarImagePath is not null, state.Presence, state.Revision);
+            return new(u.ID, u.Name, u.Bio, u.AvatarImagePath is not null, state.Presence, state.Revision, await posts.CountByUserAsync(u.ID));
         }
     }
 }

@@ -119,6 +119,6 @@ export async function login(page:Page,email='dev@example.test'){
   await page.goto('/login');
   await page.getByLabel('E-mail',{exact:true}).fill(email);
   await page.getByLabel('Senha',{exact:true}).fill('test-password');
-  await page.getByRole('button',{name:'Entrar no Pudd'}).click();
+  await page.getByRole('button',{name:'Entrar',exact:true}).click();
   await page.waitForURL('**/feed');
 }

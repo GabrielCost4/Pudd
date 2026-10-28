@@ -42,7 +42,7 @@ import { BrandLogo } from '../../shared/components/brand-logo/brand-logo';
     BrandLogo,
   ],
   templateUrl: './app-shell.html',
-  styleUrl: './app-shell.css',
+  styleUrls: ['./app-shell.css', './app-shell-navigation.css'],
   host: {
     '[class.sidebar-collapsed]': 'sidebarCollapsed() && !mobile()',
     '(document:keydown)': 'handleSidebarShortcut($event)',

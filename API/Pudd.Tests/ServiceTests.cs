@@ -241,7 +241,7 @@ internal sealed class Scenario : IAsyncDisposable
         Images = new(Storage, Queue, NullLogger<ImageService>.Instance);
         Posts = new(new PostRepository(Db), Users, Access, Images,
             new CreatePostRequestValidator(), new UpdatePostRequestValidator());
-        Profiles = new(Users, Access, Images, new UpdateProfileRequestValidator(), TimeProvider.System, new OfflinePresence());
+        Profiles = new(Users, Access, Images, new UpdateProfileRequestValidator(), TimeProvider.System, new OfflinePresence(), new PostRepository(Db));
     }
     public async Task<Post> AddPost(string? path = null)
     {
@@ -310,6 +310,7 @@ internal class FakeQueue : IImageDeletionQueue
 
 internal class FailingPosts : IPostRepository
 {
+    public Task<int> CountByUserAsync(Guid userId) => Task.FromResult(0);
     public Task AddAsync(Post post) => throw new InvalidOperationException("falha simulada");
     public Task<Post?> GetByIdAsync(Guid id) => Task.FromResult<Post?>(null);
     public Task UpdateAsync(Post post) => Task.CompletedTask;

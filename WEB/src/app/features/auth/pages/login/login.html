@@ -14,13 +14,13 @@
             {{ registering ? 'Faça parte da comunidade' : 'Acesse sua comunidade' }}
           </p>
           <h1 id="login-title">
-            {{ registering ? 'Crie sua conta' : 'Que bom ter você de volta.' }}
+            {{ registering ? 'Crie sua conta' : 'Bem-vindo de volta!' }}
           </h1>
           <p>
             {{
               registering
                 ? 'Preencha seus dados para se cadastrar no Pudd.'
-                : 'Use seu e-mail e senha para acessar sua conta.'
+                : 'Faça login para continuar no Pudd.'
             }}
           </p>
         </div>
@@ -99,7 +99,7 @@
                   : 'Entrando…'
                 : registering
                   ? 'Criar minha conta'
-                  : 'Entrar no Pudd'
+                  : 'Entrar'
             }}</span>
             @if (!loading()) {
               <i class="pi pi-arrow-right" aria-hidden="true"></i>

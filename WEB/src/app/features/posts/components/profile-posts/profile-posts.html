@@ -6,6 +6,7 @@
       size="large"
       [class.selected]="images()"
       title="Imagens"
+      label="Imagens"
       ariaLabel="Imagens"
       icon="pi pi-images"
       [text]="true"
@@ -13,12 +14,12 @@
       [pt]="{ root: { 'aria-pressed': images() }, icon: { 'aria-hidden': true } }"
       (onClick)="changeTab(true)"
     />
-    <span class="tab-divider" aria-hidden="true">|</span>
     <p-button
       class="tab-control"
       size="large"
       [class.selected]="!images()"
       title="Textos"
+      label="Textos"
       ariaLabel="Textos"
       icon="pi pi-align-left"
       [text]="true"

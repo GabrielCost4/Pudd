@@ -17,8 +17,11 @@
                 <button
                   type="button"
                   class="profile-avatar profile-avatar-trigger"
-                  aria-label="Abrir imagem ampliada"
-                  (click)="avatarPreviewVisible.set(true)"
+                  [attr.aria-label]="
+                    avatarPreviewVisible() ? 'Recolher foto de perfil' : 'Ampliar foto de perfil'
+                  "
+                  [attr.aria-expanded]="avatarPreviewVisible()"
+                  (click)="avatarPreviewVisible.set(!avatarPreviewVisible())"
                 >
                   <p-avatar
                     shape="circle"
@@ -66,7 +69,9 @@
           </div>
           <div class="identity-copy">
             <h2>{{ person.name }}</h2>
-            <p class="profile-caption">Membro da comunidade Pudd</p>
+            <p class="profile-caption">
+              <i class="pi pi-crown" aria-hidden="true"></i> Membro da comunidade Pudd
+            </p>
           </div>
         </div>
         <p class="content-text bio">
@@ -77,7 +82,11 @@
                 : 'Esta pessoa ainda não adicionou uma bio.')
           }}
         </p>
-        <div class="actions">
+        <p class="publication-count">
+          <strong>{{ person.publicationCount ?? 0 }}</strong
+          ><span>Publicações</span>
+        </p>
+        <div class="actions profile-actions">
           @if (isOwner()) {
             <button
               pButton
@@ -178,8 +187,23 @@
 
 <p-confirmdialog [closable]="true" />
 
-<app-image-viewer
-  [src]="avatarUrl()"
-  [alt]="'Foto de ' + (profile()?.name || 'perfil')"
+<p-dialog
   [(visible)]="avatarPreviewVisible"
-/>
+  [modal]="true"
+  [dismissableMask]="true"
+  [closeOnEscape]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [blockScroll]="true"
+  appendTo="body"
+  styleClass="profile-photo-overlay"
+  [pt]="{ root: { 'aria-label': 'Foto de perfil ampliada' } }"
+>
+  <ng-template #headless>
+    <img
+      class="profile-photo-preview"
+      [src]="avatarUrl()"
+      [alt]="'Foto de ' + (profile()?.name || 'perfil')"
+    />
+  </ng-template>
+</p-dialog>

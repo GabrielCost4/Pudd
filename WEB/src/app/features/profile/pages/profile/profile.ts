@@ -1,7 +1,7 @@
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { AvatarModule } from 'primeng/avatar';
-import { ImageViewer } from '../../../../shared/components/image-viewer/image-viewer';
+import { DialogModule } from 'primeng/dialog';
 import { CardModule } from 'primeng/card';
 import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
@@ -34,7 +34,7 @@ import { TooltipModule } from 'primeng/tooltip';
     ConfirmDialogModule,
     ProgressSpinnerModule,
     AvatarModule,
-    ImageViewer,
+    DialogModule,
     CardModule,
     TextareaModule,
     ButtonModule,

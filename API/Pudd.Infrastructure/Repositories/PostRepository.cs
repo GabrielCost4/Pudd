@@ -12,6 +12,8 @@ namespace Pudd.Infrastructure.Repositories
         PuddDbContext _context
     ) : IPostRepository
     {
+        public Task<int> CountByUserAsync(Guid userId) => _context.posts.CountAsync(post => post.UserID == userId);
+
         // Centraliza a persistência de posts; validações e permissões ficam no PostService.
         public async Task AddAsync(Post post)
         {

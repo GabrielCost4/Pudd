@@ -1,51 +1,39 @@
+<canvas
+  #ditherCanvas
+  class="dither-canvas"
+  [class.ready]="ditherReady()"
+  aria-hidden="true"
+></canvas>
 <aside class="intro" aria-label="Apresentação do Pudd">
   <div class="intro-brand"><app-brand-logo class="image-brand" /></div>
   <div class="intro-story">
-    <h2>Compartilhe o que<br /><span>você está criando.</span></h2>
-    <p>Projetos, aprendizados e conversas entre designers, devs e pessoas de outras áreas.</p>
+    <h2>Crie.<br />Compartilhe.<br /><span>Evolua.</span></h2>
+    <p>
+      Um lugar para compartilhar projetos, ideias e aprendizados com uma comunidade que também ama
+      criar.
+    </p>
   </div>
-  <div class="landscape-motion" aria-hidden="true"></div>
-  <details class="getting-started">
-    <summary>
-      <i class="pi pi-info-circle" aria-hidden="true"></i>Como começar<i
-        class="pi pi-chevron-down"
-        aria-hidden="true"
-      ></i>
-    </summary>
-    <div class="steps">
-      <p-stepper [value]="1" aria-label="Como usar o Pudd">
-        <p-step-item [value]="1">
-          <p-step>Crie sua conta</p-step>
-          <p-step-panel
-            ><ng-template #content>
-              <p class="step-description">
-                Cadastre seu nome, e-mail e senha. Se já tem uma conta, entre ao lado.
-              </p>
-            </ng-template></p-step-panel
-          >
-        </p-step-item>
-        <p-step-item [value]="2">
-          <p-step>Complete seu perfil</p-step>
-          <p-step-panel
-            ><ng-template #content>
-              <p class="step-description">
-                Em Meu perfil, adicione sua foto e uma bio para se apresentar.
-              </p>
-            </ng-template></p-step-panel
-          >
-        </p-step-item>
-        <p-step-item [value]="3">
-          <p-step>Publique e comente</p-step>
-          <p-step-panel
-            ><ng-template #content>
-              <p class="step-description">
-                Crie publicações com texto e imagem. No feed, curta e comente os projetos de outras
-                pessoas.
-              </p>
-            </ng-template></p-step-panel
-          >
-        </p-step-item>
-      </p-stepper>
+  <div class="intro-features">
+    <div class="intro-feature">
+      <i class="pi pi-users" aria-hidden="true"></i>
+      <div>
+        <strong>Conecte-se</strong>
+        <p>Conheça pessoas da sua área.</p>
+      </div>
     </div>
-  </details>
+    <div class="intro-feature">
+      <i class="pi pi-folder" aria-hidden="true"></i>
+      <div>
+        <strong>Compartilhe</strong>
+        <p>Mostre seus projetos e aprendizagens.</p>
+      </div>
+    </div>
+    <div class="intro-feature">
+      <i class="pi pi-chart-line" aria-hidden="true"></i>
+      <div>
+        <strong>Evolua</strong>
+        <p>Receba feedbacks e inspire-se.</p>
+      </div>
+    </div>
+  </div>
 </aside>

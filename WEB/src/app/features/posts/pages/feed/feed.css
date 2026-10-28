@@ -21,7 +21,7 @@
   min-width: 0;
 }
 .feed-greeting {
-  margin: 0.375rem 0 0;
+  margin: 0 0 0.125rem;
   color: var(--muted);
   font-size: 0.875rem;
   font-weight: 500;
@@ -53,8 +53,14 @@ h1 {
 }
 .feed-composer {
   margin-bottom: 1.5rem;
+  transition: transform 180ms ease;
   --p-card-background: var(--editorial-background);
   --p-card-shadow: none;
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .feed-composer:hover {
+    transform: scale(1.015);
+  }
 }
 .composer-link {
   width: 100%;
@@ -338,4 +344,97 @@ h1 {
 }
 .skeleton-content {
   margin-block: var(--space-6);
+}
+
+.feed-heading .feed-greeting {
+  color: var(--accent);
+}
+.feed-subtitle {
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.feed-composer {
+  --p-card-background: var(--surface);
+  --p-card-border-radius: 0.875rem;
+  --p-card-shadow: 0 4px 20px #0000000a;
+  display: block;
+}
+.composer-link {
+  align-items: flex-start;
+}
+.composer-prompt {
+  display: flex;
+  align-items: center;
+  min-height: 3.25rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  background: var(--background);
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+.composer-link:hover .composer-prompt {
+  border-color: var(--accent);
+}
+.composer-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.5rem 0 0 4rem;
+}
+.composer-option {
+  --p-button-padding-x: 0.625rem;
+  --p-button-padding-y: 0.375rem;
+  --p-button-border-radius: 2rem;
+  --p-button-text-secondary-color: var(--muted);
+  font-size: 0.75rem;
+  gap: 0.375rem;
+}
+.composer-publish {
+  margin-inline-start: auto;
+  --p-button-padding-x: 0.875rem;
+  --p-button-padding-y: 0.5rem;
+  --p-button-border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  gap: 0.5rem;
+}
+@media (max-width: 480px) {
+  .composer-actions {
+    margin-inline-start: 0;
+  }
+}
+
+.composer-top {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.composer-top .composer-link {
+  flex: 1;
+  min-width: 0;
+}
+.composer-top .composer-publish {
+  flex-shrink: 0;
+  margin: 0;
+}
+@media (max-width: 480px) {
+  .composer-top {
+    gap: 0.5rem;
+  }
+  .composer-top .composer-publish > span {
+    display: none;
+  }
+}
+
+.composer-actions {
+  margin-inline-end: 0.25rem;
+}
+@media (max-width: 480px) {
+  .composer-actions {
+    margin-inline-end: 0;
+  }
 }

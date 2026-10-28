@@ -102,6 +102,25 @@
           }
         </ul>
       </nav>
+      <section class="upcoming-section" aria-label="Fabricando...">
+        <p class="navigation-section-title">Fabricando...</p>
+        <button
+          pButton
+          type="button"
+          [text]="true"
+          severity="secondary"
+          class="navigation-link upcoming-button"
+          aria-disabled="true"
+          aria-label="Em breve — novidades"
+          pTooltip="Em breve — novidades"
+          tooltipPosition="right"
+          [tooltipDisabled]="!sidebarCollapsed() || mobile()"
+        >
+          <i class="pi pi-sparkles" aria-hidden="true"></i>
+          <span>Em breve</span>
+          <span class="upcoming-badge">Novidades</span>
+        </button>
+      </section>
     </div>
     <footer class="navigation-footer">
       <a
@@ -214,6 +233,7 @@
     class="app-controls"
     [class.feed-controls]="searchPage() === '/feed'"
     [class.admin-controls]="searchPage() === '/admin'"
+    [class.profile-controls]="searchPage().startsWith('/profile')"
   >
     <div class="toolbar-content">
       @if (mobile()) {
@@ -230,15 +250,11 @@
           <i class="pi pi-bars" aria-hidden="true"></i>
         </button>
       }
-      @if (searchPage() === '/feed') {
-        <app-user-search class="toolbar-search" (selected)="selectUser($event)" />
-      } @else if (searchPage() === '/admin') {
-        <app-user-search
-          class="toolbar-search"
-          [administrative]="true"
-          (selected)="selectUser($event)"
-        />
-      }
+      <app-user-search
+        class="toolbar-search"
+        [administrative]="searchPage() === '/admin'"
+        (selected)="selectUser($event)"
+      />
       <app-notification-bell />
       <app-theme-toggle [dark]="theme.mode() === 'dark'" (toggled)="theme.toggle()" />
     </div>

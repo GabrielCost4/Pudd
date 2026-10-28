@@ -1,21 +1,26 @@
 :host {
   display: block;
-  margin-top: 2rem;
+  margin-top: 0.75rem;
 }
 h2 {
-  margin: 0 0 1rem;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
 }
 .tabs {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  margin-bottom: 1.25rem;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
 }
 .tab-control {
-  --p-button-lg-font-size: 1.25rem;
-  --p-button-lg-padding-x: 0.875rem;
-  --p-button-lg-padding-y: 0.875rem;
+  --p-button-lg-font-size: 0.875rem;
+  --p-button-lg-padding-x: 1rem;
+  --p-button-lg-padding-y: 0.625rem;
   --p-button-text-primary-color: var(--accent);
   --p-button-text-secondary-color: var(--muted);
   --p-button-text-primary-hover-background: transparent;
@@ -23,15 +28,11 @@ h2 {
   --p-button-text-primary-active-background: transparent;
   --p-button-text-secondary-active-background: transparent;
   display: inline-flex;
+  margin-bottom: -1px;
   border-bottom: 2px solid transparent;
 }
 .tab-control.selected {
   border-bottom-color: var(--accent);
-}
-.tab-divider {
-  color: var(--muted);
-  font-size: 1.25rem;
-  user-select: none;
 }
 .posts-grid {
   display: grid;

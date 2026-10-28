@@ -28,4 +28,14 @@
     <span class="tile-text">{{ post().content }}</span>
     <small>{{ post().createdAt | date: 'dd/MM/yyyy' }}</small>
   }
+  @if (likeState(); as state) {
+    <span
+      class="tile-likes"
+      [class.liked]="state.liked"
+      [attr.aria-label]="state.count + ' curtidas'"
+    >
+      <i [class]="state.liked ? 'pi pi-heart-fill' : 'pi pi-heart'" aria-hidden="true"></i>
+      <span>{{ state.count }}</span>
+    </span>
+  }
 </button>

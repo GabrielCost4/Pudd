@@ -2,18 +2,19 @@
   <section class="feed" aria-labelledby="feed-title">
     <header class="feed-heading">
       <div>
-        <h1 id="feed-title" class="feed-name" [class.filtered]="!!authorId()">
-          <span>
-            {{
-              authorId()
-                ? authorId() === session.user().id
-                  ? 'Minhas publicações'
-                  : 'Publicações do perfil'
-                : 'Feed'
-            }}
-          </span>
-        </h1>
-        <p class="feed-greeting">{{ saudacao() }}, {{ account.name() || session.user().email }}!</p>
+        @if (!authorId()) {
+          <p class="feed-greeting">{{ saudacao() }},</p>
+          <h1 id="feed-title" class="feed-name">
+            {{ (account.name() || session.user().email).split(' ')[0] }}!
+          </h1>
+          <p class="feed-subtitle">Que tal compartilhar algo com a comunidade hoje?</p>
+        } @else {
+          <h1 id="feed-title" class="feed-name filtered">
+            <span>{{
+              authorId() === session.user().id ? 'Minhas publicações' : 'Publicações do perfil'
+            }}</span>
+          </h1>
+        }
         @if (authorId() && authorId() !== session.user().id) {
           <a pButton [text]="true" severity="secondary" [routerLink]="['/profile', authorId()]"
             >Ver perfil</a
@@ -23,36 +24,55 @@
     </header>
     @if (!authorId() || authorId() === session.user().id) {
       <p-card class="feed-composer" [dt]="composerCardTokens">
-        <a
-          pButton
-          [text]="true"
-          severity="secondary"
-          class="composer-link"
-          [dt]="composerButtonTokens"
-          routerLink="/posts/new"
-          aria-label="Escrever uma publicação"
-        >
-          @if (account.avatarUrl()) {
-            <p-avatar
-              size="large"
-              shape="circle"
-              [image]="account.avatarUrl()"
-              ariaLabel="Sua foto de perfil"
-              (onImageError)="account.imageFailed()"
-            />
-          } @else {
-            <p-avatar
-              size="large"
-              shape="circle"
-              [label]="(account.name() || session.user().email).slice(0, 1).toUpperCase()"
-            />
-          }
-          <span class="composer-prompt"
-            ><strong>Escrever uma publicação</strong
-            ><small>Compartilhe um projeto, uma ideia ou um aprendizado.</small></span
+        <div class="composer-top">
+          <a
+            pButton
+            [text]="true"
+            severity="secondary"
+            class="composer-link"
+            [dt]="composerButtonTokens"
+            routerLink="/posts/new"
+            aria-label="Escrever uma publicação"
           >
-          <i class="composer-arrow pi pi-arrow-up-right" aria-hidden="true"></i>
-        </a>
+            @if (account.avatarUrl()) {
+              <p-avatar
+                size="large"
+                shape="circle"
+                [image]="account.avatarUrl()"
+                ariaLabel="Sua foto de perfil"
+                (onImageError)="account.imageFailed()"
+              />
+            } @else {
+              <p-avatar
+                size="large"
+                shape="circle"
+                [label]="(account.name() || session.user().email).slice(0, 1).toUpperCase()"
+              />
+            }
+            <span class="composer-prompt">No que você está trabalhando?</span>
+          </a>
+        </div>
+        <div class="composer-actions">
+          <a
+            pButton
+            [text]="true"
+            severity="secondary"
+            routerLink="/posts/new"
+            class="composer-option"
+            ><i class="pi pi-image" aria-hidden="true"></i><span>Imagem</span></a
+          >
+          <a
+            pButton
+            [text]="true"
+            severity="secondary"
+            routerLink="/posts/new"
+            class="composer-option"
+            ><i class="pi pi-align-left" aria-hidden="true"></i><span>Texto</span></a
+          >
+          <a pButton routerLink="/posts/new" class="composer-publish"
+            ><i class="pi pi-send" aria-hidden="true"></i><span>Publicar</span></a
+          >
+        </div>
       </p-card>
     }
     <nav

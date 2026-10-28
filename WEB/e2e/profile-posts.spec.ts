@@ -24,8 +24,8 @@ test('separates images and texts in the profile and opens a complete post', asyn
   const imagesTab = grid.getByRole('button', { name: 'Imagens', exact: true });
   const textsTab = grid.getByRole('button', { name: 'Textos', exact: true });
   await expect(imagesTab).toHaveAttribute('aria-pressed', 'true');
-  await expect(imagesTab).toHaveText('');
-  await expect(textsTab).toHaveText('');
+  await expect(imagesTab).toHaveText('Imagens');
+  await expect(textsTab).toHaveText('Textos');
   await expect(grid.locator('app-post-tile')).toHaveCount(1);
   await expect(grid.locator('app-post-tile img')).toBeVisible();
   await expect(grid).not.toContainText('Somente texto no perfil.');

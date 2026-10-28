@@ -10,7 +10,15 @@ import { InboxStore } from './inbox.store';
 
 @Component({
   selector: 'app-notification-bell',
-  imports: [ButtonModule, DrawerModule, MessageModule, CheckboxModule, FormsModule, RouterLink, DatePipe],
+  imports: [
+    ButtonModule,
+    DrawerModule,
+    MessageModule,
+    CheckboxModule,
+    FormsModule,
+    RouterLink,
+    DatePipe,
+  ],
   templateUrl: './notification-bell.html',
   styleUrl: './notification-bell.css',
 })
@@ -22,7 +30,9 @@ export class NotificationBell {
     this.inbox.items().filter((item) => !this.inbox.seen().has(item.id)),
   );
   protected readonly allSelected = computed(
-    () => this.unreadItems().length > 0 && this.unreadItems().every((item) => this.selectedIds().has(item.id)),
+    () =>
+      this.unreadItems().length > 0 &&
+      this.unreadItems().every((item) => this.selectedIds().has(item.id)),
   );
   protected readonly someSelected = computed(() =>
     this.unreadItems().some((item) => this.selectedIds().has(item.id)),
@@ -35,7 +45,9 @@ export class NotificationBell {
   }
 
   protected markSelectedAsRead(): void {
-    const ids = [...this.selectedIds()].filter((id) => this.unreadItems().some((item) => item.id === id));
+    const ids = [...this.selectedIds()].filter((id) =>
+      this.unreadItems().some((item) => item.id === id),
+    );
     if (!ids.length) return;
     this.inbox.markRead(ids);
     this.selectedIds.set(new Set());

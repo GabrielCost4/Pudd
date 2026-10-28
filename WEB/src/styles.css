@@ -401,3 +401,12 @@ button {
     min-height: 2.75rem;
   }
 }
+
+.profile-photo-overlay.p-dialog {
+  width: min(75vw, 26rem, 65dvh);
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+}

@@ -213,7 +213,7 @@ footer {
   }
 }
 .like-button {
-  --heart-color: var(--danger);
+  --heart-color: var(--p-red-500);
   --p-button-text-secondary-color: var(--muted);
   --p-button-text-secondary-hover-background: transparent;
   --p-button-text-secondary-active-background: transparent;

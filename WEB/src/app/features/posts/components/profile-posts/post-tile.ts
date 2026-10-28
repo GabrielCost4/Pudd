@@ -12,6 +12,8 @@ import { ButtonModule } from 'primeng/button';
 import { DatePipe } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { PostService } from '../../services/post.service';
+import { LikeService } from '../../likes/services/like.service';
+import type { LikeResponse } from '../../likes/models/like-response';
 import type { Post } from '../../models/post';
 
 @Component({
@@ -25,12 +27,22 @@ export class PostTile {
   readonly selected = output<Post>();
   private readonly host = inject(ElementRef<HTMLElement>);
   private readonly api = inject(PostService);
+  private readonly likes = inject(LikeService);
+  protected readonly likeState = signal<LikeResponse | null>(null);
   private readonly destroyRef = inject(DestroyRef);
   protected readonly url = signal('');
   protected readonly failed = signal(false);
   private request?: Subscription;
 
   constructor() {
+    effect((cleanup) => {
+      this.likeState.set(null);
+      const request = this.likes.get(this.post().id).subscribe({
+        next: (state) => this.likeState.set(state),
+        error: () => this.likeState.set(null),
+      });
+      cleanup(() => request.unsubscribe());
+    });
     effect((cleanup) => {
       this.post();
       this.url.set('');

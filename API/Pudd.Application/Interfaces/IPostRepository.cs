@@ -9,6 +9,7 @@ namespace Pudd.Application.Interfaces
     public interface IPostRepository
     {
         Task AddAsync(Post post);
+        Task<int> CountByUserAsync(Guid userId);
         Task<Post?> GetByIdAsync (Guid postID);
         Task UpdateAsync(Post post);
         // Salva o post e agenda a limpeza anterior na mesma transação.

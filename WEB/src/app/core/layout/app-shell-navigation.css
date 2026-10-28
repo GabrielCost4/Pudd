@@ -1,0 +1,215 @@
+.navigation-panel,
+.mobile-navigation {
+  --sidebar-selected: #d9bd43;
+  --sidebar-selected-text: #153934;
+  --p-button-text-secondary-color: var(--nav-muted);
+  --p-button-text-secondary-hover-background: var(--nav-border);
+  --p-button-text-secondary-active-background: var(--nav-border);
+  --p-button-outlined-secondary-color: var(--nav-text);
+  --p-button-outlined-secondary-border-color: var(--nav-border);
+  --p-button-outlined-secondary-hover-background: var(--nav-border);
+  --p-avatar-background: var(--sidebar-selected);
+  --p-avatar-color: var(--sidebar-selected-text);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+  color: var(--nav-text);
+}
+.navigation-panel {
+  background: transparent;
+}
+.mobile-navigation {
+  background:
+    linear-gradient(var(--sidebar-overlay), var(--sidebar-overlay)),
+    url('/images/brand/pudd-sidebar-background.png') center / cover no-repeat;
+  background-size:
+    auto,
+    auto 100%;
+}
+.navigation-panel :focus-visible {
+  outline-color: var(--sidebar-selected);
+  outline-offset: 2px;
+}
+.navigation-content ul {
+  display: grid;
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.navigation-link {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  min-height: 2.5rem;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid transparent;
+  border-radius: 0.625rem;
+  color: var(--nav-text);
+  font-weight: 600;
+}
+.navigation-link:hover,
+.navigation-link:focus-visible {
+  background: var(--nav-border);
+  color: var(--nav-text);
+}
+.navigation-link.active {
+  position: relative;
+  border-color: var(--sidebar-active-border);
+  background: var(--sidebar-active-background);
+  box-shadow: inset 3px 0 var(--sidebar-active-marker);
+  color: var(--nav-text);
+}
+.navigation-link.active::after {
+  content: '';
+  width: 0.4rem;
+  height: 0.4rem;
+  margin-left: auto;
+  border-top: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  transform: rotate(45deg);
+}
+:host(.sidebar-collapsed) .navigation-link.active::after {
+  display: none;
+}
+:host-context(.pudd-dark) .navigation-panel,
+:host-context(.pudd-dark) .mobile-navigation {
+  --sidebar-selected: var(--nav-selected);
+  --sidebar-selected-text: var(--nav-selected-text);
+}
+:host(.sidebar-collapsed) .navigation-header {
+  justify-content: center;
+  padding: 0.5rem 0 1.5rem;
+}
+:host(.sidebar-collapsed) .brand-image app-brand-logo {
+  width: 2rem;
+}
+:host(.sidebar-collapsed) .navigation-aside:has(.navigation-header:hover) .brand-block,
+:host(.sidebar-collapsed) .navigation-aside:has(.brand-block:focus-within) .brand-block,
+:host(.sidebar-collapsed) .navigation-aside:has(+ .sidebar-toggle:hover) .brand-block,
+:host(.sidebar-collapsed) .navigation-aside:has(+ .sidebar-toggle:focus-visible) .brand-block {
+  opacity: 0;
+}
+:host(.sidebar-collapsed) .navigation-content {
+  padding-inline: 0.625rem;
+}
+:host(.sidebar-collapsed) .navigation-link,
+:host(.sidebar-collapsed) .logout {
+  width: 2.75rem;
+  min-height: 2.75rem;
+  justify-content: center;
+  padding: 0;
+  gap: 0;
+  border-radius: 0.75rem;
+}
+:host(.sidebar-collapsed) .navigation-link > i {
+  font-size: 1.25rem;
+}
+:host(.sidebar-collapsed) .navigation-link > span,
+:host(.sidebar-collapsed) .account-info,
+:host(.sidebar-collapsed) .account-arrow,
+:host(.sidebar-collapsed) .logout > span {
+  display: none;
+}
+:host(.sidebar-collapsed) .navigation-footer {
+  justify-items: center;
+  padding: 0.75rem 0.625rem;
+  border-top: 0;
+}
+:host(.sidebar-collapsed) .account {
+  --p-button-outlined-secondary-border-color: transparent;
+  --p-avatar-lg-width: 2rem;
+  --p-avatar-lg-height: 2rem;
+  --p-avatar-lg-font-size: 0.8125rem;
+  width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0;
+  justify-content: center;
+  gap: 0;
+}
+:host(.sidebar-collapsed) .navigation-link.active {
+  background: var(--nav-border);
+  color: var(--nav-text);
+}
+:host(.sidebar-collapsed) .logout {
+  order: -1;
+}
+@media (max-width: 760px) {
+  .main-column {
+    margin-inline-start: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .navigation-aside,
+  .main-column,
+  .sidebar-toggle {
+    transition: none;
+  }
+}
+
+.upcoming-section {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #a5edbd24;
+}
+.navigation-section-title {
+  margin: 0 0 0.75rem;
+  padding-inline: 0.875rem;
+  color: var(--nav-muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.upcoming-button {
+  width: 100%;
+  gap: 0.625rem;
+  cursor: default;
+  --p-button-text-secondary-color: var(--nav-text);
+}
+.upcoming-badge {
+  margin-inline-start: auto;
+  padding: 0.125rem 0.4rem;
+  border-radius: 0.375rem;
+  background: #a5edbd20;
+  color: var(--nav-text);
+  font-size: 0.5625rem;
+  font-weight: 700;
+}
+:host(.sidebar-collapsed) .navigation-section-title {
+  display: none;
+}
+
+:host-context(.pudd-dark) {
+  --sidebar-overlay: #07110dcc;
+  --sidebar-image-filter: none;
+  --sidebar-active-background: #16362fd9;
+  --sidebar-active-border: #9be2bb40;
+  --sidebar-active-marker: #a8ecc4;
+  --nav-text: #f4f5f8;
+  --nav-muted: #bfc4ce;
+  --nav-border: #484d58;
+}
+
+.navigation-aside,
+.mobile-navigation {
+  isolation: isolate;
+  background: var(--surface);
+}
+.mobile-navigation {
+  position: relative;
+}
+.navigation-aside::before,
+.mobile-navigation::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--sidebar-overlay), var(--sidebar-overlay)),
+    url('/images/brand/pudd-sidebar-background.png') center / auto 100% no-repeat;
+  filter: var(--sidebar-image-filter);
+}
