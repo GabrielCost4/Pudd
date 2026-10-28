@@ -19,6 +19,7 @@ namespace Pudd.Application.Interfaces
         Task RecordLoginAsync(Guid id, DateTimeOffset now);
         // Salva o perfil e agenda a limpeza anterior na mesma transação.
         Task UpdateWithAvatarCleanupAsync(User user, string? previousAvatarPath);
+        Task UpdateWithBannerCleanupAsync(User user, string? previousBannerPath);
         Task<IReadOnlyList<User>> GetPageAsync(int page, int pageSize);
     }
 }

@@ -21,6 +21,7 @@ namespace Pudd.Domain.Entities
         public UserRole Role { get; set;} = UserRole.User;
         public string? Bio { get; set; }
         public string? AvatarImagePath { get; set; }
+        public string? BannerImagePath { get; set; }
         public bool IsBlocked { get; set; }
         public DateTimeOffset? LastLoginAt { get; set; }
         public DateTimeOffset? LastSeenAt { get; set; }

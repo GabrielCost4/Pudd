@@ -63,6 +63,37 @@ namespace Pudd.Application.Services
             return await images.GetUrlAsync("avatars", (await FindAsync(userId)).AvatarImagePath, ct);
         }
 
+        public async Task SetBannerAsync(Guid actorId, ImageUpload image, CancellationToken ct = default)
+        {
+            var user = await access.RequireActiveAsync(actorId);
+            var oldPath = user.BannerImagePath;
+            var path = await images.UploadAsync("banners", actorId, image, ct);
+            user.BannerImagePath = path;
+            try
+            {
+                await users.UpdateWithBannerCleanupAsync(user, oldPath);
+            }
+            catch
+            {
+                await images.DiscardAsync("banners", path);
+                throw;
+            }
+        }
+
+        public async Task RemoveBannerAsync(Guid actorId)
+        {
+            var user = await access.RequireActiveAsync(actorId);
+            var oldPath = user.BannerImagePath;
+            user.BannerImagePath = null;
+            await users.UpdateWithBannerCleanupAsync(user, oldPath);
+        }
+
+        public async Task<ImageUrlResponse> GetBannerAsync(Guid actorId, Guid userId, CancellationToken ct = default)
+        {
+            await access.RequireActiveAsync(actorId);
+            return await images.GetUrlAsync("banners", (await FindAsync(userId)).BannerImagePath, ct);
+        }
+
         public async Task<PageResponse<AdminUserResponse>> GetUsersAsync(Guid actorId, int page, int pageSize)
         {
             await access.RequireAdminAsync(actorId);
@@ -107,7 +138,7 @@ namespace Pudd.Application.Services
         private async Task<ProfileResponse> MapAsync(User u)
         {
             var state = presence.Get(u.ID);
-            return new(u.ID, u.Name, u.Bio, u.AvatarImagePath is not null, state.Presence, state.Revision, await posts.CountByUserAsync(u.ID));
+            return new(u.ID, u.Name, u.Bio, u.AvatarImagePath is not null, state.Presence, state.Revision, await posts.CountByUserAsync(u.ID), u.BannerImagePath is not null);
         }
     }
 }

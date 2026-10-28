@@ -8,7 +8,16 @@
   }
   @if (profile(); as person) {
     <p-card class="profile-card">
-      <div class="cover" aria-hidden="true"></div>
+      <div class="cover" aria-hidden="true">
+        @if (bannerUrl() && !bannerFailed()) {
+          <img class="profile-banner" [src]="bannerUrl()" alt="" (error)="bannerFailed.set(true)" />
+        }
+      </div>
+      @if (bannerFailed()) {
+        <button pButton type="button" [text]="true" severity="secondary" (click)="loadBanner()">
+          Recarregar banner
+        </button>
+      }
       <div class="profile-info">
         <div class="profile-identity">
           <div class="profile-photo">
@@ -177,6 +186,38 @@
                 </button>
               }
             </div>
+          </div>
+        </p-card>
+        <p-card class="edit-profile banner-editor">
+          <h2>Seu banner</h2>
+          <p class="muted">
+            Escolha uma imagem horizontal. Recomendado: 1600 × 400 px, JPG, PNG ou WebP de até 5 MB.
+          </p>
+          @for (version of [bannerPickerVersion()]; track version) {
+            <app-image-picker [disabled]="busy()" (selected)="selectedBanner.set($event)" />
+          }
+          <div class="actions">
+            <button
+              pButton
+              type="button"
+              [loading]="busy()"
+              [disabled]="busy() || !selectedBanner()"
+              (click)="uploadBanner()"
+            >
+              Enviar banner
+            </button>
+            @if (person.hasBanner) {
+              <button
+                pButton
+                type="button"
+                [text]="true"
+                severity="danger"
+                [disabled]="busy()"
+                (click)="removeBanner()"
+              >
+                Remover banner atual
+              </button>
+            }
           </div>
         </p-card>
       </div>

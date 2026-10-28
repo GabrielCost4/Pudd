@@ -29,12 +29,12 @@ import { TooltipModule } from 'primeng/tooltip';
   providers: [ConfirmationService],
   selector: 'app-profile',
   imports: [
+    DialogModule,
     TooltipModule,
     ProfilePosts,
     ConfirmDialogModule,
     ProgressSpinnerModule,
     AvatarModule,
-    DialogModule,
     CardModule,
     TextareaModule,
     ButtonModule,
@@ -56,6 +56,8 @@ export class ProfilePage {
   private readonly destroyRef = inject(DestroyRef);
   private readonly realtime = inject(InboxRealtime);
   private avatarRequest?: Subscription;
+  private bannerRequest?: Subscription;
+  private bannerTimer?: ReturnType<typeof setTimeout>;
   private avatarTimer?: ReturnType<typeof setTimeout>;
   protected readonly profile = signal<Profile | null>(null);
   private readonly profileId = computed(() => this.profile()?.id);
@@ -67,6 +69,10 @@ export class ProfilePage {
   protected readonly editing = signal(false);
   protected readonly errors = signal<string[]>([]);
   protected readonly success = signal('');
+  protected readonly bannerUrl = signal('');
+  protected readonly bannerFailed = signal(false);
+  protected readonly selectedBanner = signal<File | null>(null);
+  protected readonly bannerPickerVersion = signal(0);
   protected readonly avatarUrl = signal('');
   protected readonly avatarFailed = signal(false);
   protected readonly avatarPreviewVisible = signal(false);
@@ -101,6 +107,11 @@ export class ProfilePage {
           this.editing.set(false);
           this.selectedImage.set(null);
           this.pickerVersion.update((value) => value + 1);
+          this.stopBanner();
+          this.bannerUrl.set('');
+          this.bannerFailed.set(false);
+          this.selectedBanner.set(null);
+          this.bannerPickerVersion.update((v) => v + 1);
           this.stopAvatar();
           this.avatarUrl.set('');
           this.avatarFailed.set(false);
@@ -120,9 +131,13 @@ export class ProfilePage {
         if (profile) {
           this.setProfile(profile);
           this.loadAvatar();
+          this.loadBanner();
         }
       });
-    this.destroyRef.onDestroy(() => this.stopAvatar());
+    this.destroyRef.onDestroy(() => {
+      this.stopAvatar();
+      this.stopBanner();
+    });
   }
   private setProfile(profile: Profile): void {
     if (this.profile()?.id !== profile.id) this.presence.set(profile.presence ?? null);
@@ -152,10 +167,34 @@ export class ProfilePage {
       error: () => this.avatarFailed.set(true),
     });
   }
+  private stopBanner(): void {
+    clearTimeout(this.bannerTimer);
+    this.bannerRequest?.unsubscribe();
+  }
+  protected loadBanner(): void {
+    this.stopBanner();
+    const profile = this.profile();
+    if (!profile?.hasBanner) {
+      this.bannerUrl.set('');
+      return;
+    }
+    this.bannerFailed.set(false);
+    this.bannerRequest = this.api.banner(profile.id).subscribe({
+      next: (response) => {
+        this.bannerUrl.set(response.url);
+        this.bannerTimer = setTimeout(
+          () => this.loadBanner(),
+          Math.max(1000, (response.expiresInSeconds - 15) * 1000),
+        );
+      },
+      error: () => this.bannerFailed.set(true),
+    });
+  }
   protected cancelEdit(): void {
     const profile = this.profile();
     if (profile) this.setProfile(profile);
     this.selectedImage.set(null);
+    this.selectedBanner.set(null);
     this.editing.set(false);
   }
   protected nameError(): string | null {
@@ -182,6 +221,7 @@ export class ProfilePage {
         next: (profile) => {
           this.setProfile(profile);
           this.selectedImage.set(null);
+          this.selectedBanner.set(null);
           this.editing.set(false);
           this.success.set('Seu perfil foi atualizado.');
           this.account.refresh();
@@ -245,6 +285,67 @@ export class ProfilePage {
           this.profile.update((p) => (p ? { ...p, hasAvatar: false } : p));
           this.success.set('Foto de perfil removida.');
           this.account.refresh(false);
+        },
+        error: (error: unknown) => this.errors.set(apiErrors(error)),
+      });
+  }
+  protected uploadBanner(): void {
+    const image = this.selectedBanner();
+    if (!image || this.busy()) return;
+    const form = new FormData();
+    form.append('Image', image);
+    this.busy.set(true);
+    this.errors.set([]);
+    this.success.set('');
+    this.api
+      .uploadBanner(form)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.busy.set(false)),
+      )
+      .subscribe({
+        next: () => {
+          this.profile.update((p) => (p ? { ...p, hasBanner: true } : p));
+          this.selectedBanner.set(null);
+          this.bannerPickerVersion.update((v) => v + 1);
+          this.loadBanner();
+          this.success.set('Banner atualizado.');
+        },
+        error: (error: unknown) => this.errors.set(apiErrors(error)),
+      });
+  }
+  protected removeBanner(): void {
+    if (this.busy()) return;
+    this.confirmation.confirm({
+      header: 'Remover banner',
+      message: 'Remover seu banner?',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Confirmar',
+      rejectLabel: 'Cancelar',
+      accept: () => this.performRemoveBanner(),
+    });
+  }
+
+  private performRemoveBanner(): void {
+    if (this.busy()) return;
+    this.busy.set(true);
+    this.errors.set([]);
+    this.success.set('');
+    this.api
+      .removeBanner()
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.busy.set(false)),
+      )
+      .subscribe({
+        next: () => {
+          this.stopBanner();
+          this.bannerUrl.set('');
+          this.bannerFailed.set(false);
+          this.selectedBanner.set(null);
+          this.bannerPickerVersion.update((v) => v + 1);
+          this.profile.update((p) => (p ? { ...p, hasBanner: false } : p));
+          this.success.set('Banner removido.');
         },
         error: (error: unknown) => this.errors.set(apiErrors(error)),
       });

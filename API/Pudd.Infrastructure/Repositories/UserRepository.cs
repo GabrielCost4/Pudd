@@ -75,6 +75,17 @@ namespace Pudd.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task UpdateWithBannerCleanupAsync(User user, string? previousBannerPath)
+        {
+            if (previousBannerPath is not null)
+                _context.pendingImageDeletions.Add(new PendingImageDeletion
+                {
+                    Bucket = "banners",
+                    Path = previousBannerPath
+                });
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<IReadOnlyList<User>> GetPageAsync(int page, int pageSize) =>
             await _context.users.AsNoTracking().OrderBy(user => user.ID)
                 .Skip((page - 1) * pageSize).Take(pageSize + 1).ToListAsync();

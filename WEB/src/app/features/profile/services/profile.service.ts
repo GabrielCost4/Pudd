@@ -27,4 +27,15 @@ export class ProfileService {
   removeAvatar() {
     return this.http.delete<void>(API_BASE_URL + '/users/me/avatar');
   }
+  banner(id: string) {
+    return this.http.get<ImageUrlResponse>(
+      API_BASE_URL + '/users/' + encodeURIComponent(id) + '/banner',
+    );
+  }
+  uploadBanner(form: FormData) {
+    return this.http.put<void>(API_BASE_URL + '/users/me/banner', form, { timeout: 60000 });
+  }
+  removeBanner() {
+    return this.http.delete<void>(API_BASE_URL + '/users/me/banner');
+  }
 }

@@ -6,6 +6,7 @@ export interface Profile {
   publicationCount?: number;
   bio: string | null;
   hasAvatar: boolean;
+  hasBanner?: boolean;
   presence: UserPresence;
   presenceRevision: number;
 }

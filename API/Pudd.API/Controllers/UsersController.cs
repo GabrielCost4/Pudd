@@ -51,4 +51,30 @@ public class UsersController(UserService users) : SocialControllerBase
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public async Task<IActionResult> GetAvatar(Guid id, CancellationToken ct) =>
         Ok(await users.GetAvatarAsync(ActorId, id, ct));
+
+    [HttpPut("me/banner")]
+    [EnableRateLimiting(ApiRateLimiting.Avatar)]
+    [Consumes("multipart/form-data")]
+    [RequestSizeLimit(6 * 1024 * 1024)]
+    public async Task<IActionResult> Banner([FromForm] AvatarForm form, CancellationToken ct)
+    {
+        var image =
+            await UploadedImage.ReadAsync(form.Image, ct)
+            ?? throw new AppException(ErrorCode.InvalidInput, "Envie uma imagem.");
+        await users.SetBannerAsync(ActorId, image, ct);
+        return NoContent();
+    }
+
+    [HttpDelete("me/banner")]
+    [EnableRateLimiting(ApiRateLimiting.Avatar)]
+    public async Task<IActionResult> RemoveBanner()
+    {
+        await users.RemoveBannerAsync(ActorId);
+        return NoContent();
+    }
+
+    [HttpGet("{id:guid}/banner")]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+    public async Task<IActionResult> GetBanner(Guid id, CancellationToken ct) =>
+        Ok(await users.GetBannerAsync(ActorId, id, ct));
 }

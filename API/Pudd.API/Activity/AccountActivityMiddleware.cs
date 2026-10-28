@@ -18,7 +18,7 @@ public sealed class AccountActivityMiddleware(RequestDelegate next, ILogger<Acco
               path.StartsWith("/api/admin", StringComparison.OrdinalIgnoreCase)) ||
             (HttpMethods.IsGet(context.Request.Method) &&
              (path.EndsWith("/avatar", StringComparison.OrdinalIgnoreCase) ||
-              path.EndsWith("/image", StringComparison.OrdinalIgnoreCase))) ||
+              path.EndsWith("/banner", StringComparison.OrdinalIgnoreCase) || path.EndsWith("/image", StringComparison.OrdinalIgnoreCase))) ||
             !Guid.TryParse(context.User.FindFirstValue("sub"), out var id)) return;
         try
         {

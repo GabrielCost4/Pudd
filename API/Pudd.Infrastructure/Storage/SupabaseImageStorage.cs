@@ -111,7 +111,7 @@ public class SupabaseImageStorage(
     private static string ObjectKey(string bucket, string path)
     {
         if (
-            bucket is not ("posts" or "avatars")
+            bucket is not ("posts" or "avatars" or "banners")
             || string.IsNullOrWhiteSpace(path)
             || path.Split('/').Any(part => part is "" or "." or "..")
             || path.Contains('\\')

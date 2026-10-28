@@ -319,3 +319,20 @@
   border-radius: 50%;
   object-fit: cover;
 }
+
+.profile-banner {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.cover {
+  overflow: hidden;
+}
+.banner-editor {
+  grid-column: 1 / -1;
+}
+.banner-editor .actions {
+  margin-top: 1rem;
+}
