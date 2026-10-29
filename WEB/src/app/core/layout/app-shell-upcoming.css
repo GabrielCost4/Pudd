@@ -1,0 +1,201 @@
+.upcoming-content {
+  width: 100%;
+  min-width: 0;
+}
+.upcoming-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 1.5rem;
+  padding-block: 0.5rem 1.75rem;
+}
+.upcoming-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--accent);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.upcoming-eyebrow > i {
+  font-size: 0.875rem;
+}
+.upcoming-hero h2 {
+  margin: 0.875rem 0 0.75rem;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  line-height: 1.15;
+  letter-spacing: -0.045em;
+}
+.upcoming-hero p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+.upcoming-art {
+  position: relative;
+  padding: 0.75rem;
+}
+.upcoming-art::before {
+  content: '';
+  position: absolute;
+  inset: 1rem 0 0 1rem;
+  background: var(--accent-soft);
+  border-radius: 45% 55% 65% 35% / 40% 30% 70% 60%;
+  transform: rotate(-10deg);
+}
+.upcoming-art-blob {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 62% 38% 44% 56% / 46% 58% 42% 54%;
+  transform: rotate(5deg);
+}
+.upcoming-art-blob img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.08) rotate(-5deg);
+}
+.upcoming-art-spark {
+  position: absolute;
+  right: 0.25rem;
+  top: 0.25rem;
+  color: var(--accent);
+  font-size: 2rem;
+}
+.upcoming-feature-list {
+  display: grid;
+}
+.upcoming-feature-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-block: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+.upcoming-feature-icon {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex-shrink: 0;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-radius: 0.875rem;
+  font-size: 1.2rem;
+}
+.upcoming-feature-item h3,
+.upcoming-feedback h3 {
+  margin: 0 0 0.375rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+.upcoming-feature-item p,
+.upcoming-feedback p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  line-height: 1.65;
+}
+.upcoming-feature-status {
+  flex-shrink: 0;
+  margin-left: auto;
+  padding: 0.25rem 0.625rem;
+  border-radius: 2rem;
+  background: #d9efdf;
+  color: #235d39;
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+.upcoming-feedback {
+  display: grid;
+  justify-items: start;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background: var(--accent-soft);
+}
+.upcoming-feedback-button {
+  font-size: 0.8125rem;
+  gap: 0.625rem;
+  --p-button-border-radius: 0.625rem;
+}
+@media (max-width: 520px) {
+  .upcoming-hero {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  .upcoming-art {
+    grid-row: 1;
+    width: 9rem;
+    justify-self: center;
+  }
+  .upcoming-feature-item {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+  .upcoming-feature-item > div:nth-child(2) {
+    flex: 1;
+    min-width: 0;
+  }
+  .upcoming-feature-status {
+    display: none;
+  }
+}
+
+.upcoming-dialog-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-weight: 700;
+}
+.upcoming-dialog-title > i {
+  color: var(--accent);
+  font-size: 1.125rem;
+}
+
+.upcoming-feature-status {
+  border: 1px solid #8ec89f;
+  color: #235d39;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+}
+:host-context(.pudd-dark) .upcoming-feature-status {
+  background: #204c35;
+  border-color: #4d9565;
+  color: #bbf5cd;
+}
+@media (max-width: 520px) {
+  .upcoming-feature-status {
+    display: inline-flex;
+    margin-left: 3.5rem;
+    margin-top: -0.25rem;
+  }
+}
+
+.upcoming-hero-copy,
+.upcoming-feature-item > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.upcoming-dialog-title:focus {
+  outline: none;
+}
+
+.upcoming-feature-status {
+  background: #214a35;
+  border-color: #538a60;
+  color: #f5f0d4;
+  box-shadow: 0 0 10px #38714c24;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .upcoming-feature-status {
+    animation: pudd-upcoming-glow 4.5s ease-in-out infinite;
+  }
+}

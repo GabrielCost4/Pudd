@@ -1,5 +1,21 @@
 @import 'primeicons/primeicons.css';
 
+@keyframes pudd-upcoming-glow {
+  0%,
+  100% {
+    background-color: #214a35;
+    border-color: #538a60;
+    color: #e0f5df;
+    box-shadow: 0 0 8px #38714c30;
+  }
+  50% {
+    background-color: #665117;
+    border-color: #b0923e;
+    color: #fff1be;
+    box-shadow: 0 0 13px #ad873540;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .login-layout,
   .login-layout .auth-content,
@@ -409,4 +425,28 @@ button {
   background: transparent;
   box-shadow: none;
   overflow: visible;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body,
+  .received-feedbacks .p-card,
+  .received-feedbacks .p-tag,
+  .received-feedbacks .p-button,
+  .app-controls {
+    transition:
+      background-color 220ms ease-out,
+      color 220ms ease-out,
+      border-color 220ms ease-out;
+  }
+}
+
+.upcoming-dialog.p-dialog {
+  width: min(42rem, calc(100vw - 2rem));
+  max-width: calc(100vw - 2rem);
+  max-height: calc(100dvh - 2rem);
+}
+.upcoming-dialog .p-dialog-content {
+  min-width: 0;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
 }

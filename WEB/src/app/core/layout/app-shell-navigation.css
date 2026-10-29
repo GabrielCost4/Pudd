@@ -152,7 +152,7 @@
 .upcoming-section {
   margin-top: 1.5rem;
   padding-top: 1.25rem;
-  border-top: 1px solid #a5edbd24;
+  border-top: 1px solid var(--nav-border);
 }
 .navigation-section-title {
   margin: 0 0 0.75rem;
@@ -166,7 +166,7 @@
 .upcoming-button {
   width: 100%;
   gap: 0.625rem;
-  cursor: default;
+  cursor: pointer;
   --p-button-text-secondary-color: var(--nav-text);
 }
 .upcoming-badge {
@@ -183,6 +183,8 @@
 }
 
 :host-context(.pudd-dark) {
+  --sidebar-background: var(--surface);
+  --sidebar-image-opacity: 1;
   --sidebar-overlay: #07110dcc;
   --sidebar-image-filter: none;
   --sidebar-active-background: #16362fd9;
@@ -196,7 +198,7 @@
 .navigation-aside,
 .mobile-navigation {
   isolation: isolate;
-  background: var(--surface);
+  background: var(--sidebar-background);
 }
 .mobile-navigation {
   position: relative;
@@ -212,4 +214,49 @@
     linear-gradient(var(--sidebar-overlay), var(--sidebar-overlay)),
     url('/images/brand/pudd-sidebar-background.png') center / auto 100% no-repeat;
   filter: var(--sidebar-image-filter);
+  opacity: var(--sidebar-image-opacity);
+}
+
+.bug-report-link {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--nav-muted);
+}
+.bug-report-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+.account-card {
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--surface);
+}
+.account-card .bug-report-link {
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  color: var(--muted);
+  gap: 0.75rem;
+}
+.account-card .bug-report-link:hover {
+  background: var(--surface-raised);
+  color: var(--text);
+}
+.account-card .account {
+  --p-button-outlined-secondary-border-color: transparent;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+:host(.sidebar-collapsed) .account-card {
+  width: 2.75rem;
+}
+:host(.sidebar-collapsed) .account-card .bug-report-link {
+  width: 100%;
+  border-radius: 0;
 }

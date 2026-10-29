@@ -1,12 +1,14 @@
 :host {
-  --sidebar-overlay: #ffffff30;
-  --sidebar-image-filter: invert(1) hue-rotate(180deg) saturate(0.45);
-  --sidebar-active-background: #c0dacb;
-  --sidebar-active-border: #759e87;
-  --sidebar-active-marker: #33734f;
-  --nav-text: #203e32;
-  --nav-muted: #526b5e;
-  --nav-border: #315c4326;
+  --sidebar-overlay: transparent;
+  --sidebar-image-filter: grayscale(0.7);
+  --sidebar-image-opacity: 0.045;
+  --sidebar-background: #f3f5f1;
+  --sidebar-active-background: #e0eadf;
+  --sidebar-active-border: #adc5b0;
+  --sidebar-active-marker: #38724e;
+  --nav-text: #25372d;
+  --nav-muted: #627067;
+  --nav-border: #2b4d3614;
   --sidebar-duration: 280ms;
   --collapsed-navigation-width: 4.125rem;
   --sidebar-easing: cubic-bezier(0.22, 1, 0.36, 1);
@@ -161,8 +163,19 @@
   margin-inline-start: -0.25rem;
 }
 @media (min-width: 761px) {
+  .admin-controls .toolbar-search {
+    margin-inline-start: max(0px, calc((100% - 1000px) / 2));
+  }
+  .feed-controls .toolbar-search {
+    margin-inline-start: max(0px, calc((100% - var(--page-width)) / 2));
+  }
   .profile-controls .toolbar-search {
     margin-inline-start: max(0px, calc((100% - 76rem) / 2));
+  }
+}
+@media (min-width: 761px) and (max-width: 1250px) {
+  .feed-controls .toolbar-search {
+    margin-inline-start: max(0px, calc((100% - 42rem) / 2));
   }
 }
 main {

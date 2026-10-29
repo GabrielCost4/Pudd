@@ -79,3 +79,10 @@ td small {
     min-width: 8rem;
   }
 }
+
+.page-header {
+  margin-bottom: 0;
+}
+app-feedback:empty {
+  display: none;
+}

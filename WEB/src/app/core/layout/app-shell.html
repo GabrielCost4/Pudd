@@ -102,15 +102,15 @@
           }
         </ul>
       </nav>
-      <section class="upcoming-section" aria-label="Fabricando...">
-        <p class="navigation-section-title">Fabricando...</p>
+      <section class="upcoming-section" aria-label="Desenvolvendo...">
+        <p class="navigation-section-title">Desenvolvendo...</p>
         <button
           pButton
           type="button"
           [text]="true"
           severity="secondary"
           class="navigation-link upcoming-button"
-          aria-disabled="true"
+          (click)="closeNavigation(); upcomingOpen.set(true)"
           aria-label="Em breve — novidades"
           pTooltip="Em breve — novidades"
           tooltipPosition="right"
@@ -123,39 +123,69 @@
       </section>
     </div>
     <footer class="navigation-footer">
-      <a
-        class="account"
-        pButton
-        severity="secondary"
-        [outlined]="true"
-        routerLink="/profile/me"
-        aria-label="Abrir meu perfil"
-        pTooltip="Meu perfil"
-        tooltipPosition="right"
-        [tooltipDisabled]="!sidebarCollapsed() || mobile()"
-        (click)="closeNavigation()"
-      >
-        @if (account.avatarUrl()) {
-          <p-avatar
-            size="large"
-            shape="circle"
-            [image]="account.avatarUrl()"
-            ariaLabel="Sua foto de perfil"
-            (onImageError)="account.imageFailed()"
-          />
-        } @else {
-          <p-avatar
-            size="large"
-            shape="circle"
-            [label]="(account.name() || session.user().email).slice(0, 1).toUpperCase()"
-          />
-        }
-        <span class="account-info">
-          <strong>{{ account.name() || 'Meu perfil' }}</strong>
-          <span [title]="session.user().email">{{ session.user().email }}</span>
-        </span>
-        <i class="account-arrow pi pi-chevron-right" aria-hidden="true"></i>
-      </a>
+      <div class="account-card">
+        <a
+          class="navigation-link bug-report-link"
+          routerLink="/feedback"
+          [queryParams]="{ type: 'bug' }"
+          aria-label="Informar bug"
+          pTooltip="Informar bug"
+          tooltipPosition="right"
+          [tooltipDisabled]="!sidebarCollapsed() || mobile()"
+          (click)="closeNavigation()"
+        >
+          <svg
+            class="bug-report-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.7"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path
+              d="m8 2 1.8 2.6M16 2l-1.8 2.6M7 8h10M12 8v12M5 12H2m20 0h-3M5.5 7 3 5m15.5 2L21 5M5.5 17 3 19m15.5-2L21 19"
+            />
+            <rect x="5" y="8" width="14" height="12" rx="6" />
+            <path d="M8 8V7a4 4 0 0 1 8 0v1" />
+          </svg>
+          <span>Informar bug</span>
+        </a>
+        <a
+          class="account"
+          pButton
+          severity="secondary"
+          [outlined]="true"
+          routerLink="/profile/me"
+          aria-label="Abrir meu perfil"
+          pTooltip="Meu perfil"
+          tooltipPosition="right"
+          [tooltipDisabled]="!sidebarCollapsed() || mobile()"
+          (click)="closeNavigation()"
+        >
+          @if (account.avatarUrl()) {
+            <p-avatar
+              size="large"
+              shape="circle"
+              [image]="account.avatarUrl()"
+              ariaLabel="Sua foto de perfil"
+              (onImageError)="account.imageFailed()"
+            />
+          } @else {
+            <p-avatar
+              size="large"
+              shape="circle"
+              [label]="(account.name() || session.user().email).slice(0, 1).toUpperCase()"
+            />
+          }
+          <span class="account-info">
+            <strong>{{ account.name() || 'Meu perfil' }}</strong>
+            <span [title]="session.user().email">{{ session.user().email }}</span>
+          </span>
+          <i class="account-arrow pi pi-chevron-right" aria-hidden="true"></i>
+        </a>
+      </div>
       <button
         class="logout"
         pButton
@@ -232,7 +262,7 @@
   <div
     class="app-controls"
     [class.feed-controls]="searchPage() === '/feed'"
-    [class.admin-controls]="searchPage() === '/admin'"
+    [class.admin-controls]="searchPage().startsWith('/admin')"
     [class.profile-controls]="searchPage().startsWith('/profile')"
   >
     <div class="toolbar-content">
@@ -267,3 +297,75 @@
   buttonAriaLabel="Voltar ao topo"
   [buttonProps]="{ rounded: true, severity: 'primary', ariaLabel: 'Voltar ao topo' }"
 />
+
+<p-dialog
+  #upcomingDialog
+  [focusOnShow]="false"
+  [blockScroll]="true"
+  (onShow)="resetUpcomingScroll(upcomingDialog)"
+  [(visible)]="upcomingOpen"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  appendTo="body"
+  styleClass="upcoming-dialog"
+>
+  <ng-template #header
+    ><span tabindex="-1" class="upcoming-dialog-title"
+      ><i class="pi pi-clock" aria-hidden="true"></i><span>Em breve no Pudd</span></span
+    ></ng-template
+  >
+  <div class="upcoming-content">
+    <div class="upcoming-hero">
+      <div class="upcoming-hero-copy">
+        <span class="upcoming-eyebrow"
+          ><i class="pi pi-hammer" aria-hidden="true"></i> Em desenvolvimento</span
+        >
+        <h2>Boas ideias crescem<br />em comunidade.</h2>
+        <p>Estamos preparando novas formas de conectar quem cria. Olha o que vem por aí.</p>
+      </div>
+      <div class="upcoming-art" aria-hidden="true">
+        <div class="upcoming-art-blob">
+          <img src="/images/brand/community-building.png" alt="" />
+        </div>
+        <span class="upcoming-art-spark">✦</span>
+      </div>
+    </div>
+    <div class="upcoming-feature-list">
+      <div class="upcoming-feature-item">
+        <div class="upcoming-feature-icon"><i class="pi pi-user-plus" aria-hidden="true"></i></div>
+        <div>
+          <h3>Seguir usuários</h3>
+          <p>Acompanhe as pessoas e os projetos que inspiram você.</p>
+        </div>
+        <span class="upcoming-feature-status">Em breve</span>
+      </div>
+      <div class="upcoming-feature-item">
+        <div class="upcoming-feature-icon"><i class="pi pi-users" aria-hidden="true"></i></div>
+        <div>
+          <h3>Criar comunidades</h3>
+          <p>
+            Reúna pessoas com interesses em comum para compartilhar ideias, projetos e conversar.
+          </p>
+        </div>
+        <span class="upcoming-feature-status">Em breve</span>
+      </div>
+    </div>
+    <div class="upcoming-feedback">
+      <div>
+        <h3>O Pudd também é feito por você.</h3>
+        <p>Tem mais alguma sugestão para a comunidade ou encontrou um bug? Mande para nós.</p>
+      </div>
+      <a
+        pButton
+        routerLink="/feedback"
+        (click)="upcomingOpen.set(false)"
+        class="upcoming-feedback-button"
+      >
+        <i class="pi pi-comment" aria-hidden="true"></i><span>Enviar feedback</span
+        ><i class="pi pi-arrow-up-right" aria-hidden="true"></i>
+      </a>
+    </div>
+  </div>
+</p-dialog>

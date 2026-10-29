@@ -1,3 +1,4 @@
+import { AdminNavigation } from '../../components/admin-navigation/admin-navigation';
 import { DatePipe } from '@angular/common';
 import { TagModule } from 'primeng/tag';
 import { TableModule } from 'primeng/table';
@@ -20,6 +21,7 @@ import { AdminService } from '../../services/admin.service';
   providers: [ConfirmationService],
   selector: 'app-admin-users',
   imports: [
+    AdminNavigation,
     DatePipe,
     TagModule,
     TableModule,

@@ -2,6 +2,7 @@ import { UserSearch } from '../search/user-search';
 import { NotificationBell } from '../notifications/notification-bell';
 import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
+import { Dialog, DialogModule } from 'primeng/dialog';
 import { DrawerModule } from 'primeng/drawer';
 import { TooltipModule } from 'primeng/tooltip';
 import { ScrollTopModule } from 'primeng/scrolltop';
@@ -32,6 +33,7 @@ import { BrandLogo } from '../../shared/components/brand-logo/brand-logo';
     AvatarModule,
     ButtonModule,
     DrawerModule,
+    DialogModule,
     TooltipModule,
     ScrollTopModule,
     NgTemplateOutlet,
@@ -42,7 +44,7 @@ import { BrandLogo } from '../../shared/components/brand-logo/brand-logo';
     BrandLogo,
   ],
   templateUrl: './app-shell.html',
-  styleUrls: ['./app-shell.css', './app-shell-navigation.css'],
+  styleUrls: ['./app-shell.css', './app-shell-navigation.css', './app-shell-upcoming.css'],
   host: {
     '[class.sidebar-collapsed]': 'sidebarCollapsed() && !mobile()',
     '(document:keydown)': 'handleSidebarShortcut($event)',
@@ -57,9 +59,18 @@ export class AppShell {
   private readonly destroyRef = inject(DestroyRef);
   protected readonly searchPage = signal(this.router.url.split('?')[0]);
   protected readonly mobile = signal(false);
+  protected readonly upcomingOpen = signal(false);
   protected readonly navigationOpen = signal(true);
   protected readonly sidebarCollapsed = signal(false);
   private readonly sidebarToggle = viewChild<ElementRef<HTMLButtonElement>>('sidebarToggle');
+
+  protected resetUpcomingScroll(dialog: Dialog): void {
+    dialog
+      .container()
+      ?.querySelector<HTMLElement>('.upcoming-dialog-title')
+      ?.focus({ preventScroll: true });
+    dialog.contentViewChild?.nativeElement.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }
 
   constructor() {
     const query = inject(DOCUMENT).defaultView?.matchMedia?.('(max-width: 760px)');
