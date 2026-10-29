@@ -1,0 +1,59 @@
+.feedback-page {
+  max-width: 42rem;
+  margin: auto;
+  display: grid;
+  gap: 1.5rem;
+}
+.feedback-page > a {
+  justify-self: start;
+}
+.feedback-page header h1 {
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  margin: 0.5rem 0;
+}
+.feedback-page header p {
+  margin: 0;
+}
+.feedback-eyebrow {
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+form {
+  display: grid;
+  gap: 1.5rem;
+}
+label {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 10rem;
+}
+small {
+  display: block;
+  font-size: 0.75rem;
+  margin-top: 0.5rem;
+}
+form > button {
+  justify-self: end;
+  gap: 0.5rem;
+}
+.feedback-error {
+  color: var(--danger);
+}
+.feedback-sent {
+  text-align: center;
+  padding: 1rem;
+}
+.feedback-sent > i {
+  font-size: 2rem;
+  color: var(--accent);
+}
+.feedback-sent p {
+  color: var(--muted);
+}

@@ -1,0 +1,68 @@
+<section class="feedback-page">
+  <a pButton [text]="true" severity="secondary" routerLink="/feed"
+    ><i class="pi pi-arrow-left" aria-hidden="true"></i> Voltar ao feed</a
+  >
+  <header>
+    <span class="feedback-eyebrow">Vamos construir juntos</span>
+    <h1>Sua ideia tem espaço aqui.</h1>
+    <p class="muted">Tem uma sugestão para a comunidade ou encontrou um bug? Conte para nós.</p>
+  </header>
+  <app-feedback [errors]="errors()" />
+  <p-card>
+    @if (sent()) {
+      <div class="feedback-sent" role="status">
+        <i class="pi pi-check-circle" aria-hidden="true"></i>
+        <h2>Feedback enviado!</h2>
+        <p>Obrigado por ajudar o Pudd a melhorar. Sua mensagem chegou à nossa equipe.</p>
+        <button pButton type="button" [outlined]="true" (click)="sent.set(false)">
+          Enviar outro feedback
+        </button>
+      </div>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="submit()" [attr.aria-busy]="busy()">
+        <div>
+          <label id="feedback-kind-label">O que você quer compartilhar?</label
+          ><p-selectbutton
+            formControlName="kind"
+            [options]="kinds"
+            optionLabel="label"
+            optionValue="value"
+            [allowEmpty]="false"
+            ariaLabelledBy="feedback-kind-label"
+          />
+        </div>
+        <div>
+          <label for="feedback-description">{{
+            form.controls.kind.value === 'Bug' ? 'O que aconteceu?' : 'Qual é a sua ideia?'
+          }}</label
+          ><textarea
+            pTextarea
+            id="feedback-description"
+            formControlName="description"
+            rows="7"
+            maxlength="3000"
+            [readOnly]="busy()"
+            [placeholder]="
+              form.controls.kind.value === 'Bug'
+                ? 'Conte em qual tela aconteceu, os passos para reproduzir e o que você esperava.'
+                : 'Conte sua ideia e como ela pode ajudar a comunidade.'
+            "
+            [attr.aria-invalid]="
+              form.controls.description.touched && form.controls.description.invalid
+            "
+            aria-describedby="feedback-hint"
+          ></textarea
+          ><small id="feedback-hint" class="muted"
+            >Entre 10 e 3000 caracteres. Não inclua senhas ou informações sensíveis.</small
+          >
+          @if (form.controls.description.touched && form.controls.description.invalid) {
+            <small class="feedback-error" role="alert">Escreva entre 10 e 3000 caracteres.</small>
+          }
+        </div>
+        <button pButton type="submit" [loading]="busy()" [disabled]="busy()">
+          <i class="pi pi-send" aria-hidden="true"></i> Enviar feedback
+        </button>
+      </form>
+    }
+  </p-card>
+</section>

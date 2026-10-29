@@ -1,0 +1,49 @@
+<section class="received-feedbacks">
+  <header class="page-header">
+    <div>
+      <h1>Feedbacks recebidos</h1>
+      <p class="muted">Sugestões e relatos de bugs enviados pela comunidade.</p>
+    </div>
+  </header>
+  <app-admin-navigation />
+  <app-feedback [errors]="errors()" />
+  @if (loading()) {
+    <p role="status">Carregando feedbacks…</p>
+  }
+  @if (errors().length) {
+    <button pButton type="button" [disabled]="loading()" (click)="load(page())">
+      Tentar novamente
+    </button>
+  }
+  @if (!loading() && !errors().length && !items().length) {
+    <p-card
+      ><div class="feedback-empty">
+        <i class="pi pi-inbox" aria-hidden="true"></i>
+        <h2>Nenhum feedback por aqui ainda</h2>
+        <p>As mensagens enviadas pela comunidade aparecerão neste painel.</p>
+      </div></p-card
+    >
+  }
+  @for (item of items(); track item.id) {
+    <p-card
+      ><article>
+        <header class="feedback-meta">
+          <strong>{{ item.authorName }}</strong
+          ><p-tag
+            [value]="item.kind === 'Bug' ? 'Bug' : 'Sugestão'"
+            [severity]="item.kind === 'Bug' ? 'warn' : 'success'"
+          /><time [attr.datetime]="item.createdAt">{{
+            item.createdAt | date: 'dd/MM/yyyy HH:mm'
+          }}</time>
+        </header>
+        <p class="feedback-description">{{ item.description }}</p>
+      </article></p-card
+    >
+  }
+  <app-pagination
+    [page]="page()"
+    [hasNext]="hasNext()"
+    [busy]="loading()"
+    (changed)="load($event)"
+  />
+</section>

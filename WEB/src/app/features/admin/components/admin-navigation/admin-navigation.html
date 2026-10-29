@@ -1,0 +1,21 @@
+﻿<nav class="admin-tabs" aria-label="Seções da administração">
+  <a
+    pButton
+    [text]="true"
+    severity="secondary"
+    routerLink="/admin"
+    routerLinkActive="selected"
+    [routerLinkActiveOptions]="{ exact: true }"
+    ariaCurrentWhenActive="page"
+    ><i class="pi pi-users" aria-hidden="true"></i><span>Usuários</span></a
+  >
+  <a
+    pButton
+    [text]="true"
+    severity="secondary"
+    routerLink="/admin/feedbacks"
+    routerLinkActive="selected"
+    ariaCurrentWhenActive="page"
+    ><i class="pi pi-comment" aria-hidden="true"></i><span>Feedbacks recebidos</span></a
+  >
+</nav>

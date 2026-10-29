@@ -24,6 +24,7 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<PuddDbContext>(options => options.UseNpgsql(connectionString));
 
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ICommunityFeedbackRepository, CommunityFeedbackRepository>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IPostRepository, PostRepository>();

@@ -34,6 +34,23 @@ export const routes: Routes = [
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'feed' },
       {
+        path: 'feedback',
+        title: 'Enviar feedback | Pudd',
+        loadComponent: () =>
+          import('./features/community-feedback/pages/community-feedback').then(
+            (m) => m.CommunityFeedbackPage,
+          ),
+      },
+      {
+        path: 'admin/feedbacks',
+        title: 'Feedbacks recebidos | Pudd',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./features/admin/pages/feedbacks/received-feedbacks').then(
+            (m) => m.ReceivedFeedbacks,
+          ),
+      },
+      {
         path: 'feed',
         title: 'Comunidade | Pudd',
         loadComponent: () => import('./features/posts/pages/feed/feed').then((m) => m.Feed),

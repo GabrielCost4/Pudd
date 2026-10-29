@@ -1,0 +1,77 @@
+.received-feedbacks {
+  max-width: 1000px;
+  margin: auto;
+  display: grid;
+  gap: 1.25rem;
+}
+.page-header {
+  flex-wrap: wrap;
+}
+.page-header h1 {
+  margin-bottom: 0.5rem;
+}
+.page-header p {
+  margin: 0;
+}
+.feedback-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.feedback-meta strong {
+  color: var(--text);
+  font-weight: 600;
+}
+time {
+  margin-inline-start: auto;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+.feedback-description {
+  margin: 1rem 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 0.9375rem;
+}
+.feedback-empty {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--muted);
+}
+.feedback-empty > i {
+  font-size: 2rem;
+  color: var(--accent);
+}
+.feedback-empty h2 {
+  margin-top: 1rem;
+  font-size: 1.125rem;
+  color: var(--text);
+}
+
+.page-header {
+  margin-bottom: 0;
+}
+app-feedback:empty {
+  display: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  p-card {
+    animation: feedback-appear 180ms ease-out;
+  }
+  .feedback-meta strong,
+  time,
+  .feedback-description {
+    transition: color 220ms ease-out;
+  }
+}
+@keyframes feedback-appear {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

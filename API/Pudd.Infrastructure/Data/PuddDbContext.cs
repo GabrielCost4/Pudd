@@ -12,6 +12,7 @@ namespace Pudd.Infrastructure
         public PuddDbContext(DbContextOptions<PuddDbContext> options) : base(options){        
         }
 
+        public DbSet<CommunityFeedback> feedbacks => Set<CommunityFeedback>();
         public DbSet<User> users => Set<User>();
         public DbSet<Post> posts => Set<Post>();
         public DbSet<Comment> comments => Set<Comment>();
@@ -23,6 +24,12 @@ namespace Pudd.Infrastructure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            var feedback = modelBuilder.Entity<CommunityFeedback>();
+            feedback.Property(f => f.Kind).HasMaxLength(16);
+            feedback.Property(f => f.Description).HasMaxLength(3000);
+            feedback.HasIndex(f => new { f.CreatedAt, f.ID });
+            feedback.HasOne(f => f.User).WithMany().HasForeignKey(f => f.UserID).OnDelete(DeleteBehavior.Restrict);
 
             var notification = modelBuilder.Entity<Notification>();
             notification.Property(n => n.Kind).HasMaxLength(16);
