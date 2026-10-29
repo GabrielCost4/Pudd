@@ -1,4 +1,3 @@
-import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -9,7 +8,7 @@ import { BrandLogo } from '../../../../shared/components/brand-logo/brand-logo';
 
 @Component({
   selector: 'app-error-page',
-  imports: [CardModule, ButtonModule, RouterLink, ThemeToggle, BrandLogo],
+  imports: [ButtonModule, RouterLink, ThemeToggle, BrandLogo],
   templateUrl: './error-page.html',
   styleUrl: './error-page.css',
 })

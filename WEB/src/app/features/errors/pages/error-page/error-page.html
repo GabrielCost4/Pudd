@@ -1,27 +1,61 @@
-<main class="error-layout">
+﻿<main class="error-layout">
   <header class="error-toolbar">
     <a
       class="brand-placeholder"
       [routerLink]="session.isAuthenticated() ? '/feed' : '/login'"
       aria-label="Pudd"
-      ><app-brand-logo /><span>Pudd</span></a
-    >
+      ><app-brand-logo
+    /></a>
     <app-theme-toggle [dark]="theme.mode() === 'dark'" (toggled)="theme.toggle()" />
   </header>
-  <p-card class="error-card">
-    <div class="error-code" aria-hidden="true">{{ code }}</div>
-    <p class="eyebrow">{{ notFound ? 'CAMINHO NÃO ENCONTRADO' : 'ACESSO NÃO AUTORIZADO' }}</p>
-    <h1>{{ title }}</h1>
-    <p class="muted">{{ description }}</p>
-    <div class="actions">
-      @if (session.isAuthenticated()) {
-        <a pButton routerLink="/feed">Voltar para o feed</a>
-      } @else {
-        <a pButton routerLink="/login">Ir para o login</a>
-      }
-      @if (!session.isAuthenticated()) {
-        <a severity="secondary" [text]="true" pButton routerLink="/register">Criar uma conta</a>
-      }
+  <section class="error-content" aria-labelledby="error-title">
+    <div class="error-art" aria-hidden="true">
+      <div class="error-art-shape">
+        <img
+          [src]="notFound ? '/images/errors/not-found.png' : '/images/errors/access.png'"
+          alt=""
+          fetchpriority="high"
+        />
+      </div>
+      <span class="error-art-spark">✦</span>
     </div>
-  </p-card>
+    <div class="error-copy">
+      <span class="error-code"
+        ><i [class]="notFound ? 'pi pi-map-marker' : 'pi pi-lock'" aria-hidden="true"></i> Erro
+        {{ code }}</span
+      >
+      <p class="error-eyebrow">
+        {{
+          notFound
+            ? 'Um pequeno desvio no caminho'
+            : forbidden
+              ? 'Este espaço tem acesso restrito'
+              : 'Vamos nos conectar de novo?'
+        }}
+      </p>
+      <h1 id="error-title">{{ title }}</h1>
+      <p class="error-description">{{ description }}</p>
+      <div class="error-actions">
+        @if (!notFound && !forbidden) {
+          <a pButton routerLink="/login"
+            ><i class="pi pi-sign-in" aria-hidden="true"></i> Entrar novamente</a
+          >
+        } @else if (session.isAuthenticated()) {
+          <a pButton routerLink="/feed"
+            ><i class="pi pi-arrow-left" aria-hidden="true"></i> Voltar para o feed</a
+          >
+        } @else {
+          <a pButton routerLink="/login"
+            ><i class="pi pi-arrow-left" aria-hidden="true"></i> Ir para o login</a
+          >
+        }
+        @if (!session.isAuthenticated()) {
+          <a severity="secondary" [text]="true" pButton routerLink="/register"
+            >Criar uma conta <i class="pi pi-arrow-up-right" aria-hidden="true"></i
+          ></a>
+        }
+      </div>
+      <p class="error-footnote">A comunidade continua por aqui, pronta para o seu próximo passo.</p>
+    </div>
+  </section>
 </main>
