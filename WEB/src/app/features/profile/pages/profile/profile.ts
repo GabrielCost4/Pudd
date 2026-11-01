@@ -73,6 +73,8 @@ export class ProfilePage {
   protected readonly bannerFailed = signal(false);
   protected readonly selectedBanner = signal<File | null>(null);
   protected readonly bannerPickerVersion = signal(0);
+  protected readonly bannerMenuOpen = signal(false);
+  protected readonly bannerDialogVisible = signal(false);
   protected readonly avatarUrl = signal('');
   protected readonly avatarFailed = signal(false);
   protected readonly avatarPreviewVisible = signal(false);
@@ -144,6 +146,20 @@ export class ProfilePage {
     this.profile.set(profile);
     this.form.setValue({ name: profile.name, bio: profile.bio || '' });
   }
+  protected openEdit(): void {
+    if (this.busy()) return;
+    const profile = this.profile();
+    if (!profile) return;
+    this.setProfile(profile);
+    this.errors.set([]);
+    this.success.set('');
+    this.selectedImage.set(null);
+    this.pickerVersion.update((value) => value + 1);
+    this.editing.set(true);
+  }
+  protected onEditDialogVisibilityChange(visible: boolean): void {
+    if (!visible && !this.busy()) this.cancelEdit();
+  }
   private stopAvatar(): void {
     clearTimeout(this.avatarTimer);
     this.avatarRequest?.unsubscribe();
@@ -195,6 +211,8 @@ export class ProfilePage {
     if (profile) this.setProfile(profile);
     this.selectedImage.set(null);
     this.selectedBanner.set(null);
+    this.errors.set([]);
+    this.success.set('');
     this.editing.set(false);
   }
   protected nameError(): string | null {
@@ -310,9 +328,16 @@ export class ProfilePage {
           this.bannerPickerVersion.update((v) => v + 1);
           this.loadBanner();
           this.success.set('Banner atualizado.');
+          this.bannerDialogVisible.set(false);
         },
         error: (error: unknown) => this.errors.set(apiErrors(error)),
       });
+  }
+  protected openBannerDialog(): void {
+    this.bannerMenuOpen.set(false);
+    this.selectedBanner.set(null);
+    this.bannerPickerVersion.update((v) => v + 1);
+    this.bannerDialogVisible.set(true);
   }
   protected removeBanner(): void {
     if (this.busy()) return;

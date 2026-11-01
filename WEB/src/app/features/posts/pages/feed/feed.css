@@ -297,6 +297,14 @@ h1 {
   margin-bottom: 0.75rem;
   background: var(--p-primary-300);
 }
+.about-community-image {
+  display: block;
+  width: 100%;
+  max-height: 15rem;
+  object-fit: cover;
+  border-radius: 0.75rem;
+  margin-bottom: 1.25rem;
+}
 .about-details ul {
   display: grid;
   gap: 1rem;
@@ -359,6 +367,8 @@ h1 {
 .feed-composer {
   --p-card-background: var(--surface);
   --p-card-border-radius: 0.875rem;
+  --p-card-border-color: var(--border);
+  --p-card-border-width: 1px;
   --p-card-shadow: 0 4px 20px #0000000a;
   display: block;
 }

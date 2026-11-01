@@ -66,12 +66,12 @@
   --page-width: 68rem;
   --reading-width: 45rem;
   --navigation-width: 14.5rem;
-  --nav-background: #153934;
-  --nav-text: #f1f7f1;
-  --nav-muted: #bed0c4;
-  --nav-border: #4e7163;
-  --nav-selected: #dfeedd;
-  --nav-selected-text: #153934;
+  --nav-background: #244b3b;
+  --nav-text: #f5f6eb;
+  --nav-muted: #c3d1c4;
+  --nav-border: #668071;
+  --nav-selected: #c5a52c;
+  --nav-selected-text: #263d31;
   --editorial-background: #eeeedf;
   --editorial-text: #21352b;
   --art-background: #102b27;

@@ -10,7 +10,6 @@ public class PostLikeRepository(PuddDbContext context) : IPostLikeRepository
     {
         if (liked)
         {
-            // Mantenha a interpolacao nesta API: o EF transforma os valores em parametros SQL.
             await context.Database.ExecuteSqlInterpolatedAsync(
                 $"""
                 WITH inserted AS (

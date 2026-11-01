@@ -71,6 +71,10 @@
   border-right: 2px solid currentColor;
   transform: rotate(45deg);
 }
+:host-context(html:not(.pudd-dark)) .navigation-link.active {
+  background: var(--sidebar-active-background);
+  color: var(--nav-text);
+}
 :host(.sidebar-collapsed) .navigation-link.active::after {
   display: none;
 }

@@ -1,5 +1,6 @@
 :host {
   display: block;
+  --p-card-border-color: var(--border);
 }
 :host(.in-dialog) {
   height: 100%;

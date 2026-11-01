@@ -2,13 +2,13 @@
   --sidebar-overlay: transparent;
   --sidebar-image-filter: grayscale(0.7);
   --sidebar-image-opacity: 0.045;
-  --sidebar-background: #f3f5f1;
-  --sidebar-active-background: #e0eadf;
-  --sidebar-active-border: #adc5b0;
-  --sidebar-active-marker: #38724e;
-  --nav-text: #25372d;
-  --nav-muted: #627067;
-  --nav-border: #2b4d3614;
+  --sidebar-background: #244b3b;
+  --sidebar-active-background: #d5b64550;
+  --sidebar-active-border: #e4c34f8c;
+  --sidebar-active-marker: #edc944;
+  --nav-text: #f5f6eb;
+  --nav-muted: #c3d1c4;
+  --nav-border: #ffffff1f;
   --sidebar-duration: 280ms;
   --collapsed-navigation-width: 4.125rem;
   --sidebar-easing: cubic-bezier(0.22, 1, 0.36, 1);
@@ -62,10 +62,10 @@
   outline-color: var(--nav-selected);
 }
 :host(.sidebar-collapsed) .sidebar-toggle {
-  --p-button-text-secondary-color: var(--nav-muted);
+  --p-button-text-secondary-color: var(--nav-text);
   --p-button-text-secondary-hover-background: transparent;
   --p-button-text-secondary-active-background: transparent;
-  --p-button-focus-ring-color: var(--accent);
+  --p-button-focus-ring-color: var(--nav-selected);
   left: 0.6875rem;
   opacity: 0;
   pointer-events: none;
@@ -79,10 +79,11 @@
   background: transparent;
 }
 :host(.sidebar-collapsed) .sidebar-toggle:hover {
-  --p-button-text-secondary-color: var(--accent);
+  --p-button-text-secondary-color: var(--nav-text);
+  color: var(--nav-text);
 }
 :host(.sidebar-collapsed) .sidebar-toggle:focus-visible {
-  outline-color: var(--accent);
+  outline-color: var(--nav-selected);
 }
 .sidebar-toggle-icon {
   display: block;
@@ -136,6 +137,9 @@
   border-bottom: 1px solid var(--border);
   background: var(--surface);
   z-index: 5;
+}
+:host-context(.pudd-dark) .main-column:has(.profile-controls) {
+  background: var(--background);
 }
 .toolbar-content {
   width: 100%;

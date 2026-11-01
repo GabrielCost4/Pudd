@@ -1,4 +1,4 @@
-<div class="feed-layout">
+﻿<div class="feed-layout">
   <section class="feed" aria-labelledby="feed-title">
     <header class="feed-heading">
       <div>
@@ -11,7 +11,7 @@
         } @else {
           <h1 id="feed-title" class="feed-name filtered">
             <span>{{
-              authorId() === session.user().id ? 'Minhas publicações' : 'Publicações do perfil'
+              authorId() === session.user().id ? 'Minhas publicaÃ§Ãµes' : 'PublicaÃ§Ãµes do perfil'
             }}</span>
           </h1>
         }
@@ -32,7 +32,7 @@
             class="composer-link"
             [dt]="composerButtonTokens"
             routerLink="/posts/new"
-            aria-label="Escrever uma publicação"
+            aria-label="Escrever uma publicaÃ§Ã£o"
           >
             @if (account.avatarUrl()) {
               <p-avatar
@@ -78,7 +78,7 @@
     <nav
       class="feed-tabs"
       [class.own-active]="authorId() === session.user().id"
-      aria-label="Filtrar publicações"
+      aria-label="Filtrar publicaÃ§Ãµes"
     >
       <a
         pButton
@@ -103,11 +103,11 @@
     <div class="feed-update" role="status" aria-live="polite">
       @if (loading() && loaded()) {
         <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
-        <span>Atualizando publicações…</span>
+        <span>Atualizando publicações</span>
       }
     </div>
     @if (loading() && !loaded()) {
-      <div class="feed-skeleton" role="status" aria-label="Carregando publicações" aria-busy="true">
+      <div class="feed-skeleton" role="status" aria-label="Carregando publicaÃ§Ãµes" aria-busy="true">
         @for (placeholder of [1, 2, 3]; track placeholder) {
           <p-card aria-hidden="true">
             <div class="skeleton-author">
@@ -127,7 +127,7 @@
       </div>
     } @else if (errors().length) {
       <div class="load-error" role="status">
-        <h2>Não foi possível carregar as publicações.</h2>
+        <h2>Não foi possí­vel carregar as publicações.</h2>
         <button pButton type="button" severity="secondary" (click)="reload()">
           Tentar novamente
         </button>
@@ -151,16 +151,16 @@
           } @empty {
             <p-card class="empty">
               <i class="pi pi-inbox" aria-hidden="true"></i>
-              <h2>Nenhuma publicação</h2>
+              <h2>Nenhuma publicaÃ§Ã£o</h2>
               <p>
                 {{
                   authorId()
-                    ? 'Este perfil ainda não publicou.'
-                    : 'As publicações da comunidade aparecerão aqui.'
+                    ? 'Este perfil ainda nÃ£o publicou.'
+                    : 'As publicaÃ§Ãµes da comunidade aparecerÃ£o aqui.'
                 }}
               </p>
               @if (!authorId() || authorId() === session.user().id) {
-                <a pButton routerLink="/posts/new">Criar publicação</a>
+                <a pButton routerLink="/posts/new">Criar publicaÃ§Ã£o</a>
               } @else {
                 <a pButton routerLink="/feed">Explorar a comunidade</a>
               }
@@ -217,14 +217,16 @@
   [modal]="true"
   [draggable]="false"
   [resizable]="false"
+  [focusOnShow]="false"
   [dismissableMask]="true"
   appendTo="body"
   [pt]="{ root: { class: 'community-about-dialog' } }"
 >
   <div class="about-details">
+    <img class="about-community-image" src="/images/brand/community-interaction.png" alt="Pessoas conversando e compartilhando ideias" />
     <p>
-      O Pudd é uma comunidade para compartilhar projetos, ideias e aprendizados, em qualquer etapa
-      da sua jornada.
+      No Pudd, você compartilha projetos, ideias e aprendizados, conhece pessoas com interesses
+      parecidos e aprende com novas perspectivas. Cada publicação pode começar uma boa conversa.
     </p>
     <ul>
       <li>
@@ -237,7 +239,7 @@
       </li>
       <li>
         <i class="pi pi-user" aria-hidden="true"></i
-        ><span>Apresente-se no perfil e reúna suas publicações em um só lugar.</span>
+        ><span>Apresente-se no perfil e reÃºna suas publicações em um só lugar.</span>
       </li>
     </ul>
     <a pButton routerLink="/profile/me" (click)="aboutOpen.set(false)"
@@ -246,7 +248,7 @@
   </div>
 </p-dialog>
 <p-dialog
-  header="Editar publicação"
+  header="Editar publicaÃ§Ã£o"
   (onHide)="restoreEditFocus()"
   [visible]="!!editingPost()"
   (visibleChange)="!$event && closeEditor()"
@@ -269,3 +271,4 @@
     />
   }
 </p-dialog>
+

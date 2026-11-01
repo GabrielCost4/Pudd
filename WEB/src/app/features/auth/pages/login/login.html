@@ -1,28 +1,71 @@
 <main class="login-layout">
+  <header class="auth-toolbar">
+    <app-theme-toggle [dark]="theme.mode() === 'dark'" (toggled)="theme.toggle()" />
+  </header>
   <div class="auth-content">
-    <header class="auth-toolbar">
-      <a class="product-name" routerLink="/login" aria-label="Pudd: entrar">
-        <app-brand-logo />
-      </a>
-      <app-theme-toggle [dark]="theme.mode() === 'dark'" (toggled)="theme.toggle()" />
-    </header>
-    <app-login-intro class="intro-panel" />
+    <section class="auth-art" aria-label="Comunidade Pudd">
+      <div class="art-shapes" aria-hidden="true"></div>
+      <a class="art-brand" routerLink="/login" aria-label="Pudd: entrar"><app-brand-logo /></a>
+      <div class="art-copy">
+        <h2>{{ registering ? 'Boas ideias começam aqui.' : 'Bom ter você de volta!' }}</h2>
+        <p-stepper [value]="1" class="community-stepper">
+          <p-step-item [value]="1">
+            <p-step>Entre no Pudd</p-step>
+            <p-step-panel>
+              <ng-template #content let-activateCallback="activateCallback">
+                <div class="step-content">
+                  <p>Acesse sua conta para continuar.</p>
+                  <p-button
+                    label="Próxima etapa"
+                    icon="pi pi-arrow-down"
+                    iconPos="right"
+                    size="small"
+                    (onClick)="activateCallback(2)"
+                  />
+                </div>
+              </ng-template>
+            </p-step-panel>
+          </p-step-item>
+          <p-step-item [value]="2">
+            <p-step>Explore publicações</p-step>
+            <p-step-panel>
+              <ng-template #content let-activateCallback="activateCallback">
+                <div class="step-content">
+                  <p>Descubra projetos, aprendizados e ideias da comunidade.</p>
+                  <p-button
+                    label="Próxima etapa"
+                    icon="pi pi-arrow-down"
+                    iconPos="right"
+                    size="small"
+                    (onClick)="activateCallback(3)"
+                  />
+                </div>
+              </ng-template>
+            </p-step-panel>
+          </p-step-item>
+          <p-step-item [value]="3">
+            <p-step>Converse com a comunidade</p-step>
+            <p-step-panel>
+              <ng-template #content>
+                <div class="step-content">
+                  <p>Compartilhe experiências e acompanhe novas conversas.</p>
+                </div>
+              </ng-template>
+            </p-step-panel>
+          </p-step-item>
+        </p-stepper>
+      </div>
+    </section>
     <section class="login-panel" aria-labelledby="login-title">
       <p-card class="login-card">
+        <div class="mobile-brand"><app-brand-logo /></div>
         <div class="auth-heading" [class.login-heading]="!registering">
           <p class="auth-eyebrow">
             {{ registering ? 'Faça parte da comunidade' : 'Acesse sua comunidade' }}
           </p>
           <h1 id="login-title">
-            {{ registering ? 'Crie sua conta' : 'Bem-vindo de volta!' }}
+            {{ registering ? 'Crie sua conta' : 'Entre no Pudd' }}
           </h1>
-          <p>
-            {{
-              registering
-                ? 'Preencha seus dados para se cadastrar no Pudd.'
-                : 'Faça login para continuar no Pudd.'
-            }}
-          </p>
         </div>
         <form
           [formGroup]="form"

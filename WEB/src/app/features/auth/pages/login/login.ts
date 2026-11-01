@@ -1,7 +1,6 @@
-import { ThemeStore } from '../../../../core/config/theme.store';
-import { ThemeToggle } from '../../../../shared/components/theme-toggle/theme-toggle';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
+import { StepperModule } from 'primeng/stepper';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -12,21 +11,22 @@ import { AuthService } from '../../services/auth.service';
 import { LabelInput } from '../../../../shared/components/label-input/label-input';
 import { Feedback } from '../../../../shared/components/feedback/feedback';
 import { apiErrors } from '../../../../shared/utils/api-errors';
-import { LoginIntro } from '../../components/login-intro/login-intro';
 import { BrandLogo } from '../../../../shared/components/brand-logo/brand-logo';
+import { ThemeStore } from '../../../../core/config/theme.store';
+import { ThemeToggle } from '../../../../shared/components/theme-toggle/theme-toggle';
 
 @Component({
   selector: 'app-login',
   imports: [
-    ThemeToggle,
     CardModule,
     ButtonModule,
+    StepperModule,
     ReactiveFormsModule,
     RouterLink,
     LabelInput,
     Feedback,
-    LoginIntro,
     BrandLogo,
+    ThemeToggle,
   ],
   templateUrl: './login.html',
   styleUrl: './login.css',
