@@ -1,3 +1,4 @@
+@import './auth-visuals.css';
 @import 'primeicons/primeicons.css';
 
 @keyframes pudd-upcoming-glow {
@@ -416,6 +417,50 @@ button {
   .actions > a {
     min-height: 2.75rem;
   }
+}
+
+app-login .login-panel app-label-input .field-label {
+  font-size: 0.8125rem;
+  margin-bottom: 0.5rem;
+}
+app-login .login-panel app-label-input input {
+  min-height: 3.25rem;
+  border-radius: 0.85rem;
+  background: color-mix(in srgb, var(--surface-raised) 35%, var(--surface));
+  font-size: 0.9375rem;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease;
+}
+app-login .login-panel app-label-input input:enabled:hover {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+}
+app-login .login-panel app-label-input input:enabled:focus {
+  background: var(--surface);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+app-login .login-panel app-label-input input[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+app-login .login-panel app-label-input input[aria-invalid='true']:focus {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 12%, transparent);
+}
+app-login .login-panel app-label-input:focus-within .p-inputicon {
+  color: var(--accent);
+}
+
+.community-stepper .p-steplist {
+  justify-content: space-between;
+  padding: 0;
+}
+.community-stepper .p-step {
+  flex: 0 0 auto;
+  padding: 0;
+}
+.community-stepper .p-stepper-separator {
+  display: none;
 }
 
 .profile-photo-overlay.p-dialog {

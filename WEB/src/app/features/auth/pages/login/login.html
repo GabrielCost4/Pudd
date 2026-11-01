@@ -5,54 +5,129 @@
   <div class="auth-content">
     <section class="auth-art" aria-label="Comunidade Pudd">
       <div class="art-shapes" aria-hidden="true"></div>
+      <div class="art-texture" aria-hidden="true"></div>
       <a class="art-brand" routerLink="/login" aria-label="Pudd: entrar"><app-brand-logo /></a>
       <div class="art-copy">
         <h2>{{ registering ? 'Boas ideias começam aqui.' : 'Bom ter você de volta!' }}</h2>
-        <p-stepper [value]="1" class="community-stepper">
-          <p-step-item [value]="1">
-            <p-step>Entre no Pudd</p-step>
-            <p-step-panel>
-              <ng-template #content let-activateCallback="activateCallback">
-                <div class="step-content">
-                  <p>Acesse sua conta para continuar.</p>
-                  <p-button
-                    label="Próxima etapa"
-                    icon="pi pi-arrow-down"
-                    iconPos="right"
-                    size="small"
-                    (onClick)="activateCallback(2)"
-                  />
-                </div>
-              </ng-template>
-            </p-step-panel>
-          </p-step-item>
-          <p-step-item [value]="2">
-            <p-step>Explore publicações</p-step>
-            <p-step-panel>
-              <ng-template #content let-activateCallback="activateCallback">
-                <div class="step-content">
-                  <p>Descubra projetos, aprendizados e ideias da comunidade.</p>
-                  <p-button
-                    label="Próxima etapa"
-                    icon="pi pi-arrow-down"
-                    iconPos="right"
-                    size="small"
-                    (onClick)="activateCallback(3)"
-                  />
-                </div>
-              </ng-template>
-            </p-step-panel>
-          </p-step-item>
-          <p-step-item [value]="3">
-            <p-step>Converse com a comunidade</p-step>
-            <p-step-panel>
-              <ng-template #content>
-                <div class="step-content">
-                  <p>Compartilhe experiências e acompanhe novas conversas.</p>
-                </div>
-              </ng-template>
-            </p-step-panel>
-          </p-step-item>
+        <p class="art-intro">Um espaço para compartilhar ideias e aprender com a comunidade.</p>
+        <p-stepper [(value)]="activeStep" class="community-stepper">
+          <div class="community-step-track">
+            <div class="community-step-progress" aria-hidden="true">
+              <span [style.width.%]="stepProgress()"></span>
+            </div>
+            <p-step-list>
+              @for (step of communitySteps; track step.value) {
+                <p-step [value]="step.value">
+                  <ng-template #content let-activateCallback="activateCallback">
+                    <button
+                      type="button"
+                      class="community-step-button"
+                      [class.reached]="step.value <= activeStep()"
+                      [class.current]="step.value === activeStep()"
+                      [attr.aria-label]="step.title"
+                      [attr.aria-current]="step.value === activeStep() ? 'step' : null"
+                      (click)="activateCallback()"
+                    >
+                      <span class="community-step-circle">
+                        <i [class]="'pi ' + step.icon" aria-hidden="true"></i>
+                      </span>
+                      <span>{{ step.label }}</span>
+                    </button>
+                  </ng-template>
+                </p-step>
+              }
+            </p-step-list>
+          </div>
+          <p-step-panels>
+            @for (step of communitySteps; track step.value) {
+              <p-step-panel [value]="step.value">
+                <ng-template #content let-activateCallback="activateCallback">
+                  <div
+                    class="community-step-content"
+                    [class.visual-active]="activeStep() === step.value"
+                  >
+                    <h3>{{ step.title }}</h3>
+                    @if (step.value === 3) {
+                      <div class="pudd-preview" aria-hidden="true">
+                        <div class="preview-toolbar">
+                          <span></span><span></span><span></span><i></i>
+                        </div>
+                        <div
+                          class="preview-body animated-community"
+                          [class.is-playing]="activeStep() === 3"
+                        >
+                          <div class="preview-post">
+                            <div class="preview-image"></div>
+                            <div class="preview-lines"><span></span><span></span></div>
+                            <span class="community-comment-target"
+                              ><i class="pi pi-comment community-comment-trigger"></i
+                              ><i class="demo-cursor community-cursor"></i
+                            ></span>
+                          </div>
+                          <div class="preview-conversations">
+                            <div class="community-comment comment-first">
+                              <i class="pi pi-user"></i><span></span>
+                            </div>
+                            <div class="community-comment comment-second">
+                              <i class="pi pi-user"></i><span></span>
+                            </div>
+                            <div class="community-comment comment-third">
+                              <i class="pi pi-user"></i><span></span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    } @else if (step.value === 1) {
+                      <div class="pudd-preview" aria-hidden="true">
+                        <div class="preview-toolbar">
+                          <span></span><span></span><span></span><i></i>
+                        </div>
+                        <div class="animated-signin" [class.is-playing]="activeStep() === 1">
+                          <div class="demo-field">
+                            <i class="pi pi-envelope"></i
+                            ><span class="demo-dots email-dots">●●●●●●●●</span>
+                          </div>
+                          <div class="demo-field">
+                            <i class="pi pi-lock"></i
+                            ><span class="demo-dots password-dots">●●●●●●</span>
+                          </div>
+                          <div class="demo-submit">Entrar <i class="pi pi-arrow-right"></i></div>
+                          <div class="demo-welcome">
+                            <i class="pi pi-check-circle"></i>Seja bem-vindo
+                          </div>
+                          <i class="demo-cursor signin-cursor"></i>
+                        </div>
+                      </div>
+                    } @else {
+                      <div class="pudd-preview" aria-hidden="true">
+                        <div class="preview-toolbar">
+                          <span></span><span></span><span></span><i></i>
+                        </div>
+                        <div class="animated-feed" [class.is-playing]="activeStep() === 2">
+                          <div class="demo-feed-scroll">
+                            @for (icon of ['pi-code', 'pi-lightbulb', 'pi-image']; track icon) {
+                              <div class="demo-post">
+                                <div class="demo-post-author">
+                                  <i class="pi pi-user"></i><span></span>
+                                </div>
+                                <div class="demo-post-image"><i [class]="'pi ' + icon"></i></div>
+                                <div class="demo-post-actions">
+                                  <i class="pi pi-heart demo-like"></i><i class="pi pi-comment"></i
+                                  ><span class="demo-comment">●●●●●</span>
+                                </div>
+                              </div>
+                            }
+                          </div>
+                          <i class="demo-cursor feed-cursor"></i>
+                        </div>
+                      </div>
+                    }
+                    <p class="community-step-description">{{ step.description }}</p>
+                  </div>
+                </ng-template>
+              </p-step-panel>
+            }
+          </p-step-panels>
         </p-stepper>
       </div>
     </section>
@@ -66,6 +141,13 @@
           <h1 id="login-title">
             {{ registering ? 'Crie sua conta' : 'Entre no Pudd' }}
           </h1>
+          <p class="auth-description">
+            {{
+              registering
+                ? 'Seu próximo projeto começa com uma boa conexão.'
+                : 'Entre para acompanhar ideias, projetos e conversas.'
+            }}
+          </p>
         </div>
         <form
           [formGroup]="form"
@@ -121,6 +203,29 @@
             "
           />
           @if (registering) {
+            @if (passwordStrength(); as strength) {
+              <div
+                class="password-strength"
+                [class.weak]="strength.tone === 'weak'"
+                [class.fair]="strength.tone === 'fair'"
+                [class.good]="strength.tone === 'good'"
+                [class.strong]="strength.tone === 'strong'"
+                role="progressbar"
+                aria-label="Força da senha"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                [attr.aria-valuenow]="strength.percentage"
+                [attr.aria-valuetext]="strength.label"
+              >
+                <span class="password-strength-track" aria-hidden="true">
+                  <span [style.width.%]="strength.percentage"></span>
+                </span>
+                <span class="password-strength-label" aria-hidden="true">
+                  <i [class]="'pi ' + strength.icon"></i>
+                  {{ strength.label }}
+                </span>
+              </div>
+            }
             <small class="field-hint" id="password-hint"
               >Use de 8 a 20 caracteres, incluindo maiúscula, número e símbolo.</small
             >

@@ -1,11 +1,11 @@
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { StepperModule } from 'primeng/stepper';
-import { Component, DestroyRef, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { afterNextRender, Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { finalize } from 'rxjs';
+import { finalize, interval } from 'rxjs';
 import { SessionStore } from '../../../../core/auth/session.store';
 import { AuthService } from '../../services/auth.service';
 import { LabelInput } from '../../../../shared/components/label-input/label-input';
@@ -32,6 +32,33 @@ import { ThemeToggle } from '../../../../shared/components/theme-toggle/theme-to
   styleUrl: './login.css',
 })
 export class Login {
+  protected readonly activeStep = signal(1);
+  protected readonly stepProgress = signal(0);
+  protected readonly communitySteps = [
+    {
+      value: 1,
+      label: 'Entre',
+      icon: 'pi-user',
+      title: 'Seu lugar no Pudd',
+      description: 'Crie seu perfil e compartilhe o que você cria, aprende e descobre.',
+    },
+    {
+      value: 2,
+      label: 'Explore',
+      icon: 'pi-compass',
+      title: 'Descubra novas ideias',
+      description:
+        'Explore publicações, encontre projetos e acompanhe os aprendizados da comunidade.',
+    },
+    {
+      value: 3,
+      label: 'Converse',
+      icon: 'pi-comments',
+      title: 'Conecte-se com a comunidade',
+      description:
+        'Troque experiências, participe das conversas e dê vida às suas ideias com outras pessoas.',
+    },
+  ];
   protected readonly theme = inject(ThemeStore);
   private readonly auth = inject(AuthService);
 
@@ -60,6 +87,50 @@ export class Login {
     }),
     senha: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
   });
+
+  private readonly passwordValue = toSignal(this.form.controls.senha.valueChanges, {
+    initialValue: this.form.controls.senha.value,
+  });
+
+  protected readonly passwordStrength = computed(() => {
+    const password = this.passwordValue();
+    if (!this.registering || !password) return null;
+
+    const score = [
+      password.length >= 8,
+      password.length >= 12,
+      /[a-z]/.test(password),
+      /[A-Z]/.test(password),
+      /\d/.test(password),
+      /[^A-Za-z0-9]/.test(password),
+    ].filter(Boolean).length;
+    const levels = [
+      { label: 'Fraca', icon: 'pi-exclamation-triangle', percentage: 15, tone: 'weak' },
+      { label: 'Fraca', icon: 'pi-exclamation-triangle', percentage: 30, tone: 'weak' },
+      { label: 'Razoável', icon: 'pi-minus-circle', percentage: 50, tone: 'fair' },
+      { label: 'Boa', icon: 'pi-check-circle', percentage: 70, tone: 'good' },
+      { label: 'Forte', icon: 'pi-shield', percentage: 85, tone: 'strong' },
+      { label: 'Muito forte', icon: 'pi-lock', percentage: 95, tone: 'strong' },
+      { label: 'Muito forte', icon: 'pi-lock', percentage: 100, tone: 'strong' },
+    ];
+    return levels[score];
+  });
+
+  constructor() {
+    afterNextRender(() => {
+      let elapsed = 0;
+      interval(50)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(() => {
+          elapsed += 50;
+          if (elapsed >= 4500) {
+            elapsed = 0;
+            this.activeStep.update((step) => (step === 3 ? 1 : step + 1));
+          }
+          this.stepProgress.set(Math.min(100, (this.activeStep() - 1 + elapsed / 4500) * 50));
+        });
+    });
+  }
 
   protected fieldError(field: 'nome' | 'email' | 'senha'): string | null {
     const control = this.form.controls[field];
