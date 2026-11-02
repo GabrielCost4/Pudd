@@ -53,6 +53,15 @@ app.UseMiddleware<AccountActivityMiddleware>();
 app.MapControllers();
 app.MapHub<NotificationsHub>("/api/hubs/notifications", options => options.CloseOnAuthenticationExpiration = true);
 
+app.MapGet("/health", () =>
+    Results.Ok(new
+    {
+        status = "healthy",
+        application = "Pudd.API",
+        timestamp = DateTime.UtcNow
+    })
+).AllowAnonymous();
+
 app.Run();
 
 // Permite hospedar a API em memória nos testes de integração.
