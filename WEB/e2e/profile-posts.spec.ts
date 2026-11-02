@@ -63,7 +63,9 @@ test('separates images and texts in the profile and opens a complete post', asyn
   await expect(modal).toBeVisible();
   const mobileMedia = (await modal.locator('.post-image').boundingBox())!;
   const mobileAuthor = (await modal.locator('header').boundingBox())!;
-  expect(mobileMedia.y + mobileMedia.height).toBeLessThanOrEqual(mobileAuthor.y + 1);
+  const mobileCopy = (await modal.locator('.post-copy').boundingBox())!;
+  expect(mobileAuthor.y + mobileAuthor.height).toBeLessThanOrEqual(mobileCopy.y + 1);
+  expect(mobileCopy.y + mobileCopy.height).toBeLessThanOrEqual(mobileMedia.y + 1);
   const comment = modal.getByRole('link', { name: 'Comentar' });
   await comment.scrollIntoViewIfNeeded();
   await expect(comment).toBeInViewport();

@@ -537,3 +537,16 @@ app-login .login-panel app-label-input:focus-within .p-inputicon {
   overflow-x: hidden;
   overscroll-behavior: contain;
 }
+
+.banner-actions-menu .banner-action-edit {
+  --p-menu-item-color: var(--accent);
+  --p-menu-item-focus-color: var(--accent);
+  --p-menu-item-icon-color: var(--accent);
+  --p-menu-item-icon-focus-color: var(--accent);
+}
+.banner-actions-menu .banner-action-remove {
+  --p-menu-item-color: var(--danger);
+  --p-menu-item-focus-color: var(--danger);
+  --p-menu-item-icon-color: var(--danger);
+  --p-menu-item-icon-focus-color: var(--danger);
+}

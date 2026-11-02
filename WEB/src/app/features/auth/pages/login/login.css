@@ -289,27 +289,34 @@ form {
   text-align: center;
 }
 .switch-account a {
+  position: relative;
+  display: inline-block;
   margin-left: 0.35rem;
+  padding: 0.2rem 0.45rem;
   color: var(--accent);
   font-weight: 650;
   text-decoration: none;
-  padding: 0.2rem 0.45rem;
-  border-radius: 0.4rem;
-  transition:
-    color 150ms ease,
-    background-color 150ms ease,
-    transform 150ms ease;
-  display: inline-block;
 }
-.switch-account a:hover {
-  color: var(--accent);
-  background-color: color-mix(in srgb, var(--accent) 14%, transparent);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  transform: translateY(-1px);
+.switch-account a::after {
+  content: '';
+  position: absolute;
+  right: 0.45rem;
+  bottom: 0.15rem;
+  left: 0.45rem;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 180ms ease;
 }
-.switch-account a:active {
-  transform: translateY(0);
+.switch-account a:hover::after,
+.switch-account a:focus-visible::after {
+  transform: scaleX(1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .switch-account a::after {
+    transition: none;
+  }
 }
 .field-hint {
   color: var(--muted);
@@ -442,4 +449,72 @@ form {
 .forgot-link:focus-visible {
   outline: 2px solid var(--accent-border);
   border-radius: 2px;
+}
+
+@media (max-width: 700px) {
+  .login-layout {
+    position: relative;
+    min-height: 100dvh;
+    height: auto;
+    overflow: visible;
+  }
+  .auth-content {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+    grid-template-rows: auto 1fr;
+  }
+  .auth-toolbar {
+    top: 1rem;
+    right: 1rem;
+  }
+  .auth-art {
+    display: block;
+    padding: 4.75rem 1.25rem 1.25rem;
+    border-radius: 0 0 1.5rem 1.5rem;
+  }
+  .art-brand {
+    top: 1rem;
+    left: 1.25rem;
+  }
+  .art-brand app-brand-logo {
+    width: 3.5rem;
+  }
+  .art-copy {
+    max-width: 27rem;
+  }
+  .art-copy h2 {
+    max-width: none;
+    font-size: 1.125rem;
+    text-align: left;
+  }
+  .art-intro {
+    display: none;
+  }
+  .community-stepper {
+    margin-top: 1.25rem;
+    --p-stepper-step-panels-padding: 1rem 0 0;
+  }
+  .community-step-content {
+    min-height: 5rem;
+    align-content: start;
+    justify-items: start;
+    gap: 0.4rem;
+    text-align: left;
+  }
+  .community-step-content h3 {
+    font-size: 0.9375rem;
+  }
+  .community-step-content .community-step-description {
+    max-width: none;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+  }
+  .login-panel {
+    overflow: visible;
+    padding: 1.5rem 1.25rem 2rem;
+  }
+  .mobile-brand {
+    display: none;
+  }
 }

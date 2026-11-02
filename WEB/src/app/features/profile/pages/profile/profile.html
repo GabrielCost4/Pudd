@@ -39,34 +39,18 @@
                 [text]="true"
                 severity="secondary"
                 aria-label="Editar banner"
-                [attr.aria-expanded]="bannerMenuOpen()"
-                (click)="bannerMenuOpen.set(!bannerMenuOpen())"
+                aria-haspopup="menu"
+                (click)="bannerMenu.toggle($event)"
               >
                 <i class="pi pi-pencil" aria-hidden="true"></i>
               </button>
-              @if (bannerMenuOpen()) {
-                <div class="banner-menu" role="menu">
-                  <button
-                    type="button"
-                    role="menuitem"
-                    [disabled]="busy()"
-                    (click)="openBannerDialog()"
-                  >
-                    Alterar banner
-                  </button>
-                  @if (person.hasBanner) {
-                    <button
-                      type="button"
-                      role="menuitem"
-                      class="danger"
-                      [disabled]="busy()"
-                      (click)="removeBanner()"
-                    >
-                      Remover Banner
-                    </button>
-                  }
-                </div>
-              }
+              <p-menu
+                #bannerMenu
+                [model]="bannerActions()"
+                styleClass="banner-actions-menu"
+                [popup]="true"
+                appendTo="body"
+              />
             </div>
           }
         </div>
@@ -141,14 +125,15 @@
             </p>
           </div>
         </div>
-        <p class="content-text bio">
-          {{
-            person.bio ||
-              (isOwner()
-                ? 'Adicione uma bio para contar o que você cria e aprende.'
-                : 'Esta pessoa ainda não adicionou uma bio.')
-          }}
-        </p>
+        <p
+          class="content-text bio"
+          [textContent]="
+            person.bio?.trim() ||
+            (isOwner()
+              ? 'Adicione uma bio para contar o que você cria e aprende.'
+              : 'Esta pessoa ainda não adicionou uma bio.')
+          "
+        ></p>
         <p class="publication-count">
           <strong>{{ person.publicationCount ?? 0 }}</strong
           ><span>Publicações</span>

@@ -11,7 +11,7 @@
         } @else {
           <h1 id="feed-title" class="feed-name filtered">
             <span>{{
-              authorId() === session.user().id ? 'Minhas publicaÃ§Ãµes' : 'PublicaÃ§Ãµes do perfil'
+              authorId() === session.user().id ? 'Minhas publicações' : 'Publicações do perfil'
             }}</span>
           </h1>
         }
@@ -32,7 +32,7 @@
             class="composer-link"
             [dt]="composerButtonTokens"
             routerLink="/posts/new"
-            aria-label="Escrever uma publicaÃ§Ã£o"
+            aria-label="Escrever uma publicação"
           >
             @if (account.avatarUrl()) {
               <p-avatar
@@ -78,7 +78,7 @@
     <nav
       class="feed-tabs"
       [class.own-active]="authorId() === session.user().id"
-      aria-label="Filtrar publicaÃ§Ãµes"
+      aria-label="Filtrar publicações"
     >
       <a
         pButton
@@ -107,7 +107,7 @@
       }
     </div>
     @if (loading() && !loaded()) {
-      <div class="feed-skeleton" role="status" aria-label="Carregando publicaÃ§Ãµes" aria-busy="true">
+      <div class="feed-skeleton" role="status" aria-label="Carregando publicações" aria-busy="true">
         @for (placeholder of [1, 2, 3]; track placeholder) {
           <p-card aria-hidden="true">
             <div class="skeleton-author">
@@ -127,7 +127,7 @@
       </div>
     } @else if (errors().length) {
       <div class="load-error" role="status">
-        <h2>Não foi possí­vel carregar as publicações.</h2>
+        <h2>Não foi possível carregar as publicações.</h2>
         <button pButton type="button" severity="secondary" (click)="reload()">
           Tentar novamente
         </button>
@@ -151,16 +151,16 @@
           } @empty {
             <p-card class="empty">
               <i class="pi pi-inbox" aria-hidden="true"></i>
-              <h2>Nenhuma publicaÃ§Ã£o</h2>
+              <h2>Nenhuma publicação</h2>
               <p>
                 {{
                   authorId()
-                    ? 'Este perfil ainda nÃ£o publicou.'
-                    : 'As publicaÃ§Ãµes da comunidade aparecerÃ£o aqui.'
+                    ? 'Este perfil ainda não publicou.'
+                    : 'As publicações da comunidade aparecerão aqui.'
                 }}
               </p>
               @if (!authorId() || authorId() === session.user().id) {
-                <a pButton routerLink="/posts/new">Criar publicaÃ§Ã£o</a>
+                <a pButton routerLink="/posts/new">Criar publicação</a>
               } @else {
                 <a pButton routerLink="/feed">Explorar a comunidade</a>
               }
@@ -223,7 +223,11 @@
   [pt]="{ root: { class: 'community-about-dialog' } }"
 >
   <div class="about-details">
-    <img class="about-community-image" src="/images/brand/community-interaction.png" alt="Pessoas conversando e compartilhando ideias" />
+    <img
+      class="about-community-image"
+      src="/images/brand/community-interaction.png"
+      alt="Pessoas conversando e compartilhando ideias"
+    />
     <p>
       No Pudd, você compartilha projetos, ideias e aprendizados, conhece pessoas com interesses
       parecidos e aprende com novas perspectivas. Cada publicação pode começar uma boa conversa.
@@ -239,7 +243,7 @@
       </li>
       <li>
         <i class="pi pi-user" aria-hidden="true"></i
-        ><span>Apresente-se no perfil e reÃºna suas publicações em um só lugar.</span>
+        ><span>Apresente-se no perfil e reúna suas publicações em um só lugar.</span>
       </li>
     </ul>
     <a pButton routerLink="/profile/me" (click)="aboutOpen.set(false)"
@@ -248,7 +252,7 @@
   </div>
 </p-dialog>
 <p-dialog
-  header="Editar publicaÃ§Ã£o"
+  header="Editar publicação"
   (onHide)="restoreEditFocus()"
   [visible]="!!editingPost()"
   (visibleChange)="!$event && closeEditor()"
@@ -271,4 +275,3 @@
     />
   }
 </p-dialog>
-

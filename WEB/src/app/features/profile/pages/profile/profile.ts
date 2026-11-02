@@ -5,7 +5,8 @@ import { DialogModule } from 'primeng/dialog';
 import { CardModule } from 'primeng/card';
 import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, type MenuItem } from 'primeng/api';
+import { MenuModule } from 'primeng/menu';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -30,6 +31,7 @@ import { TooltipModule } from 'primeng/tooltip';
   selector: 'app-profile',
   imports: [
     DialogModule,
+    MenuModule,
     TooltipModule,
     ProfilePosts,
     ConfirmDialogModule,
@@ -73,7 +75,27 @@ export class ProfilePage {
   protected readonly bannerFailed = signal(false);
   protected readonly selectedBanner = signal<File | null>(null);
   protected readonly bannerPickerVersion = signal(0);
-  protected readonly bannerMenuOpen = signal(false);
+  protected readonly bannerActions = computed<MenuItem[]>(() => {
+    const actions: MenuItem[] = [
+      {
+        label: 'Alterar banner',
+        icon: 'pi pi-image',
+        styleClass: 'banner-action-edit',
+        disabled: this.busy(),
+        command: () => this.openBannerDialog(),
+      },
+    ];
+    if (this.profile()?.hasBanner) {
+      actions.push({
+        label: 'Remover banner',
+        icon: 'pi pi-trash',
+        styleClass: 'banner-action-remove',
+        disabled: this.busy(),
+        command: () => this.removeBanner(),
+      });
+    }
+    return actions;
+  });
   protected readonly bannerDialogVisible = signal(false);
   protected readonly avatarUrl = signal('');
   protected readonly avatarFailed = signal(false);
@@ -334,7 +356,6 @@ export class ProfilePage {
       });
   }
   protected openBannerDialog(): void {
-    this.bannerMenuOpen.set(false);
     this.selectedBanner.set(null);
     this.bannerPickerVersion.update((v) => v + 1);
     this.bannerDialogVisible.set(true);

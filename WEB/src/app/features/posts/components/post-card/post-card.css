@@ -72,7 +72,6 @@
     overflow-y: auto;
   }
   .post-dialog-layout > .post-image {
-    order: -1;
     height: clamp(12rem, 40dvh, 24rem);
     border-right: 0;
     border-bottom: 1px solid var(--border);
