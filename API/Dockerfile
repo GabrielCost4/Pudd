@@ -1,7 +1,4 @@
 
-# ==========================================
-# 1. BUILD - SDK .NET 10
-# ==========================================
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 
 WORKDIR /src
@@ -25,9 +22,6 @@ RUN dotnet publish -c Release \
     --no-restore \
     /p:UseAppHost=false
 
-# ==========================================
-# 2. RUNTIME - ASP.NET CORE 10
-# ==========================================
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 
 WORKDIR /app
