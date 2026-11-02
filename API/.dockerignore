@@ -5,6 +5,9 @@
 **/obj
 **/.env
 **/.env.*
+**/appsettings.Local.json
+**/.vercel
+**/TestResults
 *.user
 *.suo
 README.md

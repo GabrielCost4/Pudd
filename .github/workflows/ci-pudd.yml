@@ -2,35 +2,125 @@ name: CI - API
 
 on:
   push:
-    branches:
-      - main
-
+    branches: [main, hml]
+  # Required checks must also exist on PRs that only change WEB or workflows.
   pull_request:
-    branches:
-      - main
+    branches: [main, hml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  # main gets a group per commit, preserving queued production checks as well.
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref == 'refs/heads/main' && github.sha || github.ref }}
+  # Preserve running validations on main, including those used by Vercel.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/hml') }}
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+  DOTNET_NOLOGO: '1'
 
 jobs:
   build:
+    name: API - Build and tests
     runs-on: ubuntu-latest
-
+    timeout-minutes: 20
     defaults:
       run:
-        working-directory: ./API
+        working-directory: API
+
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_DB: pudd_tests_ci
+          POSTGRES_USER: postgres
+          # Disposable credentials for this isolated CI service only.
+          POSTGRES_PASSWORD: pudd-ci-only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d pudd_tests_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
 
     steps:
-      - name: Baixar código
-        uses: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
-      - name: Instalar .NET
-        uses: actions/setup-dotnet@v5
+      - name: Set up .NET 10 SDK
+        id: dotnet
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
           dotnet-version: '10.0.x'
 
-      - name: Restaurar dependências
-        run: dotnet restore Pudd.slnx
+      # setup-dotnet's built-in cache requires packages.lock.json, absent here.
+      # Always restore, even on a cache hit, to resolve and audit dependencies.
+      - name: Cache NuGet packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ steps.dotnet.outputs.dotnet-version }}-${{ hashFiles('API/**/*.csproj', 'API/Pudd.slnx', 'API/**/packages.lock.json', 'API/**/Directory.*', 'API/**/[Nn]u[Gg]et.[Cc]onfig', 'API/global.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-${{ steps.dotnet.outputs.dotnet-version }}-
 
-      - name: Compilar
+      - name: Restore and audit direct and transitive NuGet dependencies
+        run: >-
+          dotnet restore Pudd.slnx
+          -p:NuGetAudit=true
+          -p:NuGetAuditMode=all
+          -p:NuGetAuditLevel=high
+          -warnaserror:NU1900,NU1903,NU1904
+
+      - name: Build solution in Release
         run: dotnet build Pudd.slnx --no-restore --configuration Release
 
-      - name: Executar testes
-        run: dotnet test Pudd.slnx --no-build --configuration Release
+      - name: Run unit and integration tests, including PostgreSQL
+        env:
+          PUDD_TEST_POSTGRES: Host=localhost;Port=5432;Database=pudd_tests_ci;Username=postgres;Password=pudd-ci-only
+        run: dotnet test Pudd.slnx --no-build --no-restore --configuration Release --logger "console;verbosity=normal"
+
+  docker:
+    name: API - Docker validation
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # Do not upload build records or introduce registry publishing permissions.
+      DOCKER_BUILD_RECORD_UPLOAD: 'false'
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - name: Validate Dockerfile with BuildKit checks
+        run: docker build --check --file API/Dockerfile API
+
+      - name: Build and load API image without publishing
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: ./API
+          file: ./API/Dockerfile
+          tags: pudd-api:ci
+          push: false
+          load: true
+          cache-from: type=gha,scope=pudd-api
+          cache-to: type=gha,scope=pudd-api,mode=min
+
+      - name: Reject an image configured to run as root
+        run: |
+          image_user="$(docker image inspect pudd-api:ci --format '{{.Config.User}}')"
+          case "$image_user" in
+            ''|0|0:*|root|root:*)
+              echo '::error::The API image must specify a non-root user.'
+              exit 1
+              ;;
+          esac

@@ -1,0 +1,34 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      github-actions:
+        patterns: ['*']
+
+  - package-ecosystem: nuget
+    directory: /API
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      dotnet:
+        patterns: ['Microsoft.*', 'System.*']
+
+  - package-ecosystem: npm
+    directory: /WEB
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      angular:
+        patterns: ['@angular/*']
+
+  - package-ecosystem: docker
+    directory: /API
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
