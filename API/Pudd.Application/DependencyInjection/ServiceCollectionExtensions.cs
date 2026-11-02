@@ -23,6 +23,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<NotificationService>();
         services.AddScoped<UserService>();
         services.AddScoped<CommunityFeedbackService>();
+        services.AddScoped<PasswordResetService>();
         services.AddTransient<IValidator<LoginRequest>, LoginRequestValidator>();
         services.AddTransient<IValidator<RegisterRequest>, RegisterRequestValidator>();
         services.AddTransient<IValidator<CreatePostRequest>, CreatePostRequestValidator>();

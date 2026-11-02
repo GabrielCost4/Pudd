@@ -419,6 +419,48 @@ button {
   }
 }
 
+::view-transition-group(auth-theme),
+::view-transition-new(auth-theme) {
+  animation: none;
+}
+::view-transition-old(auth-theme) {
+  display: none;
+}
+
+::view-transition-group(auth-form) {
+  animation-duration: 420ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+::view-transition-old(auth-form) {
+  animation: auth-form-out 180ms ease-in both;
+}
+::view-transition-new(auth-form) {
+  animation: auth-form-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes auth-form-out {
+  to {
+    opacity: 0;
+    transform: translateY(-0.4rem);
+  }
+}
+@keyframes auth-form-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.7rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(auth-form),
+  ::view-transition-old(auth-form),
+  ::view-transition-new(auth-form) {
+    animation: none;
+  }
+}
+
 app-login .login-panel app-label-input .field-label {
   font-size: 0.8125rem;
   margin-bottom: 0.5rem;

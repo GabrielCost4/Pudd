@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Pudd.Application.Interfaces;
+using Pudd.Infrastructure.Email;
 using Pudd.Infrastructure.Repositories;
 using Pudd.Infrastructure.Security;
 using Pudd.Infrastructure.Storage;
@@ -32,6 +33,11 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPostLikeRepository, PostLikeRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<IImageDeletionQueue, ImageDeletionQueue>();
+        services.AddScoped<IPasswordResetRepository, PasswordResetRepository>();
+        services.AddHttpClient<IEmailSender, ResendEmailSender>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(15);
+        });
 
         services
             .AddHttpClient<IImageStorage, SupabaseImageStorage>(client =>

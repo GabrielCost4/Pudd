@@ -10,50 +10,66 @@
   }
   @if (profile(); as person) {
     <p-card class="profile-card">
-      <div class="cover">
+      <div class="banner-frame">
         @if (bannerUrl() && !bannerFailed()) {
-          <img class="profile-banner" [src]="bannerUrl()" alt="" (error)="bannerFailed.set(true)" />
+          <img
+            class="banner-ambilight"
+            [src]="bannerUrl()"
+            alt=""
+            aria-hidden="true"
+            draggable="false"
+          />
         }
-        @if (isOwner()) {
-          <div class="banner-actions">
-            <button
-              pButton
-              type="button"
-              class="banner-menu-trigger"
-              [rounded]="true"
-              [text]="true"
-              severity="secondary"
-              aria-label="Editar banner"
-              [attr.aria-expanded]="bannerMenuOpen()"
-              (click)="bannerMenuOpen.set(!bannerMenuOpen())"
-            >
-              <i class="pi pi-pencil" aria-hidden="true"></i>
-            </button>
-            @if (bannerMenuOpen()) {
-              <div class="banner-menu" role="menu">
-                <button
-                  type="button"
-                  role="menuitem"
-                  [disabled]="busy()"
-                  (click)="openBannerDialog()"
-                >
-                  Alterar banner
-                </button>
-                @if (person.hasBanner) {
+        <div class="cover">
+          @if (bannerUrl() && !bannerFailed()) {
+            <img
+              class="profile-banner"
+              [src]="bannerUrl()"
+              alt=""
+              (error)="bannerFailed.set(true)"
+            />
+          }
+          @if (isOwner()) {
+            <div class="banner-actions">
+              <button
+                pButton
+                type="button"
+                class="banner-menu-trigger"
+                [rounded]="true"
+                [text]="true"
+                severity="secondary"
+                aria-label="Editar banner"
+                [attr.aria-expanded]="bannerMenuOpen()"
+                (click)="bannerMenuOpen.set(!bannerMenuOpen())"
+              >
+                <i class="pi pi-pencil" aria-hidden="true"></i>
+              </button>
+              @if (bannerMenuOpen()) {
+                <div class="banner-menu" role="menu">
                   <button
                     type="button"
                     role="menuitem"
-                    class="danger"
                     [disabled]="busy()"
-                    (click)="removeBanner()"
+                    (click)="openBannerDialog()"
                   >
-                    Remover Banner
+                    Alterar banner
                   </button>
-                }
-              </div>
-            }
-          </div>
-        }
+                  @if (person.hasBanner) {
+                    <button
+                      type="button"
+                      role="menuitem"
+                      class="danger"
+                      [disabled]="busy()"
+                      (click)="removeBanner()"
+                    >
+                      Remover Banner
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
       </div>
       @if (bannerFailed()) {
         <button pButton type="button" [text]="true" severity="secondary" (click)="loadBanner()">
@@ -174,85 +190,85 @@
               <i class="pi pi-user-edit" aria-hidden="true"></i>
               <span>Seus dados</span>
             </h2>
-          <form class="stack" [formGroup]="form" (ngSubmit)="save()" [attr.aria-busy]="busy()">
-            <app-label-input
-              inputId="profile-name"
-              label="Nome"
-              autocomplete="name"
-              [control]="form.controls.name"
-              [required]="true"
-              [stacked]="true"
-              [error]="nameError()"
-              describedBy="profile-name-hint"
-              [readOnly]="busy()"
-            />
-            <small class="muted" id="profile-name-hint">Seu nome de perfil deve ser único.</small>
-            <div class="field">
-              <label for="profile-bio">Bio</label
-              ><textarea
-                pTextarea
-                id="profile-bio"
-                formControlName="bio"
-                placeholder="O que você constrói, aprende ou tem vontade de compartilhar?"
+            <form class="stack" [formGroup]="form" (ngSubmit)="save()" [attr.aria-busy]="busy()">
+              <app-label-input
+                inputId="profile-name"
+                label="Nome"
+                autocomplete="name"
+                [control]="form.controls.name"
+                [required]="true"
+                [stacked]="true"
+                [error]="nameError()"
+                describedBy="profile-name-hint"
                 [readOnly]="busy()"
-              ></textarea>
-            </div>
-            <div class="actions">
-              <button pButton type="submit" [loading]="busy()" [disabled]="busy()">
-                <i class="pi pi-check" aria-hidden="true"></i>
-                {{ busy() ? 'Salvando…' : 'Salvar perfil' }}</button
-              ><button
-                severity="secondary"
-                pButton
-                type="button"
-                [disabled]="busy()"
-                (click)="cancelEdit()"
-              >
-                <i class="pi pi-times" aria-hidden="true"></i>
-                Cancelar
-              </button>
-            </div>
-          </form>
-        </p-card>
-          <p-card class="edit-profile avatar-editor">
-          <div class="avatar-editor-layout">
-            <h2 class="edit-section-title">
-              <i class="pi pi-image" aria-hidden="true"></i>
-              <span>Sua foto de perfil</span>
-            </h2>
-            <p class="muted">Selecione uma imagem para atualizar sua foto.</p>
-            <div class="avatar-selection">
-              @for (version of [pickerVersion()]; track version) {
-                <app-image-picker [disabled]="busy()" (selected)="selectedImage.set($event)" />
-              }
-            </div>
-            <div class="actions avatar-actions">
-              <button
-                pButton
-                type="button"
-                [loading]="busy()"
-                [disabled]="busy() || !selectedImage()"
-                (click)="uploadAvatar()"
-              >
-                <i class="pi pi-upload" aria-hidden="true"></i>
-                Enviar foto
-              </button>
-              @if (person.hasAvatar) {
-                <button
-                  [text]="true"
-                  severity="danger"
+              />
+              <small class="muted" id="profile-name-hint">Seu nome de perfil deve ser único.</small>
+              <div class="field">
+                <label for="profile-bio">Bio</label
+                ><textarea
+                  pTextarea
+                  id="profile-bio"
+                  formControlName="bio"
+                  placeholder="O que você constrói, aprende ou tem vontade de compartilhar?"
+                  [readOnly]="busy()"
+                ></textarea>
+              </div>
+              <div class="actions">
+                <button pButton type="submit" [loading]="busy()" [disabled]="busy()">
+                  <i class="pi pi-check" aria-hidden="true"></i>
+                  {{ busy() ? 'Salvando…' : 'Salvar perfil' }}</button
+                ><button
+                  severity="secondary"
                   pButton
                   type="button"
                   [disabled]="busy()"
-                  (click)="removeAvatar()"
+                  (click)="cancelEdit()"
                 >
-                  <i class="pi pi-trash" aria-hidden="true"></i>
-                  Remover foto atual
+                  <i class="pi pi-times" aria-hidden="true"></i>
+                  Cancelar
                 </button>
-              }
+              </div>
+            </form>
+          </p-card>
+          <p-card class="edit-profile avatar-editor">
+            <div class="avatar-editor-layout">
+              <h2 class="edit-section-title">
+                <i class="pi pi-image" aria-hidden="true"></i>
+                <span>Sua foto de perfil</span>
+              </h2>
+              <p class="muted">Selecione uma imagem para atualizar sua foto.</p>
+              <div class="avatar-selection">
+                @for (version of [pickerVersion()]; track version) {
+                  <app-image-picker [disabled]="busy()" (selected)="selectedImage.set($event)" />
+                }
+              </div>
+              <div class="actions avatar-actions">
+                <button
+                  pButton
+                  type="button"
+                  [loading]="busy()"
+                  [disabled]="busy() || !selectedImage()"
+                  (click)="uploadAvatar()"
+                >
+                  <i class="pi pi-upload" aria-hidden="true"></i>
+                  Enviar foto
+                </button>
+                @if (person.hasAvatar) {
+                  <button
+                    [text]="true"
+                    severity="danger"
+                    pButton
+                    type="button"
+                    [disabled]="busy()"
+                    (click)="removeAvatar()"
+                  >
+                    <i class="pi pi-trash" aria-hidden="true"></i>
+                    Remover foto atual
+                  </button>
+                }
+              </div>
             </div>
-          </div>
-        </p-card>
+          </p-card>
         </div>
       </p-dialog>
     }

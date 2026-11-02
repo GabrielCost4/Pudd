@@ -14,6 +14,8 @@
   background: var(--background);
 }
 .auth-toolbar {
+  view-transition-name: auth-theme;
+  z-index: 2;
   position: absolute;
   top: 1.25rem;
   right: 1.5rem;
@@ -198,6 +200,7 @@
   padding: 1.5rem clamp(1.5rem, 5vw, 5rem);
 }
 .login-card {
+  view-transition-name: auth-form;
   --p-card-body-padding: 0;
   --p-card-body-gap: 0;
   --p-card-shadow: none;
@@ -247,9 +250,27 @@ form {
   border-radius: 0.85rem;
   font-weight: 650;
   box-shadow: 0 0.35rem 0.8rem color-mix(in srgb, var(--accent) 15%, transparent);
+  transition:
+    transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 180ms ease,
+    background-color 180ms ease;
+  cursor: pointer;
+}
+.submit-button i {
+  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 .submit-button:enabled:hover {
-  box-shadow: 0 0.5rem 1rem color-mix(in srgb, var(--accent) 23%, transparent);
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+  box-shadow: 0 0.65rem 1.4rem color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.submit-button:enabled:hover i {
+  transform: translateX(3px);
+}
+.submit-button:enabled:active {
+  transform: translateY(0) scale(0.99);
+  box-shadow: 0 0.25rem 0.6rem color-mix(in srgb, var(--accent) 22%, transparent);
 }
 .submit-button:focus-visible {
   outline: 3px solid var(--accent-border);
@@ -268,9 +289,27 @@ form {
   text-align: center;
 }
 .switch-account a {
-  margin-left: 0.25rem;
+  margin-left: 0.35rem;
   color: var(--accent);
-  font-weight: 600;
+  font-weight: 650;
+  text-decoration: none;
+  padding: 0.2rem 0.45rem;
+  border-radius: 0.4rem;
+  transition:
+    color 150ms ease,
+    background-color 150ms ease,
+    transform 150ms ease;
+  display: inline-block;
+}
+.switch-account a:hover {
+  color: var(--accent);
+  background-color: color-mix(in srgb, var(--accent) 14%, transparent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transform: translateY(-1px);
+}
+.switch-account a:active {
+  transform: translateY(0);
 }
 .field-hint {
   color: var(--muted);
@@ -389,4 +428,18 @@ form {
   .switch-account {
     margin-top: 1.25rem;
   }
+}
+
+.forgot-link-wrapper {
+  text-align: left;
+  margin-top: -0.5rem;
+}
+.forgot-link {
+  color: var(--accent);
+  font-size: var(--type-small);
+  font-weight: 500;
+}
+.forgot-link:focus-visible {
+  outline: 2px solid var(--accent-border);
+  border-radius: 2px;
 }

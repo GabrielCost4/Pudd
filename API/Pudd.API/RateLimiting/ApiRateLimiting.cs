@@ -15,6 +15,7 @@ public static class ApiRateLimiting
     public const string Avatar = "avatar";
     public const string Likes = "likes";
     public const string Moderation = "moderation";
+    public const string ForgotPassword = "forgotPassword";
 
     public static IServiceCollection AddApiRateLimiting(this IServiceCollection services)
     {
@@ -45,6 +46,7 @@ public static class ApiRateLimiting
                 (Avatar, 5, false),
                 (Likes, 30, false),
                 (Moderation, 30, false),
+                (ForgotPassword, 5, true),   // 5 tentativas/min por IP
             ];
 
             foreach (var policy in policies)

@@ -74,6 +74,10 @@
   outline: 3px solid var(--accent);
   outline-offset: 3px;
 }
+:host(:not(.ready)) .slider,
+:host(:not(.ready)) .handle {
+  transition: none;
+}
 @media (prefers-reduced-motion: reduce) {
   .sun,
   .moon {

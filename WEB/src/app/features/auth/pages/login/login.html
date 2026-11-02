@@ -1,4 +1,4 @@
-<main class="login-layout">
+﻿<main class="login-layout">
   <header class="auth-toolbar">
     <app-theme-toggle [dark]="theme.mode() === 'dark'" (toggled)="theme.toggle()" />
   </header>
@@ -202,6 +202,11 @@
                   : null
             "
           />
+          @if (!registering) {
+            <div class="forgot-link-wrapper">
+              <a class="forgot-link" routerLink="/forgot-password">Esqueceu a senha?</a>
+            </div>
+          }
           @if (registering) {
             @if (passwordStrength(); as strength) {
               <div

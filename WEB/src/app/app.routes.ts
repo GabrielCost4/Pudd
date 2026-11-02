@@ -14,6 +14,14 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/pages/login/login').then((m) => m.Login),
   },
   {
+    path: 'forgot-password',
+    title: 'Recuperar senha | Pudd',
+    loadComponent: () =>
+      import('./features/auth/pages/forgot-password/forgot-password').then(
+        (m) => m.ForgotPassword,
+      ),
+  },
+  {
     path: 'unauthorized',
     title: 'Acesso não autorizado | Pudd',
     loadComponent: () =>

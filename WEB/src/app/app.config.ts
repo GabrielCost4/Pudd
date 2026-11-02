@@ -2,7 +2,7 @@ import { providePrimeNG } from 'primeng/config';
 import { puddTheme } from './core/config/prime-theme';
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { provideRouter, withInMemoryScrolling } from '@angular/router';
+import { provideRouter, withInMemoryScrolling, withViewTransitions } from '@angular/router';
 import { routes } from './app.routes';
 import { authInterceptor } from './core/auth/auth.interceptor';
 
@@ -26,6 +26,24 @@ export const appConfig: ApplicationConfig = {
     }),
     provideBrowserGlobalErrorListeners(),
     provideHttpClient(withInterceptors([authInterceptor])),
-    provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'enabled' })),
+    provideRouter(
+      routes,
+      withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
+      withViewTransitions({
+        skipInitialTransition: true,
+        onViewTransitionCreated: ({ transition, from, to }) => {
+          const fromPath = from.firstChild?.routeConfig?.path;
+          const toPath = to.firstChild?.routeConfig?.path;
+          const authPaths = ['login', 'register'];
+          if (
+            !authPaths.includes(fromPath ?? '') ||
+            !authPaths.includes(toPath ?? '') ||
+            fromPath === toPath ||
+            matchMedia('(prefers-reduced-motion: reduce)').matches
+          )
+            transition.skipTransition();
+        },
+      }),
+    ),
   ],
 };

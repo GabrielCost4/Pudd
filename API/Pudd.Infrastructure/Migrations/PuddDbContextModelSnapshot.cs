@@ -127,6 +127,32 @@ namespace Pudd.Infrastructure.Migrations
                     b.ToTable("notifications");
                 });
 
+            modelBuilder.Entity("Pudd.Domain.Entities.PasswordResetToken", b =>
+                {
+                    b.Property<Guid>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("OtpHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Used")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("UserID")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("UserID", "Used", "ExpiresAt");
+
+                    b.ToTable("passwordResetTokens");
+                });
+
             modelBuilder.Entity("Pudd.Domain.Entities.PendingImageDeletion", b =>
                 {
                     b.Property<Guid>("ID")
@@ -336,6 +362,17 @@ namespace Pudd.Infrastructure.Migrations
                     b.Navigation("PostLike");
 
                     b.Navigation("Recipient");
+                });
+
+            modelBuilder.Entity("Pudd.Domain.Entities.PasswordResetToken", b =>
+                {
+                    b.HasOne("Pudd.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Pudd.Domain.Entities.Post", b =>

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,8 +19,9 @@ namespace Pudd.Infrastructure
         public DbSet<PostLike> postLikes => Set<PostLike>();
         public DbSet<PendingImageDeletion> pendingImageDeletions => Set<PendingImageDeletion>();
         public DbSet<Notification> notifications => Set<Notification>();
+        public DbSet<PasswordResetToken> passwordResetTokens => Set<PasswordResetToken>();
 
-        // Define as relações entre as entidades e as regras aplicadas pelo banco nas exclusões.
+        // Define as relaÃ§Ãµes entre as entidades e as regras aplicadas pelo banco nas exclusÃµes.
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -46,7 +47,7 @@ namespace Pudd.Infrastructure
             modelBuilder.Entity<PendingImageDeletion>()
                 .HasIndex(item => item.NextAttemptAt);
 
-            // Evita que duas edições simultâneas percam dados ou deixem imagens sem referência.
+            // Evita que duas ediÃ§Ãµes simultÃ¢neas percam dados ou deixem imagens sem referÃªncia.
             modelBuilder.Entity<Post>().Property(post => post.UpdatedAt).IsConcurrencyToken();
             modelBuilder.Entity<User>().Property(user => user.AvatarImagePath).IsConcurrencyToken();
             modelBuilder.Entity<User>().Property(user => user.BannerImagePath).IsConcurrencyToken();
@@ -93,6 +94,13 @@ namespace Pudd.Infrastructure
                 .WithMany(post => post.Likes)
                 .HasForeignKey(like => like.PostID)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            var prt = modelBuilder.Entity<PasswordResetToken>();
+            prt.HasIndex(t => new { t.UserID, t.Used, t.ExpiresAt });
+            prt.HasOne(t => t.User)
+               .WithMany()
+               .HasForeignKey(t => t.UserID)
+               .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

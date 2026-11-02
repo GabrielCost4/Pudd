@@ -290,11 +290,9 @@
   z-index: 2;
   top: 1.2rem;
   left: 4rem;
-  width: 0.75rem;
-  height: 1rem;
-  background: var(--nav-background);
-  clip-path: polygon(0 0, 100% 65%, 60% 68%, 80% 95%, 60% 100%, 40% 73%, 10% 100%);
-  filter: drop-shadow(1px 1px 0 white);
+  width: 15px;
+  height: 19px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 18'%3E%3Cpath d='M1 1 L12 9.5 L7.5 10 L10 16 L7.5 17 L5 11 L1 15 Z' fill='%23ffffff' stroke='%23000000' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center/contain;
 }
 .is-playing .email-dots {
   animation: demo-type 4.5s steps(8, end) both;
