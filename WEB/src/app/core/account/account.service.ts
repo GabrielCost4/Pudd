@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { API_BASE_URL } from '../config/api';
+import { API_BASE_URL } from '../../../environments/environment';
 import type { ImageUrlResponse } from '../../shared/models/image-url-response';
 import type { AccountSummary } from './account.model';
 

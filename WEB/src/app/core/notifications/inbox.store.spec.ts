@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../../../environments/environment';
 import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
@@ -55,13 +56,17 @@ describe('InboxStore', () => {
   function setup() {
     const store = TestBed.inject(InboxStore);
     TestBed.tick();
-    TestBed.inject(HttpTestingController).expectOne('/api/notifications').flush([oldItem]);
+    TestBed.inject(HttpTestingController)
+      .expectOne(API_BASE_URL + '/notifications')
+      .flush([oldItem]);
     return store;
   }
   it('shows seen feedback, removes acknowledged IDs and preserves arrivals during the request', () => {
     const store = setup();
     store.markRead();
-    const request = TestBed.inject(HttpTestingController).expectOne('/api/notifications/read');
+    const request = TestBed.inject(HttpTestingController).expectOne(
+      API_BASE_URL + '/notifications/read',
+    );
     expect(request.request.body).toEqual({ ids: ['old'] });
     received([arrival]);
     expect(store.items().map((item) => item.id)).toEqual(['new', 'old']);
@@ -77,7 +82,7 @@ describe('InboxStore', () => {
     const store = setup();
     store.markRead();
     TestBed.inject(HttpTestingController)
-      .expectOne('/api/notifications/read')
+      .expectOne(API_BASE_URL + '/notifications/read')
       .flush({}, { status: 503, statusText: 'Unavailable' });
     expect(store.items()).toEqual([oldItem]);
     expect(store.seen().size).toBe(0);

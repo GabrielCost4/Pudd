@@ -3,7 +3,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
-import { API_BASE_URL } from '../../../../core/config/api';
+import { API_BASE_URL } from '../../../../../environments/environment';
 import { Feed } from './feed';
 describe('Feed', () => {
   beforeEach(() =>

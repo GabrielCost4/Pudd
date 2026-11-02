@@ -2,22 +2,23 @@ name: CI - WEB
 
 on:
   push:
-    branches: [main]
-    paths: ['WEB/**']
+    branches: [main, hml]
+  # No path filters: required checks must report a result on every relevant PR.
   pull_request:
-    branches: [main]
-    paths: ['WEB/**']
+    branches: [main, hml]
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: ci-pudd-web-${{ github.ref }}
-  cancel-in-progress: true
+  # main gets a group per commit, preserving queued production checks as well.
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref == 'refs/heads/main' && github.sha || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/hml') }}
 
 env:
   CI: 'true'
+  NG_CLI_ANALYTICS: 'false'
 
 defaults:
   run:
@@ -25,59 +26,68 @@ defaults:
 
 jobs:
   formatting:
-    name: Formatação com ESLint
+    name: WEB - Lint, formatting and dependency audit
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Baixar código
-        uses: actions/checkout@v4
-      - name: Instalar Node.js
-        uses: actions/setup-node@v4
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Node.js 24
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '24'
           cache: npm
           cache-dependency-path: WEB/package-lock.json
-      - name: Instalar dependências
-        run: npm ci
-      - name: Conferir formatação do TypeScript
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Check ESLint
         run: npm run lint
+      - name: Check Prettier formatting
+        run: npm run format:check
+      - name: Audit direct and transitive npm dependencies
+        run: npm audit --audit-level=high
 
   tests:
-    name: Testes de services, componentes e páginas
+    name: WEB - Types and tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: Baixar código
-        uses: actions/checkout@v4
-      - name: Instalar Node.js
-        uses: actions/setup-node@v4
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Node.js 24
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '24'
           cache: npm
           cache-dependency-path: WEB/package-lock.json
-      - name: Instalar dependências
-        run: npm ci
-      - name: Conferir tipos dos testes
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Check test types
         run: npx --no-install tsc --project tsconfig.spec.json --noEmit
-      # Executa todos os specs Angular, incluindo os módulos de comentários e curtidas.
-      # HttpTestingController intercepta as chamadas; não precisa iniciar o backend.
-      - name: Testar requisições HTTP e comportamento da interface
+      # HTTP is mocked; no production API, Supabase or database is needed.
+      - name: Run Angular unit tests
         run: npm test -- --watch=false --runner-config=vitest-base.config.ts
 
   build:
-    name: Build de produção
+    name: WEB - Production build
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Baixar código
-        uses: actions/checkout@v4
-      - name: Instalar Node.js
-        uses: actions/setup-node@v4
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Node.js 24
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '24'
           cache: npm
           cache-dependency-path: WEB/package-lock.json
-      - name: Instalar dependências
-        run: npm ci
-      - name: Compilar frontend
-        run: npm run build -- --configuration production
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Build Angular with production API configuration
+        run: npm run build -- --configuration main

@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { AutoComplete } from 'primeng/autocomplete';
-import { API_BASE_URL } from '../config/api';
+import { API_BASE_URL } from '../../../environments/environment';
 import { UserSearch } from './user-search';
 
 describe('UserSearch', () => {

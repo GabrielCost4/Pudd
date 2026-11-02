@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { API_BASE_URL } from '../config/api';
+import { API_BASE_URL } from '../../../environments/environment';
 import { AccountService } from './account.service';
 
 describe('AccountService', () => {

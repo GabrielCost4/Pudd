@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { API_BASE_URL } from '../../../core/config/api';
+import { API_BASE_URL } from '../../../../environments/environment';
 import type { LoginRequest } from '../models/login-request';
 import type { LoginResponse } from '../models/login-response';
 import type { RegisterRequest } from '../models/register-request';

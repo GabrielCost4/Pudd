@@ -1,0 +1,14 @@
+**/.git
+**/.vs
+**/.vscode
+**/bin
+**/obj
+**/.env
+**/.env.*
+**/appsettings.Local.json
+**/.vercel
+**/TestResults
+*.user
+*.suo
+README.md
+docs/

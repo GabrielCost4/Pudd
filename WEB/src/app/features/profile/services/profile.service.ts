@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { API_BASE_URL } from '../../../core/config/api';
+import { API_BASE_URL } from '../../../../environments/environment';
 import type { ImageUrlResponse } from '../../../shared/models/image-url-response';
 import type { Profile, UpdateProfile } from '../models/profile';
 

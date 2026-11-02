@@ -43,15 +43,59 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.main.ts"
+                }
+              ]
             },
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.hml.ts"
+                }
+              ]
+            },
+            "main": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.main.ts"
+                }
+              ]
+            },
+            "hml": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.hml.ts"
+                }
+              ]
             }
           },
-          "defaultConfiguration": "production"
+          "defaultConfiguration": "main"
         },
         "serve": {
           "builder": "@angular/build:dev-server",
@@ -60,11 +104,16 @@
               "buildTarget": "WEB:build:production"
             },
             "development": {
-              "buildTarget": "WEB:build:development",
-              "proxyConfig": "proxy.conf.json"
+              "buildTarget": "WEB:build:development"
+            },
+            "hml": {
+              "buildTarget": "WEB:build:hml"
+            },
+            "main": {
+              "buildTarget": "WEB:build:main"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "hml"
         },
         "test": {
           "builder": "@angular/build:unit-test"
