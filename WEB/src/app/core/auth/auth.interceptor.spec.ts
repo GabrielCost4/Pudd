@@ -2,7 +2,7 @@ import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
-import { API_BASE_URL } from '../config/api';
+import { API_BASE_URL } from '../../../environments/environment';
 import { SessionStore } from './session.store';
 import { authInterceptor } from './auth.interceptor';
 

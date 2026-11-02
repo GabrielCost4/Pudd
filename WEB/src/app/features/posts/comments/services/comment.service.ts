@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { API_BASE_URL } from '../../../../core/config/api';
+import { API_BASE_URL } from '../../../../../environments/environment';
 import type { PageResponse } from '../../../../shared/models/page-response';
 import type { PostComment } from '../models/comment';
 

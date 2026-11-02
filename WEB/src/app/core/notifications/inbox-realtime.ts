@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { API_BASE_URL } from '../config/api';
+import { API_BASE_URL } from '../../../environments/environment';
 import type { HubConnection } from '@microsoft/signalr';
 import type { InboxNotification } from './inbox-notification';
 import type { PresenceUpdate } from './user-presence';
