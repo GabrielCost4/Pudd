@@ -221,6 +221,8 @@ export class PostCard {
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Confirmar',
       rejectLabel: 'Cancelar',
+      acceptButtonProps: { severity: 'danger' },
+      rejectButtonProps: { severity: 'secondary' },
       accept: () => this.performRemove(),
     });
   }

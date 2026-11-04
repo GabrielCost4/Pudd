@@ -336,6 +336,11 @@ p-avatar {
 .confirmation-dialog {
   width: min(92vw, 28rem);
 }
+@media (max-width: 760px) {
+  .confirmation-dialog {
+    width: min(calc(100vw - 3rem), 28rem);
+  }
+}
 .post-edit-dialog {
   width: min(44rem, calc(100vw - 2rem));
   max-height: 90dvh;
