@@ -10,13 +10,13 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
+import { DOCUMENT, NgTemplateOutlet } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 
 @Component({
   selector: 'app-image-viewer',
-  imports: [ButtonModule, DialogModule],
+  imports: [ButtonModule, DialogModule, NgTemplateOutlet],
   templateUrl: './image-viewer.html',
   styleUrl: './image-viewer.css',
 })
@@ -24,6 +24,7 @@ export class ImageViewer {
   private readonly document = inject(DOCUMENT);
   readonly src = input.required<string>();
   readonly alt = input('Imagem');
+  readonly mobileOverlay = input(false);
   readonly visible = model(false);
   protected readonly zoom = signal(100);
   protected readonly pan = signal({ x: 0, y: 0 });
@@ -39,9 +40,20 @@ export class ImageViewer {
     height: (this.fit().height * this.zoom()) / 100,
   }));
   protected readonly canPan = computed(() => this.zoom() > 100 && this.natural().width > 0);
+  protected readonly mobile = computed(() => this.mobileOverlay() && this.screen().width <= 700);
+  private readonly mobileSurface = viewChild<ElementRef<HTMLElement>>('mobileSurface');
+  private readonly pointers = new Map<number, { x: number; y: number }>();
+  private pinch?: {
+    distance: number;
+    zoom: number;
+    x: number;
+    y: number;
+    panX: number;
+    panY: number;
+  };
   protected readonly frame = computed(() => ({
-    width: Math.min(this.screen().width * 0.92, 960),
-    height: Math.min(this.screen().height * 0.84, 720),
+    width: this.mobile() ? this.screen().width : Math.min(this.screen().width * 0.92, 960),
+    height: this.mobile() ? this.screen().height : Math.min(this.screen().height * 0.84, 720),
   }));
   private returnFocus?: HTMLElement;
   private wasVisible = false;
@@ -68,12 +80,32 @@ export class ImageViewer {
       this.fit.set({ width: 0, height: 0 });
     });
     effect((cleanup) => {
+      const surface = this.mobileSurface()?.nativeElement;
+      if (!surface) return;
+      surface.showPopover();
+      const previousOverflow = this.document.body.style.overflow;
+      this.document.body.style.overflow = 'hidden';
+      surface.querySelector<HTMLElement>('.viewport')?.focus();
+      cleanup(() => {
+        this.document.body.style.overflow = previousOverflow;
+        this.restoreFocus();
+      });
+    });
+    effect((cleanup) => {
       const viewport = this.viewport()?.nativeElement;
       if (!viewport) return;
       const observer = new ResizeObserver(() => this.measure());
       observer.observe(viewport);
       cleanup(() => observer.disconnect());
     });
+  }
+
+  protected dismissBackdrop(event: MouseEvent): void {
+    if (this.mobile() && event.target === event.currentTarget) this.close();
+  }
+
+  protected close(): void {
+    this.visible.set(false);
   }
 
   protected restoreFocus(): void {
@@ -113,6 +145,8 @@ export class ImageViewer {
     this.pan.set({ x: 0, y: 0 });
     this.dragging.set(false);
     this.drag = undefined;
+    this.pointers.clear();
+    this.pinch = undefined;
   }
 
   private moveTo(x: number, y: number): void {
@@ -123,7 +157,23 @@ export class ImageViewer {
   }
 
   protected startDrag(event: PointerEvent): void {
-    if (event.button !== 0 || !this.canPan()) return;
+    if (event.button !== 0 || (!this.canPan() && event.pointerType !== 'touch')) return;
+    this.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    if (this.pointers.size === 2) {
+      const [a, b] = [...this.pointers.values()];
+      this.pinch = {
+        distance: Math.hypot(a.x - b.x, a.y - b.y),
+        zoom: this.zoom(),
+        x: (a.x + b.x) / 2,
+        y: (a.y + b.y) / 2,
+        panX: this.pan().x,
+        panY: this.pan().y,
+      };
+      this.drag = undefined;
+      (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+      event.preventDefault();
+      return;
+    }
     event.preventDefault();
     this.drag = {
       id: event.pointerId,
@@ -137,6 +187,36 @@ export class ImageViewer {
   }
 
   protected moveDrag(event: PointerEvent): void {
+    if (!this.pointers.has(event.pointerId)) return;
+    this.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    if (this.pinch && this.pointers.size === 2) {
+      const [a, b] = [...this.pointers.values()];
+      const viewport = (event.currentTarget as HTMLElement).getBoundingClientRect();
+      const gesture = this.pinch;
+      this.zoom.set(
+        Math.round(
+          Math.max(
+            100,
+            Math.min(
+              400,
+              (gesture.zoom * Math.hypot(a.x - b.x, a.y - b.y)) / Math.max(1, gesture.distance),
+            ),
+          ),
+        ),
+      );
+      const ratio = this.zoom() / gesture.zoom;
+      this.moveTo(
+        (a.x + b.x) / 2 -
+          viewport.left -
+          viewport.width / 2 -
+          (gesture.x - viewport.left - viewport.width / 2 - gesture.panX) * ratio,
+        (a.y + b.y) / 2 -
+          viewport.top -
+          viewport.height / 2 -
+          (gesture.y - viewport.top - viewport.height / 2 - gesture.panY) * ratio,
+      );
+      return;
+    }
     if (this.drag?.id !== event.pointerId) return;
     this.moveTo(
       this.drag.originX + event.clientX - this.drag.x,
@@ -145,7 +225,19 @@ export class ImageViewer {
   }
 
   protected endDrag(event: PointerEvent): void {
-    if (this.drag?.id !== event.pointerId) return;
+    this.pointers.delete(event.pointerId);
+    this.pinch = undefined;
+    const remaining = [...this.pointers.entries()][0];
+    if (remaining) {
+      this.drag = {
+        id: remaining[0],
+        x: remaining[1].x,
+        y: remaining[1].y,
+        originX: this.pan().x,
+        originY: this.pan().y,
+      };
+      return;
+    }
     this.drag = undefined;
     this.dragging.set(false);
     const viewport = event.currentTarget as HTMLElement;

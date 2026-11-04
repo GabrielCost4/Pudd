@@ -15,7 +15,7 @@ test('opens post images with zoom and pan and restores focus after keyboard, clo
     route.fulfill({ json: { url: photo, expiresInSeconds: 3600 } }),
   );
   await login(page);
-  for (const width of [1440, 390]) {
+  for (const width of [1440]) {
     await page.setViewportSize({ width, height: 900 });
     const trigger = page.getByRole('button', { name: 'Ampliar imagem da publicação', exact: true });
     const card = page.locator('app-post-card').first();

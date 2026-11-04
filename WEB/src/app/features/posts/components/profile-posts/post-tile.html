@@ -7,7 +7,7 @@
   [class.text-tile]="!post().hasImage"
   aria-haspopup="dialog"
   [attr.aria-label]="'Abrir publicação de ' + post().authorName"
-  (click)="selected.emit(post())"
+  (click)="open()"
 >
   @if (post().hasImage) {
     @if (url() && !failed()) {
@@ -39,3 +39,10 @@
     </span>
   }
 </button>
+
+<app-image-viewer
+  [mobileOverlay]="true"
+  [src]="url()"
+  alt="Imagem da publicação"
+  [(visible)]="viewingImage"
+/>

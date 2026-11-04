@@ -8,6 +8,7 @@ import {
   output,
   signal,
 } from '@angular/core';
+import { ImageViewer } from '../../../../shared/components/image-viewer/image-viewer';
 import { ButtonModule } from 'primeng/button';
 import { DatePipe } from '@angular/common';
 import { Subscription } from 'rxjs';
@@ -18,7 +19,7 @@ import type { Post } from '../../models/post';
 
 @Component({
   selector: 'app-post-tile',
-  imports: [ButtonModule, DatePipe],
+  imports: [ButtonModule, DatePipe, ImageViewer],
   templateUrl: './post-tile.html',
   styleUrl: './post-tile.css',
 })
@@ -31,6 +32,7 @@ export class PostTile {
   protected readonly likeState = signal<LikeResponse | null>(null);
   private readonly destroyRef = inject(DestroyRef);
   protected readonly url = signal('');
+  protected readonly viewingImage = signal(false);
   protected readonly failed = signal(false);
   private request?: Subscription;
 
@@ -68,6 +70,19 @@ export class PostTile {
       });
     });
     this.destroyRef.onDestroy(() => this.request?.unsubscribe());
+  }
+
+  protected open(): void {
+    if (
+      this.post().hasImage &&
+      this.url() &&
+      !this.failed() &&
+      this.host.nativeElement.ownerDocument.defaultView?.matchMedia('(max-width: 700px)').matches
+    ) {
+      this.viewingImage.set(true);
+      return;
+    }
+    this.selected.emit(this.post());
   }
 
   protected load(): void {

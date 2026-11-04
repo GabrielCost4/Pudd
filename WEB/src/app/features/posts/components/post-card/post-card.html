@@ -183,8 +183,9 @@
 }
 
 <app-feedback [errors]="errors()" />
-<p-confirmdialog [closable]="true" />
+<p-confirmdialog [closable]="true" [style]="{ width: 'min(28rem, calc(100vw - 3rem))' }" />
 <app-image-viewer
+  [mobileOverlay]="true"
   [src]="imageUrl()"
   alt="Imagem da publicação"
   [visible]="galleryVisible()"
