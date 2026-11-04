@@ -1,7 +1,10 @@
-import { computed, Injectable, signal } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class SessionStore {
+  private readonly document = inject(DOCUMENT);
+  private readonly storageKey = 'pudd-session';
   private readonly token = signal<string | null>(null);
   private readonly identity = signal({ id: '', email: '', role: '' });
   private expiresAt = 0;
@@ -14,6 +17,28 @@ export class SessionStore {
     return this.permissions().includes(permission);
   }
   readonly isAuthenticated = computed(() => this.token() !== null);
+
+  constructor() {
+    inject(DestroyRef).onDestroy(() => clearTimeout(this.expirationTimer));
+    try {
+      const saved = this.document.defaultView?.sessionStorage.getItem(this.storageKey);
+      if (!saved) return;
+      const session: unknown = JSON.parse(saved);
+      if (
+        typeof session === 'object' &&
+        session !== null &&
+        'accessToken' in session &&
+        typeof session.accessToken === 'string' &&
+        'role' in session &&
+        typeof session.role === 'string' &&
+        this.start(session.accessToken, session.role)
+      )
+        return;
+      this.clear();
+    } catch {
+      this.clear();
+    }
+  }
 
   start(accessToken: string, role: string): boolean {
     try {
@@ -40,6 +65,14 @@ export class SessionStore {
             : [],
       );
       this.token.set(accessToken);
+      try {
+        this.document.defaultView?.sessionStorage.setItem(
+          this.storageKey,
+          JSON.stringify({ accessToken, role }),
+        );
+      } catch {
+        // Login remains available when browser storage is blocked.
+      }
       this.expirationTimer = setTimeout(
         () => this.clear(),
         Math.min(expiresAt - Date.now(), 2147483647),
@@ -57,6 +90,11 @@ export class SessionStore {
   }
 
   clear(): void {
+    try {
+      this.document.defaultView?.sessionStorage.removeItem(this.storageKey);
+    } catch {
+      // Clear in-memory state even when browser storage is blocked.
+    }
     clearTimeout(this.expirationTimer);
     this.token.set(null);
     this.permissions.set([]);
