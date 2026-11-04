@@ -10,8 +10,37 @@
     </div>
   }
   @if (post(); as item) {
-    <app-post-card [post]="item" [collapseText]="false" (deleted)="removed()" /><app-comments
-      [postId]="item.id"
+    <app-post-card
+      [post]="item"
+      [collapseText]="false"
+      [editInPlace]="true"
+      (editRequested)="openEditor($event)"
+      (deleted)="removed()"
     />
+    <app-comments [postId]="item.id" />
   }
 </div>
+<p-dialog
+  header="Editar publicação"
+  (onHide)="restoreEditFocus()"
+  [visible]="!!editingPost()"
+  (visibleChange)="!$event && closeEditor()"
+  [modal]="true"
+  [blockScroll]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [closable]="!editSaving()"
+  [closeOnEscape]="!editSaving()"
+  appendTo="body"
+  styleClass="post-edit-dialog"
+>
+  @if (editingPost(); as post) {
+    <app-post-editor
+      [postId]="post.id"
+      [embedded]="true"
+      (saved)="updated($event)"
+      (cancelled)="closeEditor()"
+      (savingChanged)="editSaving.set($event)"
+    />
+  }
+</p-dialog>
