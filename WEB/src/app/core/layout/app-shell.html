@@ -213,7 +213,7 @@
     [(visible)]="navigationOpen"
     [modal]="true"
     [blockScroll]="true"
-    [style]="{ width: '16rem' }"
+    [style]="{ width: '16rem', height: '100dvh', border: '0', boxShadow: 'none' }"
     aria-label="Navegação principal"
   >
     <ng-template #headless>
@@ -267,6 +267,9 @@
   >
     <div class="toolbar-content">
       @if (mobile()) {
+        <a class="mobile-toolbar-brand" routerLink="/feed" aria-label="Pudd: feed">
+          <app-brand-logo />
+        </a>
         <button
           pButton
           type="button"

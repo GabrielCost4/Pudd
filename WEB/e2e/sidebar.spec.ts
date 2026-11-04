@@ -185,6 +185,17 @@ test('keeps account and logout accessible on a short mobile screen and closes af
   await mockApi(page);
   await page.setViewportSize({ width: 320, height: 568 });
   await login(page);
+  const logo = (await page.locator('.mobile-toolbar-brand').boundingBox())!;
+  const menu = (await page.getByRole('button', { name: 'Abrir menu', exact: true }).boundingBox())!;
+  const search = (await page.locator('.toolbar-search').boundingBox())!;
+  expect(logo.y + logo.height).toBeLessThanOrEqual(menu.y);
+  expect(Math.abs(logo.x - menu.x)).toBeLessThanOrEqual(1);
+  expect(menu.x + menu.width).toBeLessThan(search.x);
+  expect(Math.abs(menu.y + menu.height / 2 - search.y - search.height / 2)).toBeLessThanOrEqual(1);
+  expect(Math.abs(search.x + search.width - (page.viewportSize()!.width - 14))).toBeLessThanOrEqual(
+    1,
+  );
+  await page.screenshot({ path: 'test-results/mobile-toolbar.png' });
   await page.getByRole('button', { name: 'Abrir menu', exact: true }).click();
   const account = page.getByRole('link', { name: 'Abrir meu perfil', exact: true });
   await expect(account).toBeInViewport({ ratio: 1 });

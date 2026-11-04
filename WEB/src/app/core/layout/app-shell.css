@@ -254,23 +254,41 @@ main {
   }
   .toolbar-content {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-columns: 2.75rem minmax(0, 1fr) auto auto;
     gap: 0.75rem;
   }
+  .mobile-toolbar-brand {
+    grid-column: 1;
+    grid-row: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+  }
+  .mobile-toolbar-brand app-brand-logo {
+    width: 2.75rem;
+  }
   .toolbar-content > button {
+    grid-column: 1;
+    grid-row: 2;
+    width: 2.75rem;
+    min-height: 2.75rem;
     justify-self: start;
   }
   .toolbar-content > app-theme-toggle {
-    grid-column: 3;
+    grid-column: 4;
     grid-row: 1;
   }
   .toolbar-content > app-notification-bell {
-    grid-column: 2;
+    grid-column: 3;
     grid-row: 1;
   }
   .toolbar-search {
-    grid-column: 1 / -1;
+    grid-column: 2 / -1;
     grid-row: 2;
+    width: 100%;
+    max-width: none;
+    margin: 0;
   }
   main {
     padding: 1.5rem 0.875rem;

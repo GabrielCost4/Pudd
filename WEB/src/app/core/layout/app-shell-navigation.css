@@ -264,3 +264,7 @@
   width: 100%;
   border-radius: 0;
 }
+
+.mobile-navigation .navigation-footer {
+  border-top: 0;
+}
