@@ -19,7 +19,7 @@
         </button>
       </div>
     } @else {
-      <form [formGroup]="form" (ngSubmit)="submit()" [attr.aria-busy]="busy()">
+      <form appSubmitOnEnter [formGroup]="form" (ngSubmit)="submit()" [attr.aria-busy]="busy()">
         <div>
           <label id="feedback-kind-label">O que você quer compartilhar?</label
           ><p-selectbutton
@@ -53,13 +53,20 @@
             aria-describedby="feedback-hint"
           ></textarea
           ><small id="feedback-hint" class="muted"
-            >Entre 10 e 3000 caracteres. Não inclua senhas ou informações sensíveis.</small
+            >Enter para enviar; Shift+Enter para nova linha. Entre 10 e 3000 caracteres. Não inclua
+            senhas ou informações sensíveis.</small
           >
           @if (form.controls.description.touched && form.controls.description.invalid) {
             <small class="feedback-error" role="alert">Escreva entre 10 e 3000 caracteres.</small>
           }
         </div>
-        <button pButton type="submit" [loading]="busy()" [disabled]="busy()">
+        <button
+          pButton
+          type="submit"
+          aria-keyshortcuts="Enter"
+          [loading]="busy()"
+          [disabled]="busy()"
+        >
           <i class="pi pi-send" aria-hidden="true"></i> Enviar feedback
         </button>
       </form>

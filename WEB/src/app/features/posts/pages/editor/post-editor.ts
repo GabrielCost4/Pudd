@@ -1,6 +1,6 @@
+import { SubmitOnEnter } from '../../../../shared/directives/submit-on-enter';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CardModule } from 'primeng/card';
-import { CheckboxModule } from 'primeng/checkbox';
 import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
@@ -31,9 +31,9 @@ import type { Post } from '../../models/post';
 @Component({
   selector: 'app-post-editor',
   imports: [
+    SubmitOnEnter,
     ProgressSpinnerModule,
     CardModule,
-    CheckboxModule,
     TextareaModule,
     ButtonModule,
     AvatarModule,
@@ -82,7 +82,6 @@ export class PostEditor implements OnInit {
       nonNullable: true,
       validators: [Validators.maxLength(this.maxContentLength)],
     }),
-    removeImage: new FormControl(false, { nonNullable: true }),
   });
   private readonly content = toSignal(this.form.controls.content.valueChanges, {
     initialValue: this.form.controls.content.value,
@@ -125,7 +124,6 @@ export class PostEditor implements OnInit {
   }
   protected selectImage(file: File | null): void {
     this.image.set(file);
-    if (file) this.form.controls.removeImage.setValue(false);
   }
   protected save(): void {
     if (this.saving() || this.loading() || !this.ready()) return;
@@ -145,7 +143,7 @@ export class PostEditor implements OnInit {
     const data = new FormData();
     data.append('Content', this.form.controls.content.value);
     if (this.image()) data.append('Image', this.image()!);
-    if (this.id) data.append('RemoveImage', String(this.form.controls.removeImage.value));
+    if (this.id) data.append('RemoveImage', 'false');
     this.form.disable();
     const request = this.id ? this.api.update(this.id, data) : this.api.create(data);
     request

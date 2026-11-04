@@ -1,3 +1,4 @@
+import { SubmitOnEnter } from '../../../shared/directives/submit-on-enter';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -14,6 +15,7 @@ import { apiErrors } from '../../../shared/utils/api-errors';
 @Component({
   selector: 'app-community-feedback',
   imports: [
+    SubmitOnEnter,
     ReactiveFormsModule,
     RouterLink,
     ButtonModule,

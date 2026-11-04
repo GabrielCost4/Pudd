@@ -175,7 +175,13 @@
               <i class="pi pi-user-edit" aria-hidden="true"></i>
               <span>Seus dados</span>
             </h2>
-            <form class="stack" [formGroup]="form" (ngSubmit)="save()" [attr.aria-busy]="busy()">
+            <form
+              appSubmitOnEnter
+              class="stack"
+              [formGroup]="form"
+              (ngSubmit)="save()"
+              [attr.aria-busy]="busy()"
+            >
               <app-label-input
                 inputId="profile-name"
                 label="Nome"
@@ -197,9 +203,16 @@
                   placeholder="O que você constrói, aprende ou tem vontade de compartilhar?"
                   [readOnly]="busy()"
                 ></textarea>
+                <small class="muted">Enter para salvar; Shift+Enter para nova linha.</small>
               </div>
               <div class="actions">
-                <button pButton type="submit" [loading]="busy()" [disabled]="busy()">
+                <button
+                  pButton
+                  type="submit"
+                  aria-keyshortcuts="Enter"
+                  [loading]="busy()"
+                  [disabled]="busy()"
+                >
                   <i class="pi pi-check" aria-hidden="true"></i>
                   {{ busy() ? 'Salvando…' : 'Salvar perfil' }}</button
                 ><button

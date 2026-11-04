@@ -1,3 +1,4 @@
+import { SubmitOnEnter } from '../../../../shared/directives/submit-on-enter';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { AvatarModule } from 'primeng/avatar';
@@ -30,6 +31,7 @@ import { TooltipModule } from 'primeng/tooltip';
   providers: [ConfirmationService],
   selector: 'app-profile',
   imports: [
+    SubmitOnEnter,
     DialogModule,
     MenuModule,
     TooltipModule,

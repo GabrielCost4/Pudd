@@ -19,7 +19,13 @@
     </div>
   } @else if (ready()) {
     <p-card [dt]="editorCardTokens">
-      <form class="composer" [formGroup]="form" (ngSubmit)="save()" [attr.aria-busy]="saving()">
+      <form
+        appSubmitOnEnter
+        class="composer"
+        [formGroup]="form"
+        (ngSubmit)="save()"
+        [attr.aria-busy]="saving()"
+      >
         @if (!embedded()) {
           <div class="composer-author">
             @if (account.avatarUrl()) {
@@ -63,30 +69,18 @@
               [class.over-limit]="overLimit()"
               [attr.aria-label]="contentLength() + ' de ' + maxContentLength + ' caracteres'"
             >
-              {{ contentLength() }} / {{ maxContentLength }}
+              {{ contentLength() }} / {{ maxContentLength }} · Enter para enviar; Shift+Enter para
+              nova linha
             </small>
           </div>
-          <div class="attachment">
-            <div class="attachment-label">
-              <span><i class="pi pi-paperclip" aria-hidden="true"></i> Imagem</span
-              ><small>Opcional</small>
+          @if (!id) {
+            <div class="attachment">
+              <div class="attachment-label">
+                <span><i class="pi pi-paperclip" aria-hidden="true"></i> Imagem</span
+                ><small>Opcional</small>
+              </div>
+              <app-image-picker [disabled]="saving()" (selected)="selectImage($event)" />
             </div>
-            <app-image-picker [disabled]="saving()" (selected)="selectImage($event)" />
-          </div>
-          @if (id && hasImage()) {
-            <p class="muted image-note">
-              {{
-                image()
-                  ? 'A nova imagem substituirá a atual.'
-                  : 'A imagem atual será mantida, a menos que você escolha removê-la.'
-              }}
-            </p>
-            @if (!image()) {
-              <label for="remove-image" class="checkbox"
-                ><p-checkbox inputId="remove-image" formControlName="removeImage" [binary]="true" />
-                Remover a imagem atual</label
-              >
-            }
           }
         </div>
         <footer class="composer-actions">
@@ -110,7 +104,13 @@
               >Cancelar</a
             >
           }
-          <button pButton type="submit" [loading]="saving()" [disabled]="saving() || overLimit()">
+          <button
+            pButton
+            type="submit"
+            aria-keyshortcuts="Enter"
+            [loading]="saving()"
+            [disabled]="saving() || overLimit()"
+          >
             @if (!saving()) {
               <i [class]="id ? 'pi pi-check' : 'pi pi-send'" aria-hidden="true"></i>
             }
