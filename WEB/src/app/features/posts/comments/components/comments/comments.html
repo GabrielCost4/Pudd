@@ -1,30 +1,32 @@
 <section class="comments" aria-labelledby="comments-title">
   <h2 id="comments-title">Comentários</h2>
   <form (submit)="$event.preventDefault(); submit()" class="comment-form">
-    <div class="field">
-      <label for="comment-content">Seu comentário</label
-      ><textarea
-        pTextarea
+    <div class="comment-composer">
+      <input
+        pInputText
         id="comment-content"
         [formControl]="content"
         [maxlength]="maxLength"
         aria-describedby="comment-character-count"
         required
-        placeholder="Escreva um comentário…"
+        placeholder="Adicionar comentário..."
         [readOnly]="saving()"
-      ></textarea>
-      <small id="comment-character-count" class="character-count">
-        {{ content.value.length }} / {{ maxLength }} caracteres
-      </small>
+      />
+      <button
+        pButton
+        type="submit"
+        [rounded]="true"
+        class="comment-submit"
+        aria-label="Comentar"
+        [attr.aria-busy]="saving()"
+        [disabled]="saving() || content.invalid || !content.value.trim()"
+      >
+        <i [class]="saving() ? 'pi pi-spin pi-spinner' : 'pi pi-arrow-up'" aria-hidden="true"></i>
+      </button>
     </div>
-    <button
-      pButton
-      type="submit"
-      [loading]="saving()"
-      [disabled]="saving() || content.invalid || !content.value.trim()"
-    >
-      {{ saving() ? 'Enviando…' : 'Comentar' }}
-    </button>
+    <small id="comment-character-count" class="character-count">
+      {{ content.value.length }} / {{ maxLength }} caracteres
+    </small>
   </form>
   <app-feedback [errors]="errors()" />
   @if (loading()) {
@@ -37,7 +39,7 @@
         Recarregar comentários
       </button>
     }
-    @for (comment of items(); track comment.id) {
+    @for (comment of items(); track comment.id; let last = $last) {
       <article class="comment">
         <a
           class="avatar"
@@ -46,42 +48,61 @@
         >
           @if (authorImages()[comment.userID]) {
             <p-avatar
+              size="large"
               shape="circle"
               [image]="authorImages()[comment.userID]"
               [ariaLabel]="'Foto de ' + comment.authorName"
               (onImageError)="avatarFailed(comment.userID)"
             />
           } @else {
-            <p-avatar shape="circle" [label]="comment.authorName.slice(0, 1).toUpperCase()" />
+            <p-avatar
+              size="large"
+              shape="circle"
+              [label]="comment.authorName.slice(0, 1).toUpperCase()"
+            />
           }
         </a>
         <div class="comment-body">
-          <header>
-            <a [routerLink]="['/profile', comment.userID]">{{ comment.authorName }}</a
-            ><small>{{ comment.createdAt | date: 'dd/MM/yyyy · HH:mm' }}</small>
-          </header>
+          <div class="comment-heading">
+            <header>
+              <a [routerLink]="['/profile', comment.userID]">{{ comment.authorName }}</a>
+            </header>
+            <small class="comment-date" [title]="comment.createdAt | date: 'dd/MM/yyyy HH:mm'">{{
+              comment.createdAt | date: 'dd/MM · HH:mm'
+            }}</small>
+            @if (
+              comment.userID === session.user().id || session.hasPermission('comments.moderate')
+            ) {
+              <button
+                pButton
+                type="button"
+                [text]="true"
+                [rounded]="true"
+                severity="secondary"
+                class="comment-actions-trigger"
+                aria-label="Ações do comentário"
+                aria-haspopup="menu"
+                [disabled]="!!deleting()"
+                (click)="commentMenu.toggle($event)"
+              >
+                <i class="pi pi-ellipsis-h" aria-hidden="true"></i>
+              </button>
+              <p-menu
+                #commentMenu
+                (onHide)="confirmPendingRemoval()"
+                [model]="commentActions(comment)"
+                [popup]="true"
+                appendTo="body"
+                styleClass="post-actions-menu"
+              />
+            }
+          </div>
           <p class="content-text">{{ comment.content }}</p>
-          @if (comment.userID === session.user().id || session.hasPermission('comments.moderate')) {
-            <button
-              [text]="true"
-              severity="danger"
-              pButton
-              type="button"
-              [disabled]="!!deleting()"
-              [loading]="deleting() === comment.id"
-              (click)="remove(comment)"
-            >
-              {{
-                deleting() === comment.id
-                  ? 'Excluindo…'
-                  : comment.userID === session.user().id
-                    ? 'Excluir'
-                    : 'Remover pela moderação'
-              }}
-            </button>
-          }
         </div>
       </article>
+      @if (!last) {
+        <p-divider />
+      }
     } @empty {
       @if (!errors().length) {
         <p class="empty">Nenhum comentário nesta publicação.</p>
@@ -96,4 +117,5 @@
   }
 </section>
 
-<p-confirmdialog [closable]="true" />
+<p-confirmdialog [closable]="true" [style]="{ width: 'min(28rem, calc(100vw - 3rem))' }" />
+

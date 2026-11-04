@@ -29,6 +29,24 @@ describe('Comments', () => {
     const { f } = setup();
     expect(f.nativeElement.querySelector('button[type="submit"]').disabled).toBe(true);
   });
+  it('enables the send arrow only for nonblank content', () => {
+    const { f } = setup();
+    const input = f.nativeElement.querySelector('input') as HTMLInputElement;
+    const submit = f.nativeElement.querySelector('button[type="submit"]') as HTMLButtonElement;
+    input.value = '   ';
+    input.dispatchEvent(new Event('input'));
+    f.detectChanges();
+    expect(submit.disabled).toBe(true);
+    input.value = 'Hello';
+    input.dispatchEvent(new Event('input'));
+    f.detectChanges();
+    expect(submit.disabled).toBe(false);
+    expect(submit.querySelector('.pi-arrow-up')).not.toBeNull();
+    input.value = '';
+    input.dispatchEvent(new Event('input'));
+    f.detectChanges();
+    expect(submit.disabled).toBe(true);
+  });
   it('requests photos only for comment authors with an avatar', () => {
     const comment = {
       id: 'comment',
@@ -54,7 +72,7 @@ describe('Comments', () => {
   });
   it('counts characters and prevents submission above 350 characters', () => {
     const { f, http } = setup();
-    const input = f.nativeElement.querySelector('textarea') as HTMLTextAreaElement;
+    const input = f.nativeElement.querySelector('input') as HTMLInputElement;
     const counter = f.nativeElement.querySelector('#comment-character-count');
     const submit = f.nativeElement.querySelector('button[type="submit"]');
     expect(counter.textContent).toContain('0 / 350');
@@ -73,7 +91,7 @@ describe('Comments', () => {
   });
   it('submits the entered comment, prevents duplicate requests and reloads the list', () => {
     const { f, http } = setup();
-    const input = f.nativeElement.querySelector('textarea') as HTMLTextAreaElement;
+    const input = f.nativeElement.querySelector('input') as HTMLInputElement;
     input.value = 'Hello';
     input.dispatchEvent(new Event('input'));
     f.detectChanges();
@@ -93,7 +111,7 @@ describe('Comments', () => {
   });
   it('shows errors returned when posting', () => {
     const { f, http } = setup();
-    const input = f.nativeElement.querySelector('textarea') as HTMLTextAreaElement;
+    const input = f.nativeElement.querySelector('input') as HTMLInputElement;
     input.value = 'Hello';
     input.dispatchEvent(new Event('input'));
     f.nativeElement.querySelector('form').dispatchEvent(new Event('submit', { cancelable: true }));

@@ -1,9 +1,11 @@
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { AvatarModule } from 'primeng/avatar';
-import { TextareaModule } from 'primeng/textarea';
+import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService, type MenuItem } from 'primeng/api';
+import { MenuModule } from 'primeng/menu';
+import { DividerModule } from 'primeng/divider';
 import { DatePipe } from '@angular/common';
 import { Component, DestroyRef, effect, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -25,8 +27,10 @@ import { CommentService } from '../../services/comment.service';
     ConfirmDialogModule,
     ProgressSpinnerModule,
     AvatarModule,
-    TextareaModule,
+    InputTextModule,
     ButtonModule,
+    MenuModule,
+    DividerModule,
     DatePipe,
     RouterLink,
     ReactiveFormsModule,
@@ -38,6 +42,7 @@ import { CommentService } from '../../services/comment.service';
 })
 export class Comments {
   private readonly confirmation = inject(ConfirmationService);
+  private pendingRemoval: PostComment | null = null;
   readonly postId = input.required<string>();
   protected readonly session = inject(SessionStore);
   private readonly api = inject(CommentService);
@@ -117,6 +122,22 @@ export class Comments {
   protected avatarFailed(id: string): void {
     this.authorImages.update((images) => ({ ...images, [id]: '' }));
   }
+  protected commentActions(comment: PostComment): MenuItem[] {
+    return [
+      {
+        label:
+          comment.userID === this.session.user().id
+            ? 'Excluir'
+            : 'Remover pela modera\u00e7\u00e3o',
+        icon: 'pi pi-trash',
+        linkClass: 'post-action-delete',
+        iconClass: 'post-action-delete-icon',
+        disabled: !!this.deleting(),
+        command: () => (this.pendingRemoval = comment),
+      },
+    ];
+  }
+
   protected remove(comment: PostComment): void {
     if (this.deleting()) return;
     this.confirmation.confirm({
@@ -125,8 +146,16 @@ export class Comments {
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Confirmar',
       rejectLabel: 'Cancelar',
+      acceptButtonProps: { severity: 'danger' },
+      rejectButtonProps: { severity: 'secondary' },
       accept: () => this.performRemove(comment),
     });
+  }
+
+  protected confirmPendingRemoval(): void {
+    const comment = this.pendingRemoval;
+    this.pendingRemoval = null;
+    if (comment) this.remove(comment);
   }
 
   private performRemove(comment: PostComment): void {
