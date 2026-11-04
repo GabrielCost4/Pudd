@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="WEB/public/images/brand/logo.png" alt="Logo do Pudd" width="160" />
+  <img src="DOCS/assets/imagens/logo.png" alt="Logo do Pudd" width="160" />
 </p>
 
 <h1 align="center">Pudd</h1>
@@ -23,7 +23,7 @@ Este é um **projeto de estudo**, desenvolvido para aplicar conhecimentos adquir
 ## Tecnologias
 
 <p align="center">
-  <img src="docs/assets/tecnologias.svg" alt="Angular, TypeScript, HTML, CSS, C#, .NET, PostgreSQL, Supabase, Docker, GitHub Actions, Git e Vercel" width="720" />
+  <img src="DOCS/assets/imagens/tecnologias.svg" alt="Angular, TypeScript, HTML, CSS, C#, .NET, PostgreSQL, Supabase, Docker, GitHub Actions, Git e Vercel" width="720" />
 </p>
 
 | Parte | Tecnologias e responsabilidades |
@@ -42,7 +42,7 @@ O acesso ao banco usa consultas parametrizadas pelo EF Core para prevenir SQL In
 
 O backend segue **Clean Architecture**, com dependências orientadas para o domínio. As regras e os contratos da aplicação ficam separados dos detalhes de HTTP, banco de dados e serviços externos. O frontend Angular é organizado por **features**.
 
-![Dependências entre as camadas da Clean Architecture do Pudd](docs/assets/clean-architecture.svg)
+![Dependências entre as camadas da Clean Architecture do Pudd](DOCS/assets/imagens/clean-architecture.svg)
 
 | Projeto | Responsabilidade |
 | --- | --- |
@@ -57,7 +57,7 @@ O fluxo de uma operação parte da interface Angular, chega ao controller e pass
 
 ### Ambientes: homologação e produção
 
-![Arquitetura dos ambientes local e de produção do Pudd](docs/assets/ambientes.svg)
+![Arquitetura dos ambientes local e de produção do Pudd](DOCS/assets/imagens/ambientes.svg)
 
 | Ambiente | Frontend | API | Banco |
 | --- | --- | --- | --- |
@@ -68,7 +68,7 @@ Neste projeto, a homologação corresponde à execução local associada à bran
 
 ## CI/CD: de `hml` para `main`
 
-![Fluxo de desenvolvimento, integração contínua e deploy do Pudd](docs/assets/ci-cd.svg)
+![Fluxo de desenvolvimento, integração contínua e deploy do Pudd](DOCS/assets/imagens/ci-cd.svg)
 
 - **`hml`**: desenvolvimento, testes e validação local das alterações.
 - **`main`**: branch de produção, que recebe as alterações por merge.
