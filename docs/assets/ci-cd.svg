@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title desc">
+  <title id="title">Fluxo de CI/CD do Pudd</title>
+  <desc id="desc">Desenvolvimento na branch hml e merge para main. GitHub Actions valida pushes e pull requests em ambas as branches. A integração Git da Vercel executa o deploy de main para o frontend e para a API.</desc>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10" fill="none" stroke="#75d9a0" stroke-width="1.5"/></marker></defs>
+  <rect x="1" y="1" width="1198" height="638" rx="24" fill="#0d1412" stroke="#2d4238"/>
+  <g font-family="Segoe UI,Arial,sans-serif" text-anchor="middle">
+    <text x="600" y="54" fill="#f2f6f3" font-size="27" font-weight="700">Desenvolvimento, validação e entrega</text>
+    <g fill="#15251d" stroke="#355b46" stroke-width="1.5">
+      <rect x="65" y="117" width="420" height="119" rx="16"/>
+      <rect x="715" y="117" width="420" height="119" rx="16"/>
+      <rect x="65" y="345" width="525" height="177" rx="16"/>
+      <rect x="700" y="345" width="435" height="177" rx="16" fill="#123220" stroke="#75d9a0"/>
+    </g>
+    <g fill="#f2f6f3" font-size="23" font-weight="700">
+      <text x="275" y="158">Branch hml</text><text x="925" y="158">Branch main</text>
+      <text x="327" y="390">GitHub Actions</text><text x="917" y="390">Vercel</text>
+    </g>
+    <g fill="#afc4b7" font-size="17">
+      <text x="275" y="192">Desenvolvimento e testes locais</text><text x="925" y="192">Código de produção</text>
+      <text x="327" y="426">Build · lint · formatação · auditorias</text><text x="327" y="456">Testes automatizados · PostgreSQL</text><text x="327" y="486">Validação da imagem Docker</text>
+      <text x="917" y="426">Deploy pela integração Git</text><text x="917" y="456">Frontend Angular + API em container</text><text x="917" y="486">Publicação a partir de main</text>
+    </g>
+    <g fill="none" stroke="#75d9a0" stroke-width="2" marker-end="url(#arrow)">
+      <path d="M497 176 H701"/>
+      <path d="M275 238 V331"/>
+      <path d="M925 238 V331"/>
+      <path d="M786 238 L526 331"/>
+    </g>
+    <text x="600" y="156" fill="#a9bcb0" font-size="16">Merge para main</text>
+    <text x="173" y="292" fill="#a9bcb0" font-size="15">CI em hml</text>
+    <text x="606" y="287" fill="#a9bcb0" font-size="15">CI em main</text>
+    <text x="1046" y="292" fill="#a9bcb0" font-size="15">Deploy de main</text>
+    <text x="600" y="576" fill="#a9bcb0" font-size="17">Os workflows também validam pull requests para hml e main e permitem execução manual.</text>
+    <text x="600" y="607" fill="#a9bcb0" font-size="16">GitHub Actions: integração contínua · Vercel: implantação dos projetos</text>
+  </g>
+</svg>

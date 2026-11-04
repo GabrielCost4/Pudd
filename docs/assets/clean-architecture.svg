@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="530" viewBox="0 0 1200 530" role="img" aria-labelledby="title desc">
+  <title id="title">Clean Architecture do Pudd</title>
+  <desc id="desc">API referencia Application e Infrastructure. Infrastructure referencia Application e Domain. Application referencia Domain. Domain é independente das outras camadas.</desc>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10" fill="none" stroke="#75d9a0" stroke-width="1.5"/></marker></defs>
+  <rect x="1" y="1" width="1198" height="528" rx="24" fill="#0d1412" stroke="#2d4238"/>
+  <g font-family="Segoe UI,Arial,sans-serif" text-anchor="middle">
+    <text x="600" y="54" fill="#f2f6f3" font-size="27" font-weight="700">Clean Architecture</text>
+    <text x="600" y="88" fill="#a9bcb0" font-size="17">Dependências orientadas para o domínio</text>
+    <g fill="#15251d" stroke="#355b46" stroke-width="1.5">
+      <rect x="52" y="132" width="256" height="110" rx="15"/>
+      <rect x="52" y="327" width="256" height="110" rx="15"/>
+      <rect x="455" y="228" width="285" height="120" rx="15"/>
+      <rect x="900" y="228" width="248" height="120" rx="15" fill="#123220" stroke="#75d9a0"/>
+    </g>
+    <g fill="#f2f6f3" font-size="22" font-weight="700">
+      <text x="180" y="173">Pudd.API</text><text x="180" y="370">Pudd.Infrastructure</text>
+      <text x="598" y="274">Pudd.Application</text><text x="1024" y="274">Pudd.Domain</text>
+    </g>
+    <g fill="#b7c9bf" font-size="16">
+      <text x="180" y="207">HTTP · JWT · SignalR</text><text x="180" y="403">EF Core · storage · e-mail</text>
+      <text x="598" y="308">Serviços · contratos · validações</text><text x="1024" y="308">Entidades · tipos centrais</text>
+    </g>
+    <g fill="none" stroke="#75d9a0" stroke-width="2" marker-end="url(#arrow)">
+      <path d="M308 187 L445 262"/><path d="M308 382 L445 310"/>
+      <path d="M180 244 L180 315"/><path d="M742 288 L888 288"/>
+      <path d="M309 414 L1024 414 L1024 360" stroke-dasharray="6 6"/>
+    </g>
+    <text x="268" y="283" fill="#a9bcb0" font-size="13">Composição / DI</text>
+    <text x="815" y="270" fill="#a9bcb0" font-size="14">Depende de</text>
+    <text x="600" y="489" fill="#a9bcb0" font-size="16">As setas representam referências entre projetos; o frontend Angular é organizado por features.</text>
+  </g>
+</svg>

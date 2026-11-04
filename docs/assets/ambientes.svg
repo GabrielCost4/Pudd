@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="690" viewBox="0 0 1200 690" role="img" aria-labelledby="title desc">
+  <title id="title">Ambientes do Pudd</title>
+  <desc id="desc">Homologação local: Angular na porta 4200, API .NET 10 na porta 5193 e PostgreSQL Docker na porta 5433. Produção: Angular e API em container na Vercel e PostgreSQL no Neon. Supabase Storage armazena as imagens.</desc>
+  <defs>
+    <g id="screen" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="-14" y="-11" width="28" height="20" rx="3"/><path d="M-7 15 H7 M0 9 V15"/></g>
+    <g id="server" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="-14" y="-15" width="28" height="12" rx="3"/><rect x="-14" y="3" width="28" height="12" rx="3"/><path d="M-9 -9 H-6 M-9 9 H-6"/></g>
+    <g id="db" fill="none" stroke="currentColor" stroke-width="2.5"><ellipse cy="-11" rx="12" ry="5"/><path d="M-12 -11 V11 C-12 18 12 18 12 11 V-11 M-12 0 C-12 7 12 7 12 0"/></g>
+  </defs>
+  <rect x="1" y="1" width="1198" height="688" rx="24" fill="#0d1412" stroke="#2d4238"/>
+  <g font-family="Segoe UI,Arial,sans-serif" text-anchor="middle">
+    <text x="600" y="51" fill="#f2f6f3" font-size="27" font-weight="700">Do ambiente local à produção</text>
+    <rect x="70" y="84" width="490" height="459" rx="20" fill="#101b16" stroke="#2c4939"/>
+    <rect x="640" y="84" width="490" height="459" rx="20" fill="#101b16" stroke="#2c4939"/>
+    <rect x="210" y="106" width="210" height="33" rx="16" fill="#29332e"/>
+    <rect x="768" y="106" width="234" height="33" rx="16" fill="#133d26"/>
+    <g font-size="17" font-weight="700"><text x="315" y="129" fill="#e4eae6">HML — Localhost</text><text x="885" y="129" fill="#75d9a0">PRD — Nuvem</text></g>
+    <g color="#d9e8de"><use href="#screen" x="315" y="174"/><use href="#screen" x="885" y="174"/></g>
+    <g fill="#f2f6f3" font-size="22" font-weight="700"><text x="315" y="215">Angular</text><text x="885" y="215">Angular</text></g>
+    <g fill="#afc4b7" font-size="17"><text x="315" y="243">localhost:4200</text><text x="885" y="243">Vercel · pudd.vercel.app</text></g>
+    <g fill="#7eaa90" font-size="24"><text x="315" y="276">↓</text><text x="885" y="276">↓</text></g>
+    <g color="#d9e8de"><use href="#server" x="315" y="310"/><use href="#server" x="885" y="310"/></g>
+    <g fill="#f2f6f3" font-size="22" font-weight="700"><text x="315" y="350">API .NET 10</text><text x="885" y="350">API .NET 10</text></g>
+    <g fill="#afc4b7" font-size="17"><text x="315" y="379">Execução local · localhost:5193</text><text x="885" y="379">Container na Vercel · pudd-api</text></g>
+    <g fill="#7eaa90" font-size="24"><text x="315" y="411">↓</text><text x="885" y="411">↓</text></g>
+    <g color="#75d9a0"><use href="#db" x="315" y="444"/><use href="#db" x="885" y="444"/></g>
+    <g fill="#f2f6f3" font-size="22" font-weight="700"><text x="315" y="484">PostgreSQL</text><text x="885" y="484">PostgreSQL</text></g>
+    <g fill="#afc4b7" font-size="17"><text x="315" y="514">Docker local · porta 5433</text><text x="885" y="514">Neon · produção</text></g>
+    <rect x="185" y="571" width="830" height="77" rx="15" fill="#15251d" stroke="#355b46"/>
+    <text x="600" y="600" fill="#f2f6f3" font-size="19" font-weight="700">Integrações da API</text>
+    <text x="600" y="629" fill="#afc4b7" font-size="17">Supabase Storage: posts, avatares e banners · Resend: e-mails de recuperação</text>
+  </g>
+</svg>
