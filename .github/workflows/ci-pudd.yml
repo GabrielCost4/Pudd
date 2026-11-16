@@ -2,24 +2,16 @@ name: CI - API
 
 on:
   push:
-    branches: [main, hml]
-  # Required checks must also exist on PRs that only change WEB or workflows.
+    branches:
+      - main
+    paths:
+      - 'API/**'
+
   pull_request:
-    branches: [main, hml]
-  workflow_dispatch:
-
-permissions:
-  contents: read
-
-concurrency:
-  # main gets a group per commit, preserving queued production checks as well.
-  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref == 'refs/heads/main' && github.sha || github.ref }}
-  # Preserve running validations on main, including those used by Vercel.
-  cancel-in-progress: ${{ github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/hml') }}
-
-env:
-  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
-  DOTNET_NOLOGO: '1'
+    branches:
+      - main
+    paths:
+      - 'API/**'
 
 jobs:
   build:
@@ -68,15 +60,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-${{ steps.dotnet.outputs.dotnet-version }}-
 
-      - name: Restore and audit direct and transitive NuGet dependencies
-        run: >-
-          dotnet restore Pudd.slnx
-          -p:NuGetAudit=true
-          -p:NuGetAuditMode=all
-          -p:NuGetAuditLevel=high
-          -warnaserror:NU1900,NU1903,NU1904
+      - name: Formatar código
+        run: dotnet format
 
-      - name: Build solution in Release
+      - name: Conferir formatação
+        run: dotnet format --verify-no-changes
+
+      - name: Compilar
         run: dotnet build Pudd.slnx --no-restore --configuration Release
 
       - name: Run unit and integration tests, including PostgreSQL

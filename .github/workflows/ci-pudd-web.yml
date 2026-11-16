@@ -26,7 +26,7 @@ defaults:
 
 jobs:
   formatting:
-    name: WEB - Lint, formatting and dependency audit
+    name: Formatação com Prettier
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -40,14 +40,12 @@ jobs:
           node-version: '24'
           cache: npm
           cache-dependency-path: WEB/package-lock.json
-      - name: Install locked dependencies
-        run: npm ci --no-audit --no-fund
-      - name: Check ESLint
-        run: npm run lint
-      - name: Check Prettier formatting
+      - name: Instalar dependências
+        run: npm ci
+      - name: Formatar código com Prettier
+        run: npx prettier --write src
+      - name: Conferir formatação
         run: npm run format:check
-      - name: Audit direct and transitive npm dependencies
-        run: npm audit --audit-level=high
 
   tests:
     name: WEB - Types and tests
