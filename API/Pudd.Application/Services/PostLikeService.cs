@@ -34,7 +34,7 @@ public class PostLikeService(
         await likes.SetLikedAsync(actorId, postId, liked, notification);
 
         if (notifications is not null)
-        await notifications.PublishForPostAsync(postId);
+            await notifications.PublishForPostAsync(postId);
 
         return new(liked, await likes.CountAsync(postId));
     }

@@ -10,12 +10,12 @@ namespace Pudd.Application.Interfaces
     {
         Task AddAsync(Post post);
         Task<int> CountByUserAsync(Guid userId);
-        Task<Post?> GetByIdAsync (Guid postID);
+        Task<Post?> GetByIdAsync(Guid postID);
         Task UpdateAsync(Post post);
         // Salva o post e agenda a limpeza anterior na mesma transação.
         Task UpdateWithImageCleanupAsync(Post post, string? previousImagePath);
-        Task DeleteAsync (Post post);
-        Task<IReadOnlyList<Post>> GetFeedAsync (int page, int pageSize);
+        Task DeleteAsync(Post post);
+        Task<IReadOnlyList<Post>> GetFeedAsync(int page, int pageSize);
         Task<IReadOnlyList<Post>> GetByUserAsync(Guid userId, int page, int pageSize, bool? hasImage = null);
     }
 }

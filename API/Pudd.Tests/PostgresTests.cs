@@ -72,12 +72,16 @@ public class PostgresTests
         var inserted = await Task.WhenAll(Enumerable.Range(0, 2).Select(async index =>
         {
             await using var concurrent = new PuddDbContext(options);
-            concurrent.users.Add(new User { ID = Guid.NewGuid(),
+            concurrent.users.Add(new User
+            {
+                ID = Guid.NewGuid(),
                 Name = index == 0 ? uniqueName : "  " + uniqueName.ToUpperInvariant() + "  ",
-                Email = Guid.NewGuid() + "@example.test" });
+                Email = Guid.NewGuid() + "@example.test"
+            });
             try { await concurrent.SaveChangesAsync(); return true; }
             catch (DbUpdateException error) when (error.InnerException is PostgresException
-                { SqlState: "23505", ConstraintName: "IX_users_NormalizedName" }) { return false; }
+            { SqlState: "23505", ConstraintName: "IX_users_NormalizedName" })
+            { return false; }
         }));
         Assert.Single(inserted, success => success);
 

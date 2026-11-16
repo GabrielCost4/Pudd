@@ -9,7 +9,8 @@ namespace Pudd.Infrastructure
 {
     public class PuddDbContext : DbContext
     {
-        public PuddDbContext(DbContextOptions<PuddDbContext> options) : base(options){        
+        public PuddDbContext(DbContextOptions<PuddDbContext> options) : base(options)
+        {
         }
 
         public DbSet<CommunityFeedback> feedbacks => Set<CommunityFeedback>();
@@ -67,8 +68,11 @@ namespace Pudd.Infrastructure
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<PostLike>()
-                .HasIndex(like => new { like.UserID,
-                like.PostID })
+                .HasIndex(like => new
+                {
+                    like.UserID,
+                    like.PostID
+                })
                 .IsUnique();
 
             modelBuilder.Entity<Comment>()

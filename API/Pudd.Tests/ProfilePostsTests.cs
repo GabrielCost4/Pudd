@@ -16,9 +16,15 @@ public class ProfilePostsTests
         var author = new User { ID = Guid.NewGuid(), Name = "Author", Email = "author@test.test" };
         var other = new User { ID = Guid.NewGuid(), Name = "Other", Email = "other@test.test" };
         for (var i = 0; i < 7; i++)
-            db.posts.Add(new Post { ID = Guid.NewGuid(), User = author, UserID = author.ID,
-                Content = "Post " + i, ImagePath = i % 2 == 0 ? "image.png" : null,
-                CreatedAt = DateTimeOffset.UtcNow.AddMinutes(-i) });
+            db.posts.Add(new Post
+            {
+                ID = Guid.NewGuid(),
+                User = author,
+                UserID = author.ID,
+                Content = "Post " + i,
+                ImagePath = i % 2 == 0 ? "image.png" : null,
+                CreatedAt = DateTimeOffset.UtcNow.AddMinutes(-i)
+            });
         db.posts.Add(new Post { ID = Guid.NewGuid(), User = other, UserID = other.ID, Content = "Other image", ImagePath = "other.png" });
         await db.SaveChangesAsync();
         var repository = new PostRepository(db);

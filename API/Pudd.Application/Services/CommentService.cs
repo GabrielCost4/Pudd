@@ -34,8 +34,11 @@ public class CommentService(
         };
         var notification = post.UserID == actorId ? null : new Notification
         {
-            RecipientID = post.UserID, ActorID = actorId, PostID = postId,
-            CommentID = comment.ID, Kind = "comment",
+            RecipientID = post.UserID,
+            ActorID = actorId,
+            PostID = postId,
+            CommentID = comment.ID,
+            Kind = "comment",
         };
         await comments.AddAsync(comment, notification);
         if (notifications is not null) await notifications.PublishForPostAsync(postId);

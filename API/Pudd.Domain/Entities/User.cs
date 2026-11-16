@@ -16,9 +16,9 @@ namespace Pudd.Domain.Entities
             }
         }
         public string NormalizedName { get; private set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;   
-        public string PasswordHash { get; set;} = string.Empty;
-        public UserRole Role { get; set;} = UserRole.User;
+        public string Email { get; set; } = string.Empty;
+        public string PasswordHash { get; set; } = string.Empty;
+        public UserRole Role { get; set; } = UserRole.User;
         public string? Bio { get; set; }
         public string? AvatarImagePath { get; set; }
         public string? BannerImagePath { get; set; }

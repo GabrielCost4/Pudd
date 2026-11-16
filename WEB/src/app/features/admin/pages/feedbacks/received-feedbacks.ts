@@ -14,15 +14,7 @@ import { apiErrors } from '../../../../shared/utils/api-errors';
 
 @Component({
   selector: 'app-received-feedbacks',
-  imports: [
-    AdminNavigation,
-    DatePipe,
-    ButtonModule,
-    CardModule,
-    TagModule,
-    Feedback,
-    Pagination,
-  ],
+  imports: [AdminNavigation, DatePipe, ButtonModule, CardModule, TagModule, Feedback, Pagination],
   templateUrl: './received-feedbacks.html',
   styleUrl: './received-feedbacks.css',
 })

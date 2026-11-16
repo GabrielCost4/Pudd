@@ -14,9 +14,13 @@ public class CommunityFeedbackService(ICommunityFeedbackRepository feedbacks, Ac
         var description = request.Description?.Trim() ?? string.Empty;
         if (description.Length is < 10 or > 3000)
             throw new AppException(ErrorCode.InvalidInput, "Descreva seu feedback usando entre 10 e 3000 caracteres.");
-        await feedbacks.AddAsync(new CommunityFeedback {
-            ID = Guid.NewGuid(), UserID = actorId, Kind = request.Kind,
-            Description = description, CreatedAt = clock.GetUtcNow()
+        await feedbacks.AddAsync(new CommunityFeedback
+        {
+            ID = Guid.NewGuid(),
+            UserID = actorId,
+            Kind = request.Kind,
+            Description = description,
+            CreatedAt = clock.GetUtcNow()
         }, ct);
     }
 

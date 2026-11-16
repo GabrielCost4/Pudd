@@ -27,8 +27,14 @@ public class ProfileSearchTests
     {
         await using var s = new Scenario();
         var names = new[] { "Ana", "Anabela", "Mariana", "Ana Carolina", "Anastasia" };
-        s.Db.users.AddRange(names.Select(name => new User { ID = Guid.NewGuid(), Name = name,
-            Email = name + "@example.test", IsBlocked = name == "Anastasia", AvatarImagePath = name == "Ana" ? "avatar.png" : null }));
+        s.Db.users.AddRange(names.Select(name => new User
+        {
+            ID = Guid.NewGuid(),
+            Name = name,
+            Email = name + "@example.test",
+            IsBlocked = name == "Anastasia",
+            AvatarImagePath = name == "Ana" ? "avatar.png" : null
+        }));
         await s.Db.SaveChangesAsync();
         var results = await s.Profiles.SearchAsync(s.Owner.ID, " ANA ");
         Assert.Equal(new[] { "Ana", "Ana Carolina", "Anabela" }, results.Select(user => user.Name));

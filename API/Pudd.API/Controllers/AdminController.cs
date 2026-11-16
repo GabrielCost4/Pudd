@@ -10,8 +10,8 @@ namespace Pudd.API.Controllers;
 // Os services conferem a role atual no banco, além da autenticação exigida pelo controller.
 [Route("api/admin")]
 public class AdminController(
-    UserService users, 
-    PostService posts, 
+    UserService users,
+    PostService posts,
     CommentService comments) : SocialControllerBase
 {
     [HttpGet("users")]

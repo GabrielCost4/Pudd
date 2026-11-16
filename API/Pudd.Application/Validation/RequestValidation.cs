@@ -16,7 +16,7 @@ public static class RequestValidation
                 group => group.Select(error => error.ErrorMessage)
                 .Distinct()
                 .ToArray());
-                
+
         throw new AppException(ErrorCode.InvalidInput, "Verifique os dados informados.", errors);
     }
 }

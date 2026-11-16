@@ -71,8 +71,13 @@ public partial class ApiTests
         using (var scope = factory.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<PuddDbContext>();
-            var user = new User { ID = Guid.NewGuid(), Name = "Login test", Email = "login@example.test",
-                PasswordHash = scope.ServiceProvider.GetRequiredService<IPasswordHasher>().GerarHash("Valid!1234") };
+            var user = new User
+            {
+                ID = Guid.NewGuid(),
+                Name = "Login test",
+                Email = "login@example.test",
+                PasswordHash = scope.ServiceProvider.GetRequiredService<IPasswordHasher>().GerarHash("Valid!1234")
+            };
             id = user.ID;
             db.users.Add(user);
             await db.SaveChangesAsync();
@@ -208,8 +213,14 @@ public partial class ApiTests
         using var scope = factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<PuddDbContext>();
         var hasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher>();
-        db.users.Add(new User { ID = Guid.NewGuid(), Name = "Bloqueado", Email = "blocked@example.test",
-            IsBlocked = true, PasswordHash = hasher.GerarHash("Valid!1234") });
+        db.users.Add(new User
+        {
+            ID = Guid.NewGuid(),
+            Name = "Bloqueado",
+            Email = "blocked@example.test",
+            IsBlocked = true,
+            PasswordHash = hasher.GerarHash("Valid!1234")
+        });
         await db.SaveChangesAsync();
         var result = await client.PostAsJsonAsync("/api/auth/login",
             new { Email = "blocked@example.test", Senha = "Valid!1234" });
