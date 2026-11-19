@@ -218,15 +218,6 @@
 .notifications li.seen .activity-icon {
   color: var(--muted);
 }
-.connection-status {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem;
-  border: 1px dashed var(--border);
-  border-radius: 0.75rem;
-  font-size: 0.75rem;
-}
 .loading-state {
   display: flex;
   justify-content: center;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Pudd.Application.Contracts;
 using Pudd.Application.Interfaces;
 using Pudd.Domain.Entities;
 
@@ -44,26 +45,31 @@ namespace Pudd.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IReadOnlyList<Post>> GetFeedAsync(int page, int pageSize)
+        public Task<PostResponse?> GetResponseAsync(Guid actorId, Guid postId) =>
+            Project(_context.posts.Where(post => post.ID == postId), actorId).FirstOrDefaultAsync();
+
+        public async Task<IReadOnlyList<PostResponse>> GetFeedAsync(
+            Guid actorId, int page, int pageSize, Guid? authorId = null, bool? hasImage = null)
         {
-            return await _context.posts
-                .AsNoTracking()
-                .Include(post => post.User)
+            var query = _context.posts.AsNoTracking();
+            if (authorId.HasValue)
+                query = query.Where(post => post.UserID == authorId.Value);
+            if (hasImage.HasValue)
+                query = query.Where(post => (post.ImagePath != null) == hasImage.Value);
+
+            var pageQuery = query
                 .OrderByDescending(post => post.CreatedAt)
                 .ThenByDescending(post => post.ID)
                 .Skip((page - 1) * pageSize)
-                .Take(pageSize + 1)
-                .ToListAsync();
+                .Take(pageSize + 1);
+            return await Project(pageQuery, actorId).ToListAsync();
         }
 
-        public async Task<IReadOnlyList<Post>> GetByUserAsync(Guid userId, int page, int pageSize, bool? hasImage = null)
-        {
-            return await _context.posts.AsNoTracking().Include(post => post.User)
-                .Where(post => post.UserID == userId)
-                .Where(post => !hasImage.HasValue || (post.ImagePath != null) == hasImage.Value)
-                .OrderByDescending(post => post.CreatedAt).ThenByDescending(post => post.ID)
-                .Skip((page - 1) * pageSize).Take(pageSize + 1).ToListAsync();
-        }
+        private static IQueryable<PostResponse> Project(IQueryable<Post> query, Guid actorId) =>
+            query.Select(post => new PostResponse(
+                post.ID, post.UserID, post.User.Name, post.Content, post.ImagePath != null,
+                post.CreatedAt, post.UpdatedAt, post.User.AvatarImagePath != null,
+                post.Likes.Count, post.Likes.Any(like => like.UserID == actorId)));
 
         private void ScheduleImageDeletion(string? path)
         {

@@ -7,8 +7,7 @@ namespace Pudd.Application.Services;
 public class PostLikeService(
        IPostLikeRepository likes,
        IPostRepository posts,
-       AccountAccess access,
-       NotificationService? notifications = null)
+       AccountAccess access)
 {
     public async Task<LikeResponse> GetAsync(Guid actorId, Guid postId)
     {
@@ -32,9 +31,6 @@ public class PostLikeService(
         };
 
         await likes.SetLikedAsync(actorId, postId, liked, notification);
-
-        if (notifications is not null)
-            await notifications.PublishForPostAsync(postId);
 
         return new(liked, await likes.CountAsync(postId));
     }

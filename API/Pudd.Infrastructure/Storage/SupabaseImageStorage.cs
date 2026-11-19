@@ -49,6 +49,7 @@ public class SupabaseImageStorage(
     {
         using var request = Create(HttpMethod.Post, $"object/sign/{ObjectKey(bucket, path)}");
         request.Content = JsonContent.Create(new { expiresIn = UrlLifetimeSeconds });
+        var expiresAt = DateTimeOffset.UtcNow.AddSeconds(UrlLifetimeSeconds);
         using var response = await SendAsync(request, ct);
         EnsureSuccess(response);
         try
@@ -63,7 +64,7 @@ public class SupabaseImageStorage(
                 : new Uri(new Uri(root, "storage/v1/"), relative.TrimStart('/'));
             if (url.Host != root.Host || url.Scheme != root.Scheme)
                 throw Unavailable();
-            return new(url.AbsoluteUri, UrlLifetimeSeconds);
+            return new(url.AbsoluteUri, UrlLifetimeSeconds, expiresAt);
         }
         catch (Exception ex)
             when (ex

@@ -1,4 +1,5 @@
 import { SubmitOnEnter } from '../../../../shared/directives/submit-on-enter';
+import { DOCUMENT } from '@angular/common';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { AvatarModule } from 'primeng/avatar';
@@ -13,7 +14,7 @@ import { Component, DestroyRef, computed, effect, inject, signal } from '@angula
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { catchError, finalize, of, Subscription, switchMap } from 'rxjs';
+import { catchError, exhaustMap, finalize, of, Subscription, switchMap } from 'rxjs';
 import { SessionStore } from '../../../../core/auth/session.store';
 import { AccountStore } from '../../../../core/account/account.store';
 import { LabelInput } from '../../../../shared/components/label-input/label-input';
@@ -23,7 +24,8 @@ import { apiErrors } from '../../../../shared/utils/api-errors';
 import type { Profile } from '../../models/profile';
 import { ProfileService } from '../../services/profile.service';
 import { ProfilePosts } from '../../../posts/public';
-import { InboxRealtime } from '../../../../core/notifications/inbox-realtime';
+import { foregroundRefreshes } from '../../../../shared/utils/foreground-refreshes';
+import { imageRefreshDelay } from '../../../../shared/models/image-url-response';
 import type { UserPresence } from '../../../../core/notifications/user-presence';
 import { TooltipModule } from 'primeng/tooltip';
 
@@ -58,7 +60,7 @@ export class ProfilePage {
   private readonly session = inject(SessionStore);
   private readonly account = inject(AccountStore);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly realtime = inject(InboxRealtime);
+  private readonly document = inject(DOCUMENT);
   private avatarRequest?: Subscription;
   private bannerRequest?: Subscription;
   private bannerTimer?: ReturnType<typeof setTimeout>;
@@ -116,11 +118,10 @@ export class ProfilePage {
         this.presence.set(null);
         return;
       }
-      cleanup(
-        this.realtime.watchPresence(id, token, (state) =>
-          this.presence.set(state?.presence ?? null),
-        ),
-      );
+      const poll = foregroundRefreshes(this.document, false)
+        .pipe(exhaustMap(() => this.api.get(id).pipe(catchError(() => of(null)))))
+        .subscribe((profile) => this.presence.set(profile?.presence ?? null));
+      cleanup(() => poll.unsubscribe());
     });
     this.route.paramMap
       .pipe(
@@ -166,7 +167,7 @@ export class ProfilePage {
     });
   }
   private setProfile(profile: Profile): void {
-    if (this.profile()?.id !== profile.id) this.presence.set(profile.presence ?? null);
+    this.presence.set(profile.presence ?? null);
     this.profile.set(profile);
     this.form.setValue({ name: profile.name, bio: profile.bio || '' });
   }
@@ -188,7 +189,7 @@ export class ProfilePage {
     clearTimeout(this.avatarTimer);
     this.avatarRequest?.unsubscribe();
   }
-  protected loadAvatar(): void {
+  protected loadAvatar(reload = false): void {
     this.stopAvatar();
     const profile = this.profile();
     if (!profile?.hasAvatar) {
@@ -196,13 +197,10 @@ export class ProfilePage {
       return;
     }
     this.avatarFailed.set(false);
-    this.avatarRequest = this.api.avatar(profile.id).subscribe({
+    this.avatarRequest = this.api.avatar(profile.id, reload).subscribe({
       next: (response) => {
         this.avatarUrl.set(response.url);
-        this.avatarTimer = setTimeout(
-          () => this.loadAvatar(),
-          Math.max(1000, (response.expiresInSeconds - 15) * 1000),
-        );
+        this.avatarTimer = setTimeout(() => this.loadAvatar(), imageRefreshDelay(response));
       },
       error: () => this.avatarFailed.set(true),
     });
@@ -222,10 +220,7 @@ export class ProfilePage {
     this.bannerRequest = this.api.banner(profile.id).subscribe({
       next: (response) => {
         this.bannerUrl.set(response.url);
-        this.bannerTimer = setTimeout(
-          () => this.loadBanner(),
-          Math.max(1000, (response.expiresInSeconds - 15) * 1000),
-        );
+        this.bannerTimer = setTimeout(() => this.loadBanner(), imageRefreshDelay(response));
       },
       error: () => this.bannerFailed.set(true),
     });
@@ -290,7 +285,7 @@ export class ProfilePage {
           this.profile.update((p) => (p ? { ...p, hasAvatar: true } : p));
           this.selectedImage.set(null);
           this.pickerVersion.update((v) => v + 1);
-          this.loadAvatar();
+          this.loadAvatar(true);
           this.success.set('Foto de perfil atualizada.');
           this.account.refresh(true);
         },

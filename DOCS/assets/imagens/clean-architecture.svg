@@ -17,7 +17,7 @@
       <text x="598" y="274">Pudd.Application</text><text x="1024" y="274">Pudd.Domain</text>
     </g>
     <g fill="#b7c9bf" font-size="16">
-      <text x="180" y="207">HTTP · JWT · SignalR</text><text x="180" y="403">EF Core · storage · e-mail</text>
+      <text x="180" y="207">HTTP · JWT</text><text x="180" y="403">EF Core · storage · e-mail</text>
       <text x="598" y="308">Serviços · contratos · validações</text><text x="1024" y="308">Entidades · tipos centrais</text>
     </g>
     <g fill="none" stroke="#75d9a0" stroke-width="2" marker-end="url(#arrow)">

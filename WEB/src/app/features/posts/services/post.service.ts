@@ -44,9 +44,10 @@ export class PostService {
     return this.http.delete<void>(API_BASE_URL + '/admin/posts/' + encodeURIComponent(id));
   }
 
-  image(id: string) {
+  image(id: string, updatedAt?: string | null, reload = false) {
     return this.http.get<ImageUrlResponse>(
       API_BASE_URL + '/posts/' + encodeURIComponent(id) + '/image',
+      { params: updatedAt ? { version: updatedAt } : {}, cache: reload ? 'reload' : 'default' },
     );
   }
 }

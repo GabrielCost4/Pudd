@@ -12,9 +12,10 @@ export class AccountService {
     return this.http.get<AccountSummary>(API_BASE_URL + '/users/me');
   }
 
-  avatar(id: string) {
+  avatar(id: string, reload = false) {
     return this.http.get<ImageUrlResponse>(
       API_BASE_URL + '/users/' + encodeURIComponent(id) + '/avatar',
+      { cache: reload ? 'reload' : 'default' },
     );
   }
 }

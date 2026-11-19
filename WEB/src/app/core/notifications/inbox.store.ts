@@ -1,19 +1,19 @@
+import { DOCUMENT } from '@angular/common';
 import { DestroyRef, Injectable, computed, effect, inject, signal } from '@angular/core';
 import { from, concatMap, finalize, tap, Subscription } from 'rxjs';
 import { SessionStore } from '../auth/session.store';
 import { InboxService } from './inbox.service';
-import { InboxRealtime } from './inbox-realtime';
+import { foregroundRefreshes } from '../../shared/utils/foreground-refreshes';
 import type { InboxNotification } from './inbox-notification';
 
 @Injectable({ providedIn: 'root' })
 export class InboxStore {
   private readonly api = inject(InboxService);
-  private readonly realtime = inject(InboxRealtime);
   private readonly session = inject(SessionStore);
+  private readonly document = inject(DOCUMENT);
   readonly items = signal<InboxNotification[]>([]);
   readonly seen = signal<ReadonlySet<string>>(new Set());
   readonly count = computed(() => this.items().filter((item) => !this.seen().has(item.id)).length);
-  readonly online = signal(false);
   readonly loading = signal(false);
   readonly busy = signal(false);
   readonly error = signal('');
@@ -29,29 +29,19 @@ export class InboxStore {
       const token = this.session.accessToken();
       this.reset();
       if (!token) return;
-      this.refresh();
-      const generation = this.generation;
-      cleanup(
-        this.realtime.connect(
-          token,
-          (items) => {
-            if (generation !== this.generation) return;
-            this.request?.unsubscribe();
-            this.loading.set(false);
-            this.apply(items);
-          },
-          (online) => {
-            if (generation === this.generation) this.online.set(online);
-          },
-        ),
-      );
+      const polling = foregroundRefreshes(this.document).subscribe(() => this.refresh());
+      cleanup(() => polling.unsubscribe());
     });
     inject(DestroyRef).onDestroy(() => this.reset());
   }
 
   refresh(): void {
-    if (!this.session.accessToken()) return;
-    this.request?.unsubscribe();
+    if (
+      this.document.visibilityState !== 'visible' ||
+      !this.session.accessToken() ||
+      (this.request && !this.request.closed)
+    )
+      return;
     const generation = this.generation;
     this.loading.set(true);
     this.error.set('');
@@ -133,7 +123,6 @@ export class InboxStore {
     this.deleted.clear();
     this.items.set([]);
     this.seen.set(new Set());
-    this.online.set(false);
     this.loading.set(false);
     this.busy.set(false);
     this.error.set('');

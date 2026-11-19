@@ -8,15 +8,6 @@ namespace Pudd.API.Authentication;
 public sealed class JwtBearerEventsHandler(
     IUserRepository users) : JwtBearerEvents
 {
-    public override Task MessageReceived(MessageReceivedContext context)
-    {
-        if (context.Request.Path.StartsWithSegments("/api/hubs/notifications") &&
-            context.Request.Query.TryGetValue("access_token", out var token))
-            context.Token = token;
-
-        return Task.CompletedTask;
-    }
-
     public override async Task TokenValidated(TokenValidatedContext context)
     {
         if (!Guid.TryParse(context.Principal?.FindFirstValue("sub"), out var userId))

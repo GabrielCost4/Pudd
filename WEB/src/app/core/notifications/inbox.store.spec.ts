@@ -3,13 +3,11 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { SessionStore } from '../auth/session.store';
-import { InboxRealtime } from './inbox-realtime';
 import { InboxStore } from './inbox.store';
 import type { InboxNotification } from './inbox-notification';
 
 describe('InboxStore', () => {
-  let received: (items: InboxNotification[]) => void;
-  const stop = vi.fn();
+  let visibility: DocumentVisibilityState;
   const oldItem: InboxNotification = {
     id: 'old',
     actorID: 'actor',
@@ -26,21 +24,10 @@ describe('InboxStore', () => {
   };
   beforeEach(() => {
     vi.useFakeTimers();
-    stop.mockClear();
+    visibility = 'visible';
+    vi.spyOn(document, 'visibilityState', 'get').mockImplementation(() => visibility);
     TestBed.configureTestingModule({
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        {
-          provide: InboxRealtime,
-          useValue: {
-            connect: (_token: string, callback: typeof received) => {
-              received = callback;
-              return stop;
-            },
-          },
-        },
-      ],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     });
     TestBed.inject(SessionStore).start(
       'header.' + btoa(JSON.stringify({ sub: 'me', exp: Date.now() / 1000 + 3600 })) + '.signature',
@@ -52,10 +39,12 @@ describe('InboxStore', () => {
     TestBed.tick();
     TestBed.inject(HttpTestingController).verify();
     vi.useRealTimers();
+    vi.restoreAllMocks();
   });
   function setup() {
     const store = TestBed.inject(InboxStore);
     TestBed.tick();
+    vi.advanceTimersByTime(0);
     TestBed.inject(HttpTestingController)
       .expectOne(API_BASE_URL + '/notifications')
       .flush([oldItem]);
@@ -68,14 +57,20 @@ describe('InboxStore', () => {
       API_BASE_URL + '/notifications/read',
     );
     expect(request.request.body).toEqual({ ids: ['old'] });
-    received([arrival]);
+    store.refresh();
+    TestBed.inject(HttpTestingController)
+      .expectOne(API_BASE_URL + '/notifications')
+      .flush([arrival]);
     expect(store.items().map((item) => item.id)).toEqual(['new', 'old']);
     request.flush(null);
     expect(store.seen().has('old')).toBe(true);
     expect(store.count()).toBe(1);
     vi.advanceTimersByTime(900);
     expect(store.items()).toEqual([arrival]);
-    received([arrival, oldItem]);
+    store.refresh();
+    TestBed.inject(HttpTestingController)
+      .expectOne(API_BASE_URL + '/notifications')
+      .flush([arrival, oldItem]);
     expect(store.items()).toEqual([arrival]);
   });
   it('keeps notifications available when marking as read fails', () => {
@@ -89,12 +84,41 @@ describe('InboxStore', () => {
     expect(store.busy()).toBe(false);
     expect(store.error()).toContain('Tente novamente');
   });
-  it('clears the inbox and disconnects on logout, ignoring callbacks from the previous account', () => {
+  it('clears the inbox and cancels outstanding and scheduled polls on logout', () => {
     const store = setup();
+    const http = TestBed.inject(HttpTestingController);
+    vi.advanceTimersByTime(60_000);
+    const pending = http.expectOne(API_BASE_URL + '/notifications');
     TestBed.inject(SessionStore).clear();
     TestBed.tick();
-    expect(stop).toHaveBeenCalledOnce();
-    received([oldItem]);
+    expect(pending.cancelled).toBe(true);
+    vi.advanceTimersByTime(60_000);
+    http.expectNone(API_BASE_URL + '/notifications');
     expect(store.items()).toEqual([]);
+  });
+  it('polls on focus and every minute only while visible, without overlapping requests', () => {
+    setup();
+    const http = TestBed.inject(HttpTestingController);
+    const url = API_BASE_URL + '/notifications';
+    visibility = 'hidden';
+    document.dispatchEvent(new Event('visibilitychange'));
+    window.dispatchEvent(new Event('focus'));
+    vi.advanceTimersByTime(120_000);
+    http.expectNone(url);
+
+    visibility = 'visible';
+    document.dispatchEvent(new Event('visibilitychange'));
+    vi.advanceTimersByTime(0);
+    const pending = http.expectOne(url);
+    vi.advanceTimersByTime(60_000);
+    window.dispatchEvent(new Event('focus'));
+    http.expectNone(url);
+    pending.flush([]);
+
+    vi.advanceTimersByTime(1_000);
+    window.dispatchEvent(new Event('focus'));
+    http.expectOne(url).flush([]);
+    vi.advanceTimersByTime(59_000);
+    http.expectOne(url).flush([]);
   });
 });

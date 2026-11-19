@@ -241,7 +241,7 @@ internal sealed class Scenario : IAsyncDisposable
         Images = new(Storage, Queue, NullLogger<ImageService>.Instance);
         Posts = new(new PostRepository(Db), Users, Access, Images,
             new CreatePostRequestValidator(), new UpdatePostRequestValidator());
-        Profiles = new(Users, Access, Images, new UpdateProfileRequestValidator(), TimeProvider.System, new OfflinePresence(), new PostRepository(Db));
+        Profiles = new(Users, Access, Images, new UpdateProfileRequestValidator(), TimeProvider.System, new PostRepository(Db));
     }
     public async Task<Post> AddPost(string? path = null)
     {
@@ -251,11 +251,6 @@ internal sealed class Scenario : IAsyncDisposable
         return post;
     }
     public ValueTask DisposeAsync() => Db.DisposeAsync();
-}
-
-internal class OfflinePresence : IUserPresenceReader
-{
-    public PresenceResponse Get(Guid userId) => new(userId, UserPresence.Offline, 0);
 }
 
 internal class FakeStorage : IImageStorage
@@ -316,6 +311,7 @@ internal class FailingPosts : IPostRepository
     public Task UpdateAsync(Post post) => Task.CompletedTask;
     public Task UpdateWithImageCleanupAsync(Post post, string? previousImagePath) => Task.CompletedTask;
     public Task DeleteAsync(Post post) => Task.CompletedTask;
-    public Task<IReadOnlyList<Post>> GetFeedAsync(int page, int pageSize) => Task.FromResult<IReadOnlyList<Post>>([]);
-    public Task<IReadOnlyList<Post>> GetByUserAsync(Guid userId, int page, int pageSize, bool? hasImage = null) => GetFeedAsync(page, pageSize);
+    public Task<PostResponse?> GetResponseAsync(Guid actorId, Guid postId) => Task.FromResult<PostResponse?>(null);
+    public Task<IReadOnlyList<PostResponse>> GetFeedAsync(Guid actorId, int page, int pageSize,
+        Guid? authorId = null, bool? hasImage = null) => Task.FromResult<IReadOnlyList<PostResponse>>([]);
 }

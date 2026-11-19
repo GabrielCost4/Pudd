@@ -33,7 +33,7 @@ Este é um **projeto de estudo**, desenvolvido para aplicar conhecimentos adquir
 | Persistência | Entity Framework Core e Npgsql; PostgreSQL 18 no Docker local e PostgreSQL no Neon em produção. |
 | Imagens | Supabase Storage para publicações, avatares e banners, com URLs assinadas. |
 | Autenticação | JWT, autorização por claims e BCrypt para hash de senhas. |
-| Comunicação | SignalR para notificações/presença e Resend para recuperação de senha por e-mail. |
+| Comunicação | HTTP para notificações e presença, e Resend para recuperação de senha por e-mail. |
 | Qualidade e entrega | xUnit, Vitest, Playwright, ESLint, Prettier, Docker, GitHub Actions e Vercel. |
 
 O acesso ao banco usa consultas parametrizadas pelo EF Core para prevenir SQL Injection. A API também aplica validação de entradas e limites de requisições. Na UI/UX, o projeto trabalha feedback visual, estados de carregamento, confirmações e navegação adaptada a telas menores.
@@ -49,7 +49,7 @@ O backend segue **Clean Architecture**, com dependências orientadas para o dom�
 | `Pudd.Domain` | Entidades e tipos centrais do domínio. |
 | `Pudd.Application` | Serviços de aplicação, regras, contratos, interfaces e validações. |
 | `Pudd.Infrastructure` | EF Core, migrations, repositórios, JWT, hash de senhas e integrações com Supabase e e-mail. |
-| `Pudd.API` | Controllers, autenticação/autorização HTTP, SignalR, tratamento de erros e composição das dependências. |
+| `Pudd.API` | Controllers, autenticação/autorização HTTP, tratamento de erros e composição das dependências. |
 | `Pudd.Tests` | Testes unitários e de integração do backend. |
 | `WEB/src/app/features` | Telas e recursos de autenticação, posts, comentários, perfil, administração e feedback. |
 

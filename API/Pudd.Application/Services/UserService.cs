@@ -11,7 +11,7 @@ namespace Pudd.Application.Services
                 AccountAccess access,
                 ImageService images,
                 IValidator<UpdateProfileRequest> validator, TimeProvider clock,
-                IUserPresenceReader presence, IPostRepository posts)
+                IPostRepository posts)
     {
         public async Task<ProfileResponse> GetProfileAsync(Guid actorId, Guid userId)
         {
@@ -137,8 +137,12 @@ namespace Pudd.Application.Services
         // O perfil público da comunidade não expõe e-mail, hash, role ou estado de bloqueio.
         private async Task<ProfileResponse> MapAsync(User u)
         {
-            var state = presence.Get(u.ID);
-            return new(u.ID, u.Name, u.Bio, u.AvatarImagePath is not null, state.Presence, state.Revision, await posts.CountByUserAsync(u.ID), u.BannerImagePath is not null);
+            var lastSeen = u.LastSeenAt;
+            var presence = !u.IsBlocked && lastSeen >= clock.GetUtcNow().AddMinutes(-6)
+                ? UserPresence.Online
+                : UserPresence.Offline;
+            return new(u.ID, u.Name, u.Bio, u.AvatarImagePath is not null, presence,
+                lastSeen?.ToUnixTimeMilliseconds() ?? 0, await posts.CountByUserAsync(u.ID), u.BannerImagePath is not null);
         }
     }
 }

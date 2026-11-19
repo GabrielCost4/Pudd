@@ -166,13 +166,29 @@ public partial class ApiTests
     }
 
     [Fact]
+    public async Task MediaPreflightAllowsAuthorizationAndAdvertisesTwentyFourHours()
+    {
+        await using var factory = new ApiFactory();
+        using var client = factory.CreateClient(new() { BaseAddress = new Uri("https://localhost") });
+        using var request = new HttpRequestMessage(HttpMethod.Options, $"/api/posts/{Guid.NewGuid()}/image");
+        request.Headers.Add("Origin", "https://pudd.vercel.app");
+        request.Headers.Add("Access-Control-Request-Method", "GET");
+        request.Headers.Add("Access-Control-Request-Headers", "authorization");
+        using var response = await client.SendAsync(request);
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        Assert.Equal("https://pudd.vercel.app", Assert.Single(response.Headers.GetValues("Access-Control-Allow-Origin")));
+        Assert.Equal("authorization", Assert.Single(response.Headers.GetValues("Access-Control-Allow-Headers")));
+        Assert.Equal("86400", Assert.Single(response.Headers.GetValues("Access-Control-Max-Age")));
+    }
+
+    [Fact]
     public async Task MultipartCreationProfileAndBlockingWorkThroughHttp()
     {
         await using var factory = new ApiFactory();
         var client = factory.CreateClient(new() { BaseAddress = new Uri("https://localhost") });
         using var scope = factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<PuddDbContext>();
-        var user = new User { ID = Guid.NewGuid(), Name = "Teste", Email = "http@example.test" };
+        var user = new User { ID = Guid.NewGuid(), Name = "Teste", Email = "http@example.test", AvatarImagePath = "avatar.png" };
         db.users.Add(user);
         await db.SaveChangesAsync();
         var token = scope.ServiceProvider.GetRequiredService<IJwtService>().GerarToken(user).AccessToken;
@@ -191,7 +207,13 @@ public partial class ApiTests
         Assert.Equal(HttpStatusCode.OK, (await client.GetAsync(created.Headers.Location)).StatusCode);
         var signed = await client.GetAsync($"/api/posts/{post.ID}/image");
         Assert.Equal(HttpStatusCode.OK, signed.StatusCode);
-        Assert.True(signed.Headers.CacheControl?.NoStore);
+        Assert.True(signed.Headers.CacheControl?.Private);
+        Assert.Equal(TimeSpan.FromMinutes(1), signed.Headers.CacheControl?.MaxAge);
+        Assert.Contains("Authorization", signed.Headers.Vary);
+        using var avatar = await client.GetAsync($"/api/users/{user.ID}/avatar");
+        Assert.Equal(HttpStatusCode.OK, avatar.StatusCode);
+        Assert.Equal(signed.Headers.CacheControl, avatar.Headers.CacheControl);
+        Assert.Contains("Authorization", avatar.Headers.Vary);
         Assert.Equal(HttpStatusCode.Forbidden, (await client.GetAsync("/api/admin/users")).StatusCode);
         var profile = await client.PutAsJsonAsync("/api/users/me", new { Name = "Nome novo", Bio = "C#" });
         Assert.Equal(HttpStatusCode.OK, profile.StatusCode);

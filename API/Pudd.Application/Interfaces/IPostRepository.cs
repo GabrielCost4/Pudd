@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Pudd.Application.Contracts;
 using Pudd.Domain.Entities;
 
 namespace Pudd.Application.Interfaces
@@ -15,7 +16,8 @@ namespace Pudd.Application.Interfaces
         // Salva o post e agenda a limpeza anterior na mesma transação.
         Task UpdateWithImageCleanupAsync(Post post, string? previousImagePath);
         Task DeleteAsync(Post post);
-        Task<IReadOnlyList<Post>> GetFeedAsync(int page, int pageSize);
-        Task<IReadOnlyList<Post>> GetByUserAsync(Guid userId, int page, int pageSize, bool? hasImage = null);
+        Task<PostResponse?> GetResponseAsync(Guid actorId, Guid postId);
+        Task<IReadOnlyList<PostResponse>> GetFeedAsync(Guid actorId, int page, int pageSize,
+            Guid? authorId = null, bool? hasImage = null);
     }
 }

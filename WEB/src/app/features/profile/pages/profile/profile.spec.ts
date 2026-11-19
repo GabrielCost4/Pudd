@@ -9,8 +9,6 @@ import { AccountStore } from '../../../../core/account/account.store';
 import { SessionStore } from '../../../../core/auth/session.store';
 import { Component, input } from '@angular/core';
 import { ProfilePosts } from '../../../posts/public';
-import { InboxRealtime } from '../../../../core/notifications/inbox-realtime';
-import type { PresenceUpdate } from '../../../../core/notifications/user-presence';
 
 @Component({ selector: 'app-profile-posts', template: '' })
 class ProfilePostsStub {
@@ -48,15 +46,9 @@ describe('ProfilePage', () => {
     f.detectChanges();
     expect(f.nativeElement.querySelector('[role="alert"]')).toBeNull();
   });
-  it('updates the profile presence, handles connection loss and stops watching on destroy', () => {
+  it('refreshes profile presence on focus and stops on destroy', () => {
     TestBed.overrideProvider(AccountStore, { useValue: { refresh: vi.fn() } });
-    let receive!: (state: PresenceUpdate | null) => void;
-    const stop = vi.fn();
-    const watchPresence = vi.fn((_id: string, _token: string, callback: typeof receive) => {
-      receive = callback;
-      return stop;
-    });
-    TestBed.overrideProvider(InboxRealtime, { useValue: { watchPresence } });
+    vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('visible');
     TestBed.inject(SessionStore).start(
       'header.' +
         btoa(JSON.stringify({ sub: 'viewer', exp: Date.now() / 1000 + 3600 })) +
@@ -65,33 +57,26 @@ describe('ProfilePage', () => {
     );
     const f = TestBed.createComponent(ProfilePage);
     f.detectChanges();
-    TestBed.inject(HttpTestingController)
-      .expectOne(API_BASE_URL + '/users/me')
-      .flush({
-        id: 'member',
-        name: 'Member',
-        bio: '',
-        hasAvatar: false,
-        presence: 'Offline',
-        presenceRevision: 0,
-      });
+    const http = TestBed.inject(HttpTestingController);
+    const profile = {
+      id: 'member',
+      name: 'Member',
+      bio: '',
+      hasAvatar: false,
+      presenceRevision: 0,
+    };
+    http.expectOne(API_BASE_URL + '/users/me').flush({ ...profile, presence: 'Offline' });
     f.detectChanges();
-    expect(watchPresence).toHaveBeenCalledOnce();
-    receive({ userID: 'member', presence: 'Online', revision: 1 });
+    const indicator = f.nativeElement.querySelector('.presence-indicator');
+    expect(indicator.getAttribute('aria-label')).toBe('Offline');
+    window.dispatchEvent(new Event('focus'));
+    http.expectOne(API_BASE_URL + '/users/member').flush({ ...profile, presence: 'Online' });
     f.detectChanges();
-    expect(f.nativeElement.querySelector('.presence-indicator').getAttribute('aria-label')).toBe(
-      'Online',
-    );
-    receive({ userID: 'member', presence: 'Offline', revision: 2 });
-    f.detectChanges();
-    expect(f.nativeElement.querySelector('.presence-indicator.offline i.pi-minus')).not.toBeNull();
-    receive(null);
-    f.detectChanges();
-    expect(f.nativeElement.querySelector('.presence-indicator').getAttribute('aria-label')).toBe(
-      'Status indisponível',
-    );
+    expect(indicator.getAttribute('aria-label')).toBe('Online');
     f.destroy();
-    expect(stop).toHaveBeenCalledOnce();
+    window.dispatchEvent(new Event('focus'));
+    http.expectNone(API_BASE_URL + '/users/member');
+    vi.restoreAllMocks();
   });
   it('shows backend validation, preserves the form and confirms a successful retry', () => {
     const refresh = vi.fn();

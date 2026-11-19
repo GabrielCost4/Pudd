@@ -50,7 +50,7 @@ public class PostService(
     public async Task<PostResponse> GetAsync(Guid actorId, Guid postId)
     {
         await access.RequireActiveAsync(actorId);
-        return Map(await FindAsync(postId));
+        return await FindResponseAsync(actorId, postId);
     }
 
     public async Task<PageResponse<PostResponse>> GetFeedAsync(
@@ -67,10 +67,8 @@ public class PostService(
             throw new AppException(ErrorCode.InvalidInput, "Informe o autor para filtrar por imagem.");
         if (authorId.HasValue && await users.GetByIdAsync(authorId.Value) is null)
             throw new AppException(ErrorCode.NotFound, "Autor não encontrado.");
-        var result = authorId.HasValue
-            ? await posts.GetByUserAsync(authorId.Value, page, pageSize, hasImage)
-            : await posts.GetFeedAsync(page, pageSize);
-        return SocialRules.Slice(result.Select(Map), page, pageSize);
+        var result = await posts.GetFeedAsync(actorId, page, pageSize, authorId, hasImage);
+        return SocialRules.Slice(result, page, pageSize);
     }
 
     public async Task<PostResponse> UpdateAsync(
@@ -107,7 +105,7 @@ public class PostService(
                 await images.DiscardAsync("posts", newPath);
             throw;
         }
-        return Map(post);
+        return await FindResponseAsync(actorId, postId);
     }
 
     public async Task DeleteAsync(Guid actorId, Guid postId, bool moderation = false)
@@ -135,6 +133,10 @@ public class PostService(
 
     private async Task<Post> FindAsync(Guid id) =>
         await posts.GetByIdAsync(id)
+        ?? throw new AppException(ErrorCode.NotFound, "Postagem não encontrada.");
+
+    private async Task<PostResponse> FindResponseAsync(Guid actorId, Guid id) =>
+        await posts.GetResponseAsync(actorId, id)
         ?? throw new AppException(ErrorCode.NotFound, "Postagem não encontrada.");
 
     private static PostResponse Map(Post post) =>

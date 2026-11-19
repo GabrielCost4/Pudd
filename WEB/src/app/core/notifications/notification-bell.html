@@ -96,9 +96,6 @@
       </button>
     </div>
   }
-  @if (!inbox.online()) {
-    <p class="muted connection-status">Reconectando às atualizações…</p>
-  }
   @if (inbox.error()) {
     <p-message severity="error">{{ inbox.error() }}</p-message>
   }

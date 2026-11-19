@@ -58,7 +58,6 @@ public class PostsController(
     }
 
     [HttpGet("{id:guid}/image")]
-    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public async Task<IActionResult> Image(Guid id, CancellationToken ct) =>
-        Ok(await posts.GetImageAsync(ActorId, id, ct));
+        PrivateImageUrl(await posts.GetImageAsync(ActorId, id, ct));
 }

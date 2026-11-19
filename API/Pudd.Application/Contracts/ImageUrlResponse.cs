@@ -1,3 +1,3 @@
 namespace Pudd.Application.Contracts;
 
-public record ImageUrlResponse(string Url, int ExpiresInSeconds);
+public record ImageUrlResponse(string Url, int ExpiresInSeconds, DateTimeOffset? ExpiresAt = null);

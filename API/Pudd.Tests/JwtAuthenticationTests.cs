@@ -10,7 +10,7 @@ namespace Pudd.Tests;
 public partial class ApiTests
 {
     [Fact]
-    public async Task QueryStringTokenIsAcceptedOnlyForTheNotificationsHub()
+    public async Task NotificationsHubIsRemovedAndQueryStringTokensAreRejected()
     {
         await using var factory = new ApiFactory();
         using var authenticated = await CreateAuthenticatedClient(factory);
@@ -19,7 +19,7 @@ public partial class ApiTests
 
         using var hub = await client.PostAsync(
             $"/api/hubs/notifications/negotiate?negotiateVersion=1&access_token={token}", null);
-        Assert.Equal(HttpStatusCode.OK, hub.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, hub.StatusCode);
 
         using var profile = await client.GetAsync($"/api/users/me?access_token={token}");
         Assert.Equal(HttpStatusCode.Unauthorized, profile.StatusCode);

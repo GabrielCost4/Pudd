@@ -3,6 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { catchError, expand, map, type Observable, of, shareReplay, switchMap, timer } from 'rxjs';
 import { SessionStore } from '../auth/session.store';
 import { AccountService } from './account.service';
+import { imageRefreshDelay } from '../../shared/models/image-url-response';
 
 @Injectable({ providedIn: 'root' })
 export class AvatarStore {
@@ -29,11 +30,9 @@ export class AvatarStore {
     this.missingUntil.delete(id);
     const cached = this.images.get(id);
     if (cached) return cached;
-    const image = this.api.avatar(id).pipe(
+    const image = this.api.avatar(id, this.availability.get(id) === true).pipe(
       expand((response) =>
-        timer(Math.max(1000, (response.expiresInSeconds - 15) * 1000)).pipe(
-          switchMap(() => this.api.avatar(id)),
-        ),
+        timer(imageRefreshDelay(response)).pipe(switchMap(() => this.api.avatar(id))),
       ),
       map((response) => response.url),
       catchError((error: unknown) => {

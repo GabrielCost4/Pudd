@@ -48,9 +48,8 @@ public class UsersController(UserService users) : SocialControllerBase
     }
 
     [HttpGet("{id:guid}/avatar")]
-    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public async Task<IActionResult> GetAvatar(Guid id, CancellationToken ct) =>
-        Ok(await users.GetAvatarAsync(ActorId, id, ct));
+        PrivateImageUrl(await users.GetAvatarAsync(ActorId, id, ct));
 
     [HttpPut("me/banner")]
     [EnableRateLimiting(ApiRateLimiting.Avatar)]

@@ -1,8 +1,5 @@
 using System.Net;
 using System.Net.Http.Json;
-using System.Threading.Channels;
-using Microsoft.AspNetCore.Http.Connections;
-using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Pudd.Application.Contracts;
@@ -18,7 +15,7 @@ namespace Pudd.Tests;
 public partial class ApiTests
 {
     [Fact]
-    public async Task NotificationsArePrivatePersistOfflineAndReachTheRecipientThroughSignalR()
+    public async Task NotificationPollingReturnsOnlyTheRecipientsPendingItems()
     {
         await using var factory = new ApiFactory();
         using var owner = await CreateAuthenticatedClient(factory);
@@ -39,19 +36,8 @@ public partial class ApiTests
         await other.PostAsJsonAsync("/api/notifications/read", new { IDs = new[] { saved.ID } });
         Assert.Single((await owner.GetFromJsonAsync<NotificationResponse[]>("/api/notifications"))!);
 
-        var updates = Channel.CreateUnbounded<NotificationResponse[]>();
-        await using var connection = new HubConnectionBuilder().WithUrl("https://localhost/api/hubs/notifications", options =>
-        {
-            options.Transports = HttpTransportType.LongPolling;
-            options.HttpMessageHandlerFactory = _ => factory.Server.CreateHandler();
-            options.AccessTokenProvider = () => Task.FromResult(owner.DefaultRequestHeaders.Authorization!.Parameter);
-        }).Build();
-        connection.On<NotificationResponse[]>("Notifications", items => updates.Writer.TryWrite(items));
-        await connection.StartAsync();
-        Assert.Single(await connection.InvokeAsync<NotificationResponse[]>("GetNotifications"));
-        await other.PostAsJsonAsync($"/api/posts/{postId}/comments", new { Content = "Live comment" });
-        var live = await updates.Reader.ReadAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(10));
-        Assert.Equal(2, live.Length);
+        await other.PostAsJsonAsync($"/api/posts/{postId}/comments", new { Content = "New comment" });
+        Assert.Equal(2, (await owner.GetFromJsonAsync<NotificationResponse[]>("/api/notifications"))!.Length);
         Assert.Equal(HttpStatusCode.NoContent, (await owner.PostAsJsonAsync("/api/notifications/read", new { IDs = new[] { saved.ID } })).StatusCode);
         var remaining = Assert.Single((await owner.GetFromJsonAsync<NotificationResponse[]>("/api/notifications"))!);
         Assert.NotEqual(saved.ID, remaining.ID);
@@ -65,8 +51,6 @@ public partial class ApiTests
             (await db.users.FindAsync(ownerProfile.ID))!.IsBlocked = true;
             await db.SaveChangesAsync();
         }
-        var blocked = await Record.ExceptionAsync(() => connection.InvokeAsync<NotificationResponse[]>("GetNotifications"));
-        Assert.True(blocked is Microsoft.AspNetCore.SignalR.HubException or HttpRequestException { StatusCode: HttpStatusCode.Unauthorized });
         Assert.Equal(HttpStatusCode.Unauthorized, (await owner.GetAsync("/api/notifications")).StatusCode);
     }
 }
@@ -92,8 +76,17 @@ public class NotificationPostgresTests
             await new PostLikeService(new PostLikeRepository(concurrent), new PostRepository(concurrent), new AccountAccess(new UserRepository(concurrent))).SetLikedAsync(actor.ID, post.ID, true);
         }));
         var inbox = new NotificationRepository(db);
-        var likes = new PostLikeService(new PostLikeRepository(db), new PostRepository(db), new AccountAccess(new UserRepository(db)));
+        var posts = new PostRepository(db);
+        var likes = new PostLikeService(new PostLikeRepository(db), posts, new AccountAccess(new UserRepository(db)));
         Assert.Equal("like", Assert.Single(await inbox.GetAllAsync(owner.ID)).Kind);
+        var feed = Assert.Single(await posts.GetFeedAsync(actor.ID, 1, 10, owner.ID, false));
+        Assert.Equal(post.ID, feed.ID);
+        Assert.Equal(1, feed.LikeCount);
+        Assert.True(feed.IsLikedByCurrentUser);
+        var ownerView = await posts.GetResponseAsync(owner.ID, post.ID);
+        Assert.NotNull(ownerView);
+        Assert.Equal(1, ownerView.LikeCount);
+        Assert.False(ownerView.IsLikedByCurrentUser);
         await likes.SetLikedAsync(owner.ID, post.ID, true);
         Assert.Single(await inbox.GetAllAsync(owner.ID));
         await likes.SetLikedAsync(actor.ID, post.ID, false);

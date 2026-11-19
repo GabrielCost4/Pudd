@@ -10,8 +10,7 @@ public class CommentService(
     ICommentRepository comments,
     IPostRepository posts,
     AccountAccess access,
-    IValidator<CreateCommentRequest> validator,
-    NotificationService? notifications = null
+    IValidator<CreateCommentRequest> validator
 )
 {
     public async Task<CommentResponse> CreateAsync(
@@ -41,7 +40,6 @@ public class CommentService(
             Kind = "comment",
         };
         await comments.AddAsync(comment, notification);
-        if (notifications is not null) await notifications.PublishForPostAsync(postId);
         return Map(comment);
     }
 
@@ -74,7 +72,6 @@ public class CommentService(
         if (!moderation)
             SocialRules.Owner(comment.UserID, actorId);
         await comments.DeleteAsync(comment);
-        if (notifications is not null) await notifications.PublishForPostAsync(comment.PostID);
     }
 
     private async Task<Post> RequirePostAsync(Guid id) =>

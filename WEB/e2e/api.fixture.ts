@@ -17,6 +17,7 @@ export async function mockApi(page:Page) {
       {id:SECOND,userID:OTHER,authorName:'Ana Dev',content:'Uma ideia da comunidade.',hasImage:false,createdAt:'2026-10-06T11:00:00Z',updatedAt:null as string|null},
     ],
     comments:[{id:'55555555-5555-4555-8555-555555555555',postID:FIRST,userID:OTHER,authorName:'Ana Dev',content:'Ótimo começo!',createdAt:'2026-10-06T12:05:00Z'}],
+    otherPresence: 'Offline' as 'Offline' | 'Online',
     likes:new Map<string,boolean>(),
     avatarUsers:new Set<string>(),avatarVersion:0,
     postValidation:null as Record<string,string[]>|null,
@@ -75,10 +76,15 @@ export async function mockApi(page:Page) {
       return send({url:pixel+'#'+id+'-'+state.avatarVersion,expiresInSeconds:3600});
     }
     if(path==='/users/me'||path==='/users/'+ME)return send(state.profile);
-    if(path==='/users/'+OTHER)return send({id:OTHER,name:'Ana Dev',bio:'Aprendendo em comunidade.',hasAvatar:state.avatarUsers.has(OTHER)});
+    if(path==='/users/'+OTHER)return send({id:OTHER,name:'Ana Dev',bio:'Aprendendo em comunidade.',hasAvatar:state.avatarUsers.has(OTHER),presence:state.otherPresence});
     const withAuthorAvatar=<T extends {userID:string}>(item:T)=>({...item,authorHasAvatar:item.userID===ME?state.profile.hasAvatar:state.avatarUsers.has(item.userID)});
+    const withPostMetadata = <T extends {id: string; userID: string}>(post:T) => {
+      const item = withAuthorAvatar(post);
+      const liked = state.likes.get(post.id) ?? false;
+      return {...item, hasAvatar: item.authorHasAvatar, likeCount: liked ? 1 : 0, isLikedByCurrentUser: liked};
+    };
     if(path==='/posts'&&method==='GET'){
-      const author=url.searchParams.get('authorId'),hasImage=url.searchParams.get('hasImage');return send(paginated(state.posts.filter(p=>(!author||p.userID===author)&&(hasImage===null||p.hasImage===(hasImage==='true'))).map(withAuthorAvatar)));
+      const author=url.searchParams.get('authorId'),hasImage=url.searchParams.get('hasImage');return send(paginated(state.posts.filter(p=>(!author||p.userID===author)&&(hasImage===null||p.hasImage===(hasImage==='true'))).map(withPostMetadata)));
     }
     if(path.endsWith('/like')){
       const id=path.split('/')[2];
@@ -103,13 +109,13 @@ export async function mockApi(page:Page) {
       const hasNew=body.includes('name="Image"'),remove=body.includes('name="RemoveImage"\r\n\r\ntrue');
       if(method==='POST'){
         const post={id:crypto.randomUUID(),userID:ME,authorName:state.profile.name,content,hasImage:hasNew,createdAt:new Date().toISOString(),updatedAt:null};
-        state.posts.unshift(post);return send(withAuthorAvatar(post),201);
+        state.posts.unshift(post);return send(withPostMetadata(post),201);
       }
       const post=state.posts.find(p=>path.endsWith(p.id));
-      if(post){post.content=content;post.hasImage=hasNew||(!remove&&post.hasImage);post.updatedAt=new Date().toISOString();return send(withAuthorAvatar(post));}
+      if(post){post.content=content;post.hasImage=hasNew||(!remove&&post.hasImage);post.updatedAt=new Date().toISOString();return send(withPostMetadata(post));}
     }
     const post=state.posts.find(p=>path==='/posts/'+p.id);
-    if(post)return send(withAuthorAvatar(post));
+    if(post)return send(withPostMetadata(post));
     return send({title:'Recurso não encontrado.'},404);
   });
   return state;

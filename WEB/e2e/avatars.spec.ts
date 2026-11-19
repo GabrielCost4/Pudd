@@ -80,6 +80,8 @@ test('shows current and other author photos and synchronizes avatar changes with
   );
   await expect(sidebar.locator('img')).not.toHaveAttribute('src', original!);
   const replacement = await sidebar.locator('img').getAttribute('src');
+  const editor = page.getByRole('dialog', { name: 'Editar perfil', exact: true });
+  await editor.getByRole('button', { name: 'Cancelar', exact: true }).click();
   await page.getByRole('link', { name: 'Feed', exact: true }).click();
   await expect(own.locator('.author img')).toHaveAttribute('src', replacement!);
   await page.setViewportSize({ width: 390, height: 844 });
@@ -96,6 +98,7 @@ test('shows current and other author photos and synchronizes avatar changes with
   await expect(page.locator('p-toast .p-toast-message-success')).toContainText(
     'Foto de perfil removida.',
   );
+  await editor.getByRole('button', { name: 'Cancelar', exact: true }).click();
   await page.getByRole('button', { name: 'Abrir menu', exact: true }).click();
   await expect(sidebar.locator('img')).toHaveCount(0);
   await expect(sidebar.locator('p-avatar')).toContainText('G');

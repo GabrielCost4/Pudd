@@ -8,5 +8,3 @@ public enum UserPresence
     Offline,
     Online
 }
-
-public record PresenceResponse(Guid UserID, UserPresence Presence, long Revision);

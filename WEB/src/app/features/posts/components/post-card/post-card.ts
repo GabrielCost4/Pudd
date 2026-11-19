@@ -26,6 +26,7 @@ import { SessionStore } from '../../../../core/auth/session.store';
 import { AvatarStore } from '../../../../core/account/avatar.store';
 import { Feedback } from '../../../../shared/components/feedback/feedback';
 import { apiErrors } from '../../../../shared/utils/api-errors';
+import { imageRefreshDelay } from '../../../../shared/models/image-url-response';
 import type { Post } from '../../models/post';
 import type { LikeResponse } from '../../likes/models/like-response';
 import { PostService } from '../../services/post.service';
@@ -129,14 +130,16 @@ export class PostCard {
 
   constructor() {
     effect((cleanup) => {
-      const id = this.post().userID;
+      const post = this.post();
       this.avatars.revision();
       this.authorAvatar.set('');
       this.authorAvatarFailed.set(false);
-      const request = this.avatars.image(id, this.post().authorHasAvatar).subscribe((url) => {
-        this.authorAvatar.set(url);
-        this.authorAvatarFailed.set(false);
-      });
+      const request = this.avatars
+        .image(post.userID, post.hasAvatar ?? post.authorHasAvatar)
+        .subscribe((url) => {
+          this.authorAvatar.set(url);
+          this.authorAvatarFailed.set(false);
+        });
       cleanup(() => request.unsubscribe());
     });
     effect(() => {
@@ -144,10 +147,14 @@ export class PostCard {
       this.expanded.set(false);
     });
     effect((cleanup) => {
-      const id = this.post().id;
-      this.likesVersion();
-      this.likeState.set(null);
+      const { id, likeCount, isLikedByCurrentUser } = this.post();
+      const retry = this.likesVersion();
       this.likeErrors.set([]);
+      if (!retry && likeCount !== undefined && isLikedByCurrentUser !== undefined) {
+        this.likeState.set({ count: likeCount, liked: isLikedByCurrentUser });
+        return;
+      }
+      this.likeState.set(null);
       const subscription = this.likes.get(id).subscribe({
         next: (value) => this.likeState.set(value),
         error: (error: unknown) => this.likeErrors.set(apiErrors(error)),
@@ -156,23 +163,26 @@ export class PostCard {
     });
     effect((cleanup) => {
       const post = this.post();
-      this.imageVersion();
+      let reload = this.imageVersion() > 0;
       this.imageUrl.set('');
       this.imageFailed.set(false);
       if (!post.hasImage) return;
       const subscriptions = new Subscription();
       let refresh: ReturnType<typeof setTimeout>;
-      const load = () =>
+      const load = () => {
+        const request = this.posts.image(post.id, post.updatedAt, reload);
+        reload = false;
         subscriptions.add(
-          this.posts.image(post.id).subscribe({
+          request.subscribe({
             next: (response) => {
               this.imageUrl.set(response.url);
               this.imageFailed.set(false);
-              refresh = setTimeout(load, Math.max(1000, (response.expiresInSeconds - 15) * 1000));
+              refresh = setTimeout(load, imageRefreshDelay(response));
             },
             error: () => this.imageFailed.set(true),
           }),
         );
+      };
       load();
       cleanup(() => {
         clearTimeout(refresh);

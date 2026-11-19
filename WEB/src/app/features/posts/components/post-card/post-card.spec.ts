@@ -21,12 +21,15 @@ describe('PostCard', () => {
       authorHasAvatar,
       content,
       hasImage,
+      likeCount: 2,
+      isLikedByCurrentUser: false,
       createdAt: '2026-10-11T00:00:00Z',
       updatedAt: null,
     });
     f.detectChanges();
     const http = TestBed.inject(HttpTestingController);
-    http.expectOne(API_BASE_URL + '/posts/post/like').flush({ liked: false, count: 0 });
+    http.expectNone(API_BASE_URL + '/posts/post/like');
+    if (!hasImage) http.expectNone(API_BASE_URL + '/posts/post/image');
     if (authorHasAvatar)
       http
         .expectOne(API_BASE_URL + '/users/member/avatar')
